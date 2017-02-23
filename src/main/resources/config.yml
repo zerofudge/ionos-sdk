@@ -1,0 +1,16 @@
+api:
+  auth:
+    verifySSL: false
+    basic:
+      user: some.guy@profitbricks.com
+      password: secret
+  url: https://api.profitbricks.com/cloudapi/v3
+  wait:
+    factor: 1.87
+    init:
+      milliseconds: 100
+    max:
+      milliseconds: 2000
+    timeout:
+      seconds: 120
+  verbose: true

@@ -1,0 +1,60 @@
+apply plugin: 'groovy'
+apply plugin: 'application'
+apply plugin: 'idea'
+apply plugin: 'maven-publish'
+
+group 'com.profitbricks.sdk'
+version '1.0.0'
+
+//noinspection GroovyUnusedAssignment
+mainClassName = 'SDKTester'
+
+//noinspection GroovyUnusedAssignment
+applicationDefaultJvmArgs = [
+    // #credentials
+    user: 'some.user@email.com',
+    password: 'your_password',
+    verifySSL: 'false'
+].collect {
+    "-Dapi.${it.key}=${it.value}"
+}
+
+//noinspection GroovyUnusedAssignment
+sourceCompatibility = 7
+//noinspection GroovyUnusedAssignment
+targetCompatibility = 7
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allGroovy
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourceJar {
+                classifier 'sources'
+            }
+        }
+    }
+    repositories {
+        maven {
+            url 'http://artifacts.stage.pb.local/content/repositories/releases'
+        }
+    }
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.4.8',
+            'org.codehaus.groovy.modules.http-builder:http-builder:0.7.2',
+            'org.codehaus.gpars:gpars:1.2.0',
+            'org.apache.logging.log4j:log4j-core:2.7'
+    runtime 'org.apache.logging.log4j:log4j-jcl:2.7'
+}
+
