@@ -20,7 +20,7 @@ final class LAN extends ModelBase {
     boolean _public = true
 
     @Override
-    final getId() { super.id as int }
+    final getId() { super.id as Integer }
 
     @Override
     final LAN create() { (super.create() as LAN)?.with(dataCenter) }

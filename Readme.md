@@ -48,13 +48,13 @@ b) just add the proper maven dependency:
         <dependency>
           <groupId>com.profitbricks.sdk/groupId>
           <artifactId>groovy</artifactId>
-          <version>1.0.0</version>
+          <version>1.4.0</version>
         </dependency>`
 
   - or in your build.gradle:
 
         dependencies {
-          compile 'com.profitbricks.sdk:groovy:1.0.0'
+          compile 'com.profitbricks.sdk:groovy:1.4.0'
         }
 
 
@@ -93,13 +93,12 @@ groovyness will be gone but there won't be any technical issue doing that.
 
 ## Shortcomings and open issues
 
-Not all CRUD functionality needs to be instance methods on the entities. Especially `all` (a.k.a. `list`) and `read()` should be
+- Not all CRUD functionality needs to be instance methods on the entities. Especially `all` (a.k.a. `list`) and `read()` should be
 static members. This'll be done in an upcoming version.
 
-The current rather simplistic configuration approach using system properties should actually be replaced by a properly
+- The current rather simplistic configuration approach using system properties should actually be replaced by a properly
 provided externalized configuration within the class path. There is already a draft for this in `src/main/resources/config.yaml`
 but needs implementation and will also be done with an upcoming version.
 
-In the long run, having proper lifecycle control over your entities proves to be more than helpful. The current (brutely blocking) 
+- In the long run, having proper lifecycle control over your entities proves to be more than helpful. The current (brutely blocking) 
 approach to query for `/request` resources will be replaces by a future/promise based mechanism.
-

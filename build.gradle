@@ -4,7 +4,7 @@ apply plugin: 'idea'
 apply plugin: 'maven-publish'
 
 group 'com.profitbricks.sdk'
-version '1.0.0'
+version '1.4.0'
 
 //noinspection GroovyUnusedAssignment
 mainClassName = 'SDKTester'
@@ -30,6 +30,7 @@ repositories {
 }
 
 task sourceJar(type: Jar) {
+    //noinspection GrUnresolvedAccess, GroovyAssignabilityCheck
     from sourceSets.main.allGroovy
 }
 
@@ -38,6 +39,7 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
 
+            //noinspection GroovyAssignabilityCheck
             artifact sourceJar {
                 classifier 'sources'
             }

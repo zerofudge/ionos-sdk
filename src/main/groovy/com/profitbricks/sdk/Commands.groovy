@@ -10,7 +10,7 @@ import static groovyx.net.http.ContentType.URLENC
  * provides commands for provisioned resources
  *
  * Created by fudge on 06/02/17.
- * (c)2015 Profitbricks.com
+ * (c)2017 Profitbricks.com
  */
 class Commands {
 
@@ -164,7 +164,7 @@ class Commands {
     static final NIC associate(final LoadBalancer loadBalancer, final NIC nic) {
         def resp = waitFor(API.post(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics") + [body: [id: nic.id]]))
         if (resp?.status == 202) {
-            return new NIC().from(resp?.data) as NIC
+            return new NIC(server: nic.server, lan: nic.lan).from(resp?.data) as NIC
         }
         throw new HttpResponseException(resp?.status as int, "NIC not associated")
     }

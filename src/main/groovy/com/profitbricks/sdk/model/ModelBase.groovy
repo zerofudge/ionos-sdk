@@ -2,7 +2,10 @@ package com.profitbricks.sdk.model
 
 import com.profitbricks.sdk.annotation.*
 import groovy.transform.EqualsAndHashCode
+import groovy.util.logging.Log4j2
+
 import java.lang.annotation.Annotation
+
 import static com.profitbricks.sdk.Common.*
 
 /**
@@ -10,9 +13,10 @@ import static com.profitbricks.sdk.Common.*
  * all operations are blocking until the API result status is received
  *
  * Created by fudge on 01/02/17.
- * (c)2015 Profitbricks.com
+ * (c)2017 Profitbricks.com
  */
 @EqualsAndHashCode
+@Log4j2
 abstract class ModelBase {
     def id
 
@@ -38,7 +42,7 @@ abstract class ModelBase {
      * provides the 'list all' REST call
      * @return a list of resource IDs
      */
-    List<String> getAll() {
+    final List<String> getAll() {
         API.get(requestFor(resource))?.data?.items?.collect{it.id}
     }
 
@@ -54,7 +58,7 @@ abstract class ModelBase {
      * provides the 'get resource' REST call
      * @return the response JSON object
      */
-    def read(id = id) {
+    def read(final id = id) {
         from API.get(requestFor("${resource}/${id}"))?.data
     }
 
@@ -71,7 +75,7 @@ abstract class ModelBase {
      * provides the 'delete resource' REST call
      * @return the response JSON object
      */
-    boolean delete() {
+    final boolean delete() {
         waitFor(API.delete(requestFor("${resource}/$id")))?.status == 202
     }
 
@@ -80,14 +84,15 @@ abstract class ModelBase {
      * @param propNames list of property names to take into account
      * @return a properly filled request body
      */
-    protected Map bodyFrom(List propNames) {
-        def props = metaClass.properties.findAll{def n=it.name; propNames.contains(n) && this."$n"}.collectEntries{def n=it.name; ["$n": this."$n"]}
+    protected final Map bodyFrom(final List propNames) {
+        final props = metaClass.properties.findAll{def n=it.name; propNames.contains(n) && this."$n"}.collectEntries{def n=it.name; ["$n": this."$n"]}
 
-        def rtn = [properties: [:]]
+        final rtn = [properties: [:]]
         // surely looks a little dumb, but shortening or omitting this leads to a weird:
         // net.sf.json.JSONException: java.lang.ClassCastException: JSON keys must be strings
         // also, we have to spice up keywords with underscores
         props.each { k, v -> rtn.properties."${k.toString().replaceAll(/_/, '')}" = v }
+        if (log.isDebugEnabled()) log.debug "body: ${rtn}"
         return rtn
     }
 
@@ -112,7 +117,7 @@ abstract class ModelBase {
      * @param data a JSON object
      * @return the unmarshalled entity
      */
-    final from(final data) {
+    def from(final data) {
         def e = null
 
         if (data) {

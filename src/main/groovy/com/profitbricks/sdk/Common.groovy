@@ -4,19 +4,23 @@ import groovy.time.TimeCategory
 import groovy.util.logging.Log4j2
 import groovyx.net.http.RESTClient
 import org.apache.http.client.*
+import org.apache.http.impl.client.*
+import org.apache.http.impl.conn.PoolingClientConnectionManager
+import org.apache.http.params.*
 import org.codehaus.groovy.runtime.StackTraceUtils
 
 import static groovyx.net.http.ContentType.JSON
+import static org.apache.commons.codec.binary.Base64.encodeBase64String
 
 /**
- * some functions enclosing convenience functionality
+ * some static functions enclosing convenience functionality
  *
  * Created by fudge on 01/02/17.
- * (c)2015 Profitbricks.com
+ * (c)2017 Profitbricks.com
  */
 @Log4j2
 final class Common {
-    private final static RESTClient client = new RESTClient(URLParts.host)
+    private final static RESTClient client = new PooledClient(URLParts.prefix)
 
     // statically initializes the REST client
     static {
@@ -45,10 +49,10 @@ final class Common {
         [
          path: "${URLParts.path}/${path}",
          headers: [
-             'User-Agent': 'profitbricks-groovy-sdk/1.0',
+             'User-Agent': 'profitbricks-groovy-sdk/1.4',
              'Accept': JSON.acceptHeader,
              // omit resend-on-401 scheme
-             'Authorization': "Basic " + Base64.encoder.encodeToString("${prop('api.user')}:${prop('api.password')}".bytes)
+             'Authorization': "Basic " + encodeBase64String("${prop('api.user')}:${prop('api.password')}".bytes)
          ],
          requestContentType: JSON
         ]
@@ -64,26 +68,45 @@ final class Common {
      * @return the original response object
      */
     final static waitFor(final response) {
-        String loc = "${response?.headers?.Location}".trim()
+        final String loc = "${response?.headers?.Location}".trim()
         if (loc && !(loc =~ /(?i)null/)) {
-            int sleep = prop('api.wait.init.milliseconds') as Integer ?: 100
-            def start = new Date()
-            long max = prop('api.wait.max.milliseconds') as Long ?: 1500
+            long sleep = prop('api.wait.init.milliseconds') as Long ?: 100
+            final start = new Date()
+            final long max = prop('api.wait.max.milliseconds') as Long ?: 1500
 
             while (true) {
-                def _resp = API.get(requestFor(loc.toURL().path - URLParts.path))
-                if (_resp?.data?.metadata?.status =~ /(?i)done/) break
+                final path = loc.toURL().path - URLParts.path
+                final resp = API.get(requestFor(path))
+                final status = resp?.data?.metadata?.status
 
-                int timeout = (prop('api.wait.timeout.seconds') as Integer ?: 120)
-                if (TimeCategory.minus(new Date(), start).seconds > timeout) {
-                    throw new ClientProtocolException('timeout while waiting for status DONE')
+                if (log.isTraceEnabled())
+                    log.trace "request ${loc.substring(loc.lastIndexOf('/') + 1)}: ${status}"
+
+                if (status =~ /(?i)done/) break
+                if (status =~ /(?i)failed/)
+                    throw new ClientProtocolException("${path}: FAILED!")
+
+                final int timeout = (prop('api.wait.timeout.seconds') as Integer ?: 120)
+                if (TimeCategory.minus(new Date(), start).toMilliseconds() > (timeout * 1000)) {
+                    throw new ClientProtocolException("timeout (${timeout}s) exceeded while waiting for status DONE")
                 }
 
-                print '.'
-                Thread.sleep Math.min(max, (sleep *= (prop('api.wait.factor') ?: 1.87)) as long)
+                Thread.sleep Math.min(max, Math.abs((sleep *= (prop('api.wait.factor') ?: 1.53)) as long))
             }
         }
         return response
+    }
+
+    private final static class PooledClient extends RESTClient {
+        PooledClient(final Object defaultURI) throws URISyntaxException { super(defaultURI) }
+
+        @Override
+        protected final HttpClient createClient(final HttpParams params) {
+            final cm = new PoolingClientConnectionManager()
+            cm.maxTotal = 200
+            cm.defaultMaxPerRoute = 20
+            new DefaultHttpClient(cm, params)
+        }
     }
 
     /**
@@ -96,6 +119,6 @@ final class Common {
 
     private final static getURLParts() {
         def url = new URL(prop('api.URL') ?: 'https://api.profitbricks.com/cloudapi/v3/')
-        [host: "$url" - url.path, path: url.path]
+        [prefix: "$url" - url.path, path: url.path]
     }
 }

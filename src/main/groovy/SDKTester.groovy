@@ -142,6 +142,7 @@ class SDKTester {
             ).create()
             n = n.read()
             println "created $n"
+            assert n.lan
 
             // -------- nic update ---------
 
@@ -191,17 +192,12 @@ class SDKTester {
             lb = lb.create()
             println "recreated $lb"
 
-            // -------- crip create ---------
-
+           // -------- crip delete and create ---------
             IPBlock ip = new IPBlock(
-                location: dc.location,
-                name: "ipblock_${rnd()}",
-                size: 2
-            ).create() as IPBlock
-            ip = ip.read() as IPBlock
-            println "created $ip"
-
-            // -------- crip delete ---------
+                    location: dc.location,
+                    name: "ipblock_${rnd()}",
+                    size: 2
+            )
 
             ip.all.each { id ->
                 def _ip = ip.read(id) as IPBlock
@@ -210,9 +206,10 @@ class SDKTester {
             }
 
             ip = ip.create() as IPBlock
+            ip = ip.read() as IPBlock
             println "recreated $ip"
 
-            // -------- firewall rule create ---------
+             // -------- firewall rule create ---------
 
             FirewallRule fw = new FirewallRule(
                 nic: n,

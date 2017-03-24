@@ -1,8 +1,6 @@
 package com.profitbricks.sdk.model
 
-import com.profitbricks.sdk.annotation.Creatable
-import com.profitbricks.sdk.annotation.Readable
-import com.profitbricks.sdk.annotation.Updatable
+import com.profitbricks.sdk.annotation.*
 import groovy.transform.*
 
 /**
@@ -29,10 +27,16 @@ final class NIC extends ModelBase {
     boolean firewallActive
 
     @Override
-    final NIC create() { (super.create() as NIC)?.with(server)?.with(lan) }
+    final from(Object data) {
+        lan = lan ?: new LAN(dataCenter: server?.dataCenter, id: data?.properties?.lan).read()
+        super.from(data)
+    }
 
     @Override
-    final NIC read(final id = id) { (super.read(id) as NIC)?.with(server)?.with(lan) }
+    final NIC create() { _from super.create() }
+
+    @Override
+    final NIC read(final id = id) { _from super.read(id) }
 
     @Override
     final String getResource() { "${server.resource}/${server.id}/nics" }
@@ -49,4 +53,11 @@ final class NIC extends ModelBase {
 
     private final NIC with(final Server s) { server = s; this }
     private final NIC with(final LAN l) { lan = l; this }
+
+    private final _from(final nic) {
+        final NIC n = (nic as NIC)?.with(server)
+        if (lan) n?.with(lan)
+        return n
+
+    }
 }

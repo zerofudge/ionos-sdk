@@ -8,7 +8,7 @@ import groovy.transform.*
  * see: https://devops.profitbricks.com/api/cloud/v3/#firewall-rules
  *
  * Created by fudge on 03/02/17.
- * (c)20157 Profitbricks.com
+ * (c)2017 Profitbricks.com
  */
 @ToString(includeNames = true, ignoreNulls = true, includeSuperProperties = true, includePackage = false, excludes = ['resource', 'nic'])
 @EqualsAndHashCode(callSuper = true)
