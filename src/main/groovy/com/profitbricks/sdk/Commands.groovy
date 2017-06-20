@@ -10,7 +10,7 @@ import static groovyx.net.http.ContentType.URLENC
  * provides commands for provisioned resources
  *
  * Created by fudge on 06/02/17.
- * (c)2017 Profitbricks.com
+ * Copyright (c) 2017, ProfitBricks GmbH
  */
 class Commands {
 
@@ -31,10 +31,21 @@ class Commands {
      * gets the attached volumes for a given server
      *
      * @param server the server with the attached volumes
-     * @return a list of volume ids
+     * @return a list of attached volumes
      */
-    static final List<String> attachedVolumes(final Server server) {
-        API.get(requestFor("${server.resource}/${server.id}/volumes"))?.data?.items?.collect{it.id}
+    static final List<Volume> attachedVolumes(final Server server) {
+        API.get(requestFor("${server.resource}/${server.id}/volumes"))?.data?.items?.collect{new Volume().from(it) as Volume}
+    }
+    
+    /**
+     * This will retrieve the properties of an attached volume.
+     *
+     * @param server the server with the attached volume
+     * @param volume an existing volume
+     * @returns the volume attached
+     */
+    static final Volume attachedVolume(final Server server,final Volume volume) {
+        return new Volume().from(API.get(requestFor("${server.resource}/${server.id}/volumes/${volume.id}"))?.data) as Volume
     }
 
     /**
@@ -63,10 +74,20 @@ class Commands {
      * gets the attached CD-ROM images for a given server
      *
      * @param server the server with the attached volumes
-     * @return a list of image ids
+     * @return a list of images
      */
-    static final List<String> attachedCDROMs(final Server server) {
-        API.get(requestFor("${server.resource}/${server.id}/cdroms"))?.data?.items?.collect{it.id}
+    static final List<Image> attachedCDROMs(final Server server) {
+        API.get(requestFor("${server.resource}/${server.id}/cdroms"))?.data?.items?.collect{new Image().from(it) as Image}
+    }
+    
+    /**
+     * gets the attached CD-ROM image for a given server
+     * @param cdROM an existing, accessible CD-ROM image
+     * @param server the server with the attached volumes
+     * @return the image attached
+     */
+    static final Image attachedCDROM(final Server server, final Image cdROM) {
+        return new Image().from(API.get(requestFor("${server.resource}/${server.id}/cdroms/${cdROM.id}"))?.data) as Image
     }
 
     /**
@@ -77,7 +98,7 @@ class Commands {
      * @return true if detaching worked, false otherwise
      */
     static final boolean detach(final Server server, final Image cdROM) {
-         waitFor(API.delete(requestFor("${server.resource}/${server.id}/cdroms/${cdROM.id}")))?.status == 202
+        waitFor(API.delete(requestFor("${server.resource}/${server.id}/cdroms/${cdROM.id}")))?.status == 202
     }
 
     /**
@@ -168,6 +189,28 @@ class Commands {
         }
         throw new HttpResponseException(resp?.status as int, "NIC not associated")
     }
+    
+    /**
+     * gets the associated NICS of a loadbalancer
+     *
+     * @param LoadBalancer the LoadBalancer with the associated NICS
+     * @return a list of associated NICS
+     */
+    static final List<String> associatedNics(final LoadBalancer loadBalancer) {
+        API.get(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics"))?.data?.items?.collect{it.id}
+    }
+    
+    /**
+     * gets an associated NIC to a loadbalancer
+     *
+     * @param LoadBalancer the loadbalancer with the associated NICs
+     * @param nicId the NIC id attached to the loadbalancer
+     * @return NIC associated
+     */
+    static final NIC associatedNic(final LoadBalancer loadBalancer,final NIC nic) {
+        def data=API.get(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics/${nic.id}"))?.data
+        return new NIC(server: nic.server, lan: nic.lan).from(data) as NIC
+    }
 
     /**
      * removes the association of a given NIC and a given load balancer
@@ -178,5 +221,20 @@ class Commands {
      */
     static final boolean dissociate(final LoadBalancer loadBalancer, final NIC nic) {
         waitFor(API.delete(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics/${nic.id}")))?.status == 202
+    }
+    
+    // --------------------------------- R E Q U E S T  C O M M A N D S ---------------------------------
+    
+    /**
+     * Returns a request status
+     *
+     * @param requestId id of the request you need the status for
+     * @return Request with status details
+     */
+    static final Request requestStatus(final String requestId) {
+        def data=API.get(requestFor("requests/${requestId}/status"))?.data
+        Request request=data.metadata as Request
+        request.id=data.id.split('/')[0]
+        return request
     }
 }

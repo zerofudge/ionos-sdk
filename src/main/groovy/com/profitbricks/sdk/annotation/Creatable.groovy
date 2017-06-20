@@ -6,7 +6,7 @@ import java.lang.annotation.*
  * marks a field as transmittable in CREATE requests
  *
  * Created by fudge on 20/02/17.
- * (c)2017 Profitbricks.com
+ * Copyright (c) 2017, ProfitBricks GmbH
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

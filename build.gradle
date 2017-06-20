@@ -4,7 +4,7 @@ apply plugin: 'idea'
 apply plugin: 'maven-publish'
 
 group 'com.profitbricks.sdk'
-version '1.4.0'
+version '1.4.1'
 
 //noinspection GroovyUnusedAssignment
 mainClassName = 'SDKTester'
@@ -52,11 +52,24 @@ publishing {
     }
 }
 
+configurations {
+    // configuration that holds jars to include in the jar
+    extraLibs
+}
+
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.4.8',
-            'org.codehaus.groovy.modules.http-builder:http-builder:0.7.2',
+            'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1',
             'org.codehaus.gpars:gpars:1.2.0',
             'org.apache.logging.log4j:log4j-core:2.7'
-    runtime 'org.apache.logging.log4j:log4j-jcl:2.7'
+    extraLibs 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
+    runtime 'org.apache.logging.log4j:log4j-jcl:2.7',
+    configurations.compile.extendsFrom(configurations.extraLibs)
+}
+
+jar {
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 

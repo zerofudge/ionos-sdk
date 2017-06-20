@@ -8,7 +8,7 @@ import groovy.transform.*
  * see: https://devops.profitbricks.com/api/cloud/v3/#volumes
  *
  * Created by fudge on 03/02/17.
- * (c)2017 Profitbricks.com
+ * Copyright (c) 2017, ProfitBricks GmbH
  */
 @ToString(includeNames = true, ignoreNulls = true, includeSuperProperties = true, includePackage = false, excludes = ['resource', 'dataCenter'])
 @EqualsAndHashCode(callSuper = true)
@@ -27,7 +27,13 @@ final class Volume extends ModelBase {
     int deviceNumber
 
     @Override
-    final Volume create() { (super.create() as Volume)?.with dataCenter }
+    final Volume create() {
+        if(image!=null)
+        {
+            licenceType=null;
+        }
+        (super.create() as Volume)?.with dataCenter 
+    }
 
     @Override
     final Volume read(final id = id) { (super.read(id) as Volume)?.with dataCenter }
