@@ -12,5 +12,5 @@ api:
     max:
       milliseconds: 2000
     timeout:
-      seconds: 120
+      seconds: 240
   verbose: true

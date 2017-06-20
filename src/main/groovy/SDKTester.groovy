@@ -45,7 +45,6 @@ class SDKTester {
             dc.description = 'groovy new datacenter!'
             assert dc.update()
             println "updated $dc"
-            sleep(3000)
             assert dc == dc.read()
 
             // -------- server create ---------
@@ -116,7 +115,7 @@ class SDKTester {
 
             v = v.create()
             println "recreated $v"
-
+            
             // -------- lan create ---------
 
             LAN l = new LAN(
@@ -189,8 +188,6 @@ class SDKTester {
             println "recreated $n"
 
             // -------- loadbalancer create ---------
-            //sleep was added because the API fails to create a loadbalancer immediately after the last operation
-            sleep(5000)
             LoadBalancer lb = new LoadBalancer(
                 dataCenter: dc,
                 name: "loadbalancer_${rnd()}"

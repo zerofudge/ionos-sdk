@@ -95,7 +95,7 @@ final class Common {
                     throw new ClientProtocolException("timeout (${timeout}s) exceeded while waiting for status DONE")
                 }
 
-                Thread.sleep Math.min(max, Math.abs((sleep *= (prop('api.wait.factor') ?: 1.53)) as long))
+                Thread.sleep Math.min(max, Math.abs((sleep *= (prop('api.wait.factor') ?: 2)) as long))
             }
         }
         return response
