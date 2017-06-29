@@ -28,10 +28,8 @@ final class Volume extends ModelBase {
 
     @Override
     final Volume create() {
-        if(image!=null)
-        {
-            licenceType=null;
-        }
+        //in case both image and licenceType is provided ignore licenceType and take image
+        licenceType = (image != null) ? null : licenceType
         (super.create() as Volume)?.with dataCenter 
     }
 

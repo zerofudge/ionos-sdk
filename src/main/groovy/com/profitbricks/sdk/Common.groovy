@@ -47,15 +47,14 @@ final class Common {
      */
     final static Map requestFor(final String path) {
         [
-            path              : "${URLParts.path}/${path}",
-            headers           : [
-                'User-Agent'   : 'profitbricks-groovy-sdk/1.4',
-                'Accept'       : JSON.acceptHeader,
-                // omit resend-on-401 scheme
-                'Authorization': "Basic " + encodeBase64String("${prop('api.user')}:${prop('api.password')}".bytes)
-            ],
-
-            requestContentType: JSON
+         path              : "${URLParts.path}/${path}",
+         headers           : [
+             'User-Agent'   : 'profitbricks-groovy-sdk/1.4',
+             'Accept'       : JSON.acceptHeader,
+             // omit resend-on-401 scheme
+             'Authorization': "Basic " + encodeBase64String("${prop('api.user')}:${prop('api.password')}".bytes)
+         ],
+         requestContentType: JSON
         ]
     }
 
@@ -71,12 +70,10 @@ final class Common {
     final static waitFor(final response) {
         final String loc = "${response?.headers?.Location}".trim()
         if (loc && !(loc =~ /(?i)null/)) {
-            long sleep = prop('api.wait.init.milliseconds') as Long ?: 100
             final start = new Date()
-            final long max = prop('api.wait.max.milliseconds') as Long ?: 1500
 
             while (true) {
-                final path = loc.toURL().path - URLParts.path
+                def path = loc.toURL().path - URLParts.path
                 if (path.getAt(0) == '/') {
                     path = path.substring(1)
                 }
@@ -90,12 +87,12 @@ final class Common {
                 if (status =~ /(?i)failed/)
                     throw new ClientProtocolException("${path}: FAILED!")
 
-                final int timeout = (prop('api.wait.timeout.seconds') as Integer ?: 120)
+                final int timeout = (prop('api.wait.timeout.seconds') as Integer ?: 240)
                 if (TimeCategory.minus(new Date(), start).toMilliseconds() > (timeout * 1000)) {
                     throw new ClientProtocolException("timeout (${timeout}s) exceeded while waiting for status DONE")
                 }
 
-                Thread.sleep Math.min(max, Math.abs((sleep *= (prop('api.wait.factor') ?: 2)) as long))
+                Thread.sleep 4000
             }
         }
         return response

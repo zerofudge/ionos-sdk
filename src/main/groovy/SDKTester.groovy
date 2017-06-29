@@ -12,8 +12,7 @@ class SDKTester {
 
     final static void main(final String[] args) {
         def _start = new Date()
-        DataCenter dc
-
+        
         new SDKTester().with { try {
 
             // -------- location list & read ----------
@@ -25,7 +24,7 @@ class SDKTester {
 
             // -------- datacenter create ----------
 
-            dc = new DataCenter(
+           DataCenter dc = new DataCenter(
                 name: "datacenter_${rnd()}",
                 location: 'de/fkb',
                 description: 'deprecated'
@@ -318,7 +317,7 @@ class SDKTester {
             assert attach(s, v)
             println "attached $v to $s"
             assert attachedVolumes(s).collect { it.id }.contains(v.id)
-            assert attachedVolume(s, v).id.equals(v.id)
+            assert attachedVolume(s, v.id).id.equals(v.id)
 
             assert detach(s, v)
             println "detached $v from $s"
@@ -326,7 +325,7 @@ class SDKTester {
             assert attach(s, i)
             println "attached $i to $s"
             assert attachedCDROMs(s).collect { it.id }.contains(i.id)
-            assert attachedCDROM(s, i).id.equals(i.id)
+            assert attachedCDROM(s, i.id).id.equals(i.id)
 
             assert detach(s, i)
             println "detached $i from $s"
@@ -356,11 +355,10 @@ class SDKTester {
             println "associated ${associate(lb, n)} with ${lb.read()}"
             def loadBalancer = lb.read()
 
-            associatedNics(loadBalancer).collect { it }.each {
-                println "found associated ${n.read(it)}"
+            associatedNics(loadBalancer).each { id->
+                println "found associated ${n.read(id)}"
             }
 
-            println "found associated ${associatedNic(lb, n)}"
             assert dissociate(lb, n)
             println "removed $n from ${lb.read()}"
 

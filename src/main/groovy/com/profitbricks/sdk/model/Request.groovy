@@ -5,7 +5,7 @@ import groovy.transform.*
 
 /**
  * a Request POGO
- * see: https://devops.profitbricks.com/api/cloud/v3/#lans
+ * see: https://devops.profitbricks.com/api/cloud/v3/#requests
  *
  * Created by ali bazlamit on 30/03/17.
  * Copyright (c) 2017, ProfitBricks GmbH

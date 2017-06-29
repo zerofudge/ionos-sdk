@@ -44,8 +44,8 @@ class Commands {
      * @param volume an existing volume
      * @returns the volume attached
      */
-    static final Volume attachedVolume(final Server server,final Volume volume) {
-        return new Volume().from(API.get(requestFor("${server.resource}/${server.id}/volumes/${volume.id}"))?.data) as Volume
+    static final Volume attachedVolume(final Server server,final String volumeId) {
+        return new Volume().from(API.get(requestFor("${server.resource}/${server.id}/volumes/${volumeId}"))?.data) as Volume
     }
 
     /**
@@ -86,8 +86,8 @@ class Commands {
      * @param server the server with the attached volumes
      * @return the image attached
      */
-    static final Image attachedCDROM(final Server server, final Image cdROM) {
-        return new Image().from(API.get(requestFor("${server.resource}/${server.id}/cdroms/${cdROM.id}"))?.data) as Image
+    static final Image attachedCDROM(final Server server, final String cdROMId) {
+        return new Image().from(API.get(requestFor("${server.resource}/${server.id}/cdroms/${cdROMId}"))?.data) as Image
     }
 
     /**
@@ -200,18 +200,6 @@ class Commands {
         API.get(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics"))?.data?.items?.collect{it.id}
     }
     
-    /**
-     * gets an associated NIC to a loadbalancer
-     *
-     * @param LoadBalancer the loadbalancer with the associated NICs
-     * @param nicId the NIC id attached to the loadbalancer
-     * @return NIC associated
-     */
-    static final NIC associatedNic(final LoadBalancer loadBalancer,final NIC nic) {
-        def data=API.get(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics/${nic.id}"))?.data
-        return new NIC(server: nic.server, lan: nic.lan).from(data) as NIC
-    }
-
     /**
      * removes the association of a given NIC and a given load balancer
      *
