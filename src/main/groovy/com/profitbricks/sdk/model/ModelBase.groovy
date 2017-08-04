@@ -13,7 +13,7 @@ import static com.profitbricks.sdk.Common.*
  * all operations are blocking until the API result status is received
  *
  * Created by fudge on 01/02/17.
- * (c)2017 Profitbricks.com
+ * Copyright (c) 2017, ProfitBricks GmbH
  */
 @EqualsAndHashCode
 @Log4j2

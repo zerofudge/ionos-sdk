@@ -16,7 +16,7 @@ import static org.apache.commons.codec.binary.Base64.encodeBase64String
  * some static functions enclosing convenience functionality
  *
  * Created by fudge on 01/02/17.
- * (c)2017 Profitbricks.com
+ * Copyright (c) 2017, ProfitBricks GmbH
  */
 @Log4j2
 final class Common {
@@ -47,10 +47,10 @@ final class Common {
      */
     final static Map requestFor(final String path) {
         [
-         path: "${URLParts.path}/${path}",
-         headers: [
-             'User-Agent': 'profitbricks-groovy-sdk/1.4',
-             'Accept': JSON.acceptHeader,
+         path              : "${URLParts.path}/${path}",
+         headers           : [
+             'User-Agent'   : 'profitbricks-groovy-sdk/1.4',
+             'Accept'       : JSON.acceptHeader,
              // omit resend-on-401 scheme
              'Authorization': "Basic " + encodeBase64String("${prop('api.user')}:${prop('api.password')}".bytes)
          ],
@@ -70,12 +70,13 @@ final class Common {
     final static waitFor(final response) {
         final String loc = "${response?.headers?.Location}".trim()
         if (loc && !(loc =~ /(?i)null/)) {
-            long sleep = prop('api.wait.init.milliseconds') as Long ?: 100
             final start = new Date()
-            final long max = prop('api.wait.max.milliseconds') as Long ?: 1500
 
             while (true) {
-                final path = loc.toURL().path - URLParts.path
+                def path = loc.toURL().path - URLParts.path
+                if (path.getAt(0) == '/') {
+                    path = path.substring(1)
+                }
                 final resp = API.get(requestFor(path))
                 final status = resp?.data?.metadata?.status
 
@@ -86,12 +87,12 @@ final class Common {
                 if (status =~ /(?i)failed/)
                     throw new ClientProtocolException("${path}: FAILED!")
 
-                final int timeout = (prop('api.wait.timeout.seconds') as Integer ?: 120)
+                final int timeout = (prop('api.wait.timeout.seconds') as Integer ?: 240)
                 if (TimeCategory.minus(new Date(), start).toMilliseconds() > (timeout * 1000)) {
                     throw new ClientProtocolException("timeout (${timeout}s) exceeded while waiting for status DONE")
                 }
 
-                Thread.sleep Math.min(max, Math.abs((sleep *= (prop('api.wait.factor') ?: 1.53)) as long))
+                Thread.sleep 4000
             }
         }
         return response
@@ -118,7 +119,7 @@ final class Common {
     private final static prop(final String name) { System.getProperty name }
 
     private final static getURLParts() {
-        def url = new URL(prop('api.URL') ?: 'https://api.profitbricks.com/cloudapi/v3/')
+        def url = new URL(prop('api.URL') ?: 'https://api.profitbricks.com/cloudapi/v3')
         [prefix: "$url" - url.path, path: url.path]
     }
 }

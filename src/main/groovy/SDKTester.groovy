@@ -12,25 +12,31 @@ class SDKTester {
 
     final static void main(final String[] args) {
         def _start = new Date()
-
+        
         new SDKTester().with { try {
 
             // -------- location list & read ----------
 
             Location loc = new Location()
-            loc.all.collect {loc.read(it)}.each {
+            loc.all.collect{loc.read(it)}.each {
                 println "found $it"
             }
 
             // -------- datacenter create ----------
 
-            DataCenter dc = new DataCenter(
+           DataCenter dc = new DataCenter(
                 name: "datacenter_${rnd()}",
                 location: 'de/fkb',
                 description: 'deprecated'
             ).create() as DataCenter
             println "created $dc"
             assert dc == dc.read()
+
+            // -------- datacenter list & read ----------
+
+            dc.all.collect { dc.read(it) }.each {
+                println "found $it"
+            }
 
             // -------- datacenter update ---------
 
@@ -39,14 +45,6 @@ class SDKTester {
             assert dc.update()
             println "updated $dc"
             assert dc == dc.read()
-
-            // -------- datacenter delete ---------
-
-            (dc.all - (dc.id as String)).each { id ->
-                def _dc = dc.read(id) as DataCenter
-                assert _dc.delete()
-                println "deleted $_dc"
-            }
 
             // -------- server create ---------
 
@@ -59,6 +57,12 @@ class SDKTester {
             s = s.read()
             assert s.vmState =~ /(?i)running/
             println "created $s"
+
+            // -------- server list & read ----------
+
+            s.all.collect { s.read(it) }.each {
+                println "found $it"
+            }
 
             // -------- server update ---------
             s.name = "snoopy_${rnd()}"
@@ -94,6 +98,12 @@ class SDKTester {
             assert v.update()
             println "updated $v"
 
+            // -------- volume list & read ----------
+
+            v.all.collect { v.read(it) }.each {
+                println "found $it"
+            }
+
             // -------- volume delete ---------
 
             v.all.each { id ->
@@ -104,7 +114,7 @@ class SDKTester {
 
             v = v.create()
             println "recreated $v"
-
+            
             // -------- lan create ---------
 
             LAN l = new LAN(
@@ -121,6 +131,12 @@ class SDKTester {
             l._public = false
             assert l.update()
             println "updated $l"
+
+            // -------- lan list & read ----------
+
+            l.all.collect { l.read(it) }.each {
+                println "found $it"
+            }
 
             // -------- lan delete ---------
 
@@ -153,6 +169,12 @@ class SDKTester {
             assert n.update()
             println "updated $n"
 
+            // -------- nic list & read ----------
+
+            n.all.collect { n.read(it) }.each {
+                println "found $it"
+            }
+
             // -------- nic delete ---------
 
             n.all.each { id ->
@@ -165,7 +187,6 @@ class SDKTester {
             println "recreated $n"
 
             // -------- loadbalancer create ---------
-
             LoadBalancer lb = new LoadBalancer(
                 dataCenter: dc,
                 name: "loadbalancer_${rnd()}"
@@ -181,6 +202,12 @@ class SDKTester {
             assert lb.update()
             println "updated $lb"
 
+            // -------- loadbalancer list & read ----------
+
+            lb.all.collect { lb.read(it) }.each {
+                println "found $it"
+            }
+
             // -------- loadbalancer delete ---------
 
             lb.all.each { id ->
@@ -192,12 +219,14 @@ class SDKTester {
             lb = lb.create()
             println "recreated $lb"
 
-           // -------- crip delete and create ---------
+            // -------- crip delete and create ---------
             IPBlock ip = new IPBlock(
-                    location: dc.location,
-                    name: "ipblock_${rnd()}",
-                    size: 2
-            )
+                location: dc.location,
+                name: "ipblock_${rnd()}",
+                size: 2
+            ).create() as IPBlock
+            ip = ip.read() as IPBlock
+            println "created $ip"
 
             ip.all.each { id ->
                 def _ip = ip.read(id) as IPBlock
@@ -205,11 +234,8 @@ class SDKTester {
                 println "deleted $_ip"
             }
 
-            ip = ip.create() as IPBlock
-            ip = ip.read() as IPBlock
-            println "recreated $ip"
-
-             // -------- firewall rule create ---------
+            //
+            // -------- firewall rule create ---------
 
             FirewallRule fw = new FirewallRule(
                 nic: n,
@@ -229,6 +255,12 @@ class SDKTester {
 
             assert fw.update()
             println "updated $fw"
+
+            // -------- firewall list & read ----------
+
+            fw.all.collect { fw.read(it) }.each {
+                println "found $it"
+            }
 
             // -------- firewall rule delete ---------
 
@@ -253,14 +285,12 @@ class SDKTester {
             assert i
             println "selected image: $i"
 
-            // -------- image update ---------
-
             i.name = 'my ubuntu'
             i._public = false
             try {
                 i.update()
             } catch (HttpResponseException e) {
-                assert  e.statusCode == 422 // stoopid API
+                assert e.statusCode == 422
             } finally {
                 i = i.read() as Image
             }
@@ -268,7 +298,16 @@ class SDKTester {
             // -------- snapshot list, delete & read ---------
 
             Snapshot sn = new Snapshot()
-            sn.all.collect{sn.read(it) as Snapshot}.each{
+            sn.all.collect { sn.read(it) as Snapshot }.each {
+                println "found $it"
+                it.name = "${it.name} updated"
+                it.description = "${it.description} updated"
+                try {
+                    assert it.update()
+                } catch (HttpResponseException e) {
+                    assert e.statusCode == 422
+                }
+                println "updated $it"
                 assert it.delete()
                 println "deleted $it"
             }
@@ -277,20 +316,22 @@ class SDKTester {
 
             assert attach(s, v)
             println "attached $v to $s"
-            assert attachedVolumes(s).contains(v.id)
+            assert attachedVolumes(s).collect { it.id }.contains(v.id)
+            assert attachedVolume(s, v.id).id.equals(v.id)
 
             assert detach(s, v)
             println "detached $v from $s"
 
             assert attach(s, i)
             println "attached $i to $s"
-            assert attachedCDROMs(s).contains(i.id)
+            assert attachedCDROMs(s).collect { it.id }.contains(i.id)
+            assert attachedCDROM(s, i.id).id.equals(i.id)
 
             assert detach(s, i)
             println "detached $i from $s"
 
             assert stop(s)
-            assert (s = s.read()).vmState =~ /(?i)shutoff/ // wtf
+            assert (s = s.read()).vmState =~ /(?i)shutoff/
             println "stopped $s"
             assert start(s)
             assert (s = s.read()).vmState =~ /(?i)running/
@@ -311,13 +352,31 @@ class SDKTester {
 
             // -------- commands: loadbalancer ---------
 
-            n = associate(lb, n)
-            println "associated $n with ${lb.read()}"
+            println "associated ${associate(lb, n)} with ${lb.read()}"
+            def loadBalancer = lb.read()
+
+            associatedNics(loadBalancer).each { id->
+                println "found associated ${n.read(id)}"
+            }
+
             assert dissociate(lb, n)
             println "removed $n from ${lb.read()}"
 
-        } finally {
-            println "that took me ${TimeCategory.minus(new Date(), _start)}"
-        }}
+            // -------- datacenter delete ---------
+
+            def _dc = dc.read(dc.id) as DataCenter
+            assert _dc.delete()
+            println "deleted $_dc"
+
+            // -------- request list & get status---------
+
+            Request r = new Request()
+            assert r.all.size > 0
+            println "status found ${requestStatus(r.all[0])}"
+
+            } finally {
+                println "that took me ${TimeCategory.minus(new Date(), _start)}"
+            }
+        }
     }
 }
