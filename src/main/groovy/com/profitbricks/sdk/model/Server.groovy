@@ -5,7 +5,7 @@ import groovy.transform.*
 
 /**
  * a server POGO
- * see: https://devops.profitbricks.com/api/cloud/v3/#servers
+ * see: https://devops.profitbricks.com/api/cloud/v4/#servers
  *
  * Created by fudge on 31/01/17.
  * Copyright (c) 2017, ProfitBricks GmbH

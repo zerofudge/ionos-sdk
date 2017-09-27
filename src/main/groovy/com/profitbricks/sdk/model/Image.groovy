@@ -5,7 +5,7 @@ import groovy.transform.*
 
 /**
  * an image POGO
- * see: https://devops.profitbricks.com/api/cloud/v3/#images
+ * see: https://devops.profitbricks.com/api/cloud/v4/#images
  *
  * Created by fudge on 03/02/17.
  * Copyright (c) 2017, ProfitBricks GmbH

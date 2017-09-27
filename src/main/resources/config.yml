@@ -4,13 +4,14 @@ api:
     basic:
       user: some.guy@profitbricks.com
       password: secret
-  url: https://api.profitbricks.com/cloudapi/v3
+  url: https://api.profitbricks.com/cloudapi/v4
   wait:
     factor: 1.87
     init:
-      milliseconds: 100
-    max:
       milliseconds: 2000
+    max:
+      milliseconds: 5000
     timeout:
-      seconds: 120
+      seconds: 360
   verbose: true
+

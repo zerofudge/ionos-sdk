@@ -5,7 +5,7 @@ import groovy.transform.*
 
 /**
  * a location POGO
- * see: https://devops.profitbricks.com/api/cloud/v3/#locations
+ * see: https://devops.profitbricks.com/api/cloud/v4/#locations
  *
  * Created by fudge on 31/01/17.
  * Copyright (c) 2017, ProfitBricks GmbH
@@ -17,6 +17,8 @@ class Location extends ModelBase {
     String name
     @Readable @SuppressWarnings("GroovyUnusedDeclaration")
     List<String> features
+    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
+    List<String> imageAliases
 
     final String resource = 'locations'
 

@@ -5,7 +5,7 @@ import groovy.transform.*
 
 /**
  * a data center POGO
- * see: https://devops.profitbricks.com/api/cloud/v3/#data-centers
+ * see: https://devops.profitbricks.com/api/cloud/v4/#data-centers
  *
  * Created by fudge on 31/01/17.
  * Copyright (c) 2017, ProfitBricks GmbH

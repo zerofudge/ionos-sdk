@@ -5,7 +5,7 @@ import groovy.transform.*
 
 /**
  * a network interface POGO
- * see: https://devops.profitbricks.com/api/cloud/v3/#network-interfaces
+ * see: https://devops.profitbricks.com/api/cloud/v4/#network-interfaces
  *
  * Created by fudge on 03/02/17.
  * Copyright (c) 2017, ProfitBricks GmbH
@@ -22,9 +22,7 @@ final class NIC extends ModelBase {
     @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
     List<String> ips
     @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
-    boolean dhcp = true, nat = false
-    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
-    boolean firewallActive
+    boolean dhcp = true, nat = false, firewallActive = false
 
     @Override
     final from(Object data) {
@@ -49,7 +47,13 @@ final class NIC extends ModelBase {
     }
 
     @Override
-    protected final Map getUpdateBody() { createBody }
+    protected final Map getUpdateBody() {
+        def body = createBody
+        body.properties.dhcp = String.valueOf(dhcp)
+        body.properties.nat = String.valueOf(nat)
+        body.properties.firewallActive = String.valueOf(firewallActive)
+        return body
+    }
 
     private final NIC with(final Server s) { server = s; this }
     private final NIC with(final LAN l) { lan = l; this }
