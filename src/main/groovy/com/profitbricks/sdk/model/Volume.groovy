@@ -5,7 +5,7 @@ import groovy.transform.*
 
 /**
  * a storage volume POGO
- * see: https://devops.profitbricks.com/api/cloud/v3/#volumes
+ * see: https://devops.profitbricks.com/api/cloud/v4/#volumes
  *
  * Created by fudge on 03/02/17.
  * Copyright (c) 2017, ProfitBricks GmbH
@@ -20,6 +20,10 @@ final class Volume extends ModelBase {
     @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
     String name,  bus = 'VIRTIO'
     @Creatable @SuppressWarnings("GroovyUnusedDeclaration")
+    String imageAlias
+    @Creatable @SuppressWarnings("GroovyUnusedDeclaration")
+    List<String> sshKeys
+    @Creatable @SuppressWarnings("GroovyUnusedDeclaration")
     String imagePassword
     @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
     int size
@@ -29,7 +33,7 @@ final class Volume extends ModelBase {
     @Override
     final Volume create() {
         //in case both image and licenceType is provided ignore licenceType and take image
-        licenceType = (image != null) ? null : licenceType
+        licenceType = (image != null || imageAlias != null) ? null : licenceType
         (super.create() as Volume)?.with dataCenter 
     }
 

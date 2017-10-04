@@ -1,3 +1,15 @@
+### release 2.0.0 (09/25/2017)
+
+- add image aliases
+- add IP failover
+- add user management
+- add ssh keys to volume create
+- enable firewall activation/deactivation
+- fix NIC update for boolean parameters set to false
+- fix load balancer update for boolean parameters set to false
+- fix IP block read for `ips` property
+- add and update tests
+
 ### release 1.4.1 (06/14/2017)
 
 - update Readme and provide an example app

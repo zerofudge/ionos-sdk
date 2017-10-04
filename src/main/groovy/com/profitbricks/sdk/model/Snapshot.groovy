@@ -5,7 +5,7 @@ import groovy.transform.*
 
 /**
  * a snapshot POGO
- * see: https://devops.profitbricks.com/api/cloud/v3/#snapshots
+ * see: https://devops.profitbricks.com/api/cloud/v4/#snapshots
  *
  * Created by fudge on 06/02/17.
  * Copyright (c) 2017, ProfitBricks GmbH

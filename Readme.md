@@ -1,6 +1,6 @@
 # Groovy SDK
 
-Version: profitbricks-sdk-groovy **1.4.1**
+Version: profitbricks-sdk-groovy **2.0.0**
 
 ## Table of Contents
 
@@ -86,6 +86,33 @@ Version: profitbricks-sdk-groovy **1.4.1**
       * [Get a Load Balanced NIC](#get-a-load-balanced-nic)
       * [Associate NIC to a Load Balancer](#associate-nic-to-a-load-balancer)
       * [Remove a NIC Association](#remove-a-nic-association)
+    * [Groups](#groups)
+      * [List Groups](#list-groups)
+      * [Get a Group](#get-a-group)
+      * [Create a Group](#create-a-group)
+      * [Update a Group](#update-a-group)
+      * [Delete a Group](#delete-a-group)
+      * [List Users in a Group](#list-users-in-a-group)
+      * [Add User to Group](#add-user-to-group)
+      * [Remove User from a Group](#remove-user-from-a-group)
+    * [Shares](#shares)
+      * [List Shares](#list-shares)
+      * [Get a Share](#get-a-share)
+      * [Add a Share](#add-a-share)
+      * [Update a Share](#update-a-share)
+      * [Delete a Share](#delete-a-share)
+    * [Users](#users)
+      * [List Users](#list-users)
+      * [Get a User](#get-a-user)
+      * [Create a User](#create-a-user)
+      * [Update a User](#update-a-user)
+      * [Delete a User](#delete-a-user)
+    * [Resources](#resources)
+      * [List Resources](#list-resources)
+      * [List Resources by Type](#list-resources-by-type)
+      * [Get a Resource of a Type](#get-a-resource-of-a-type)
+    * [Contract Resources](#contract-resources)
+      * [List Contract Resources](#list-contract-resources)
   * [Requests](#requests)
       * [List Requests](#list-requests)
       * [Get a Request Status](#get-a-request-status)
@@ -187,7 +214,7 @@ The current implementation relies solely on system properties (and proper defaul
 
 | name | default | notes |
 | --- | :-- | :-- |
-| `api.URL` | https://api.profitbricks.com/cloudapi/v3 | The base API URL. |
+| `api.URL` | https://api.profitbricks.com/cloudapi/v4 | The base API URL. |
 | `api.verifySSL` | `true` | Ignores all SSL certificate issues if `false`. |
 | `api.user`| | The API user name for basic authentication. |
 | `api.password` | | The API password for basic authentication. |
@@ -255,6 +282,7 @@ Creates a new VDC. You can create a "simple" VDC by supplying just the required 
 | Value| Country | City |
 |---|---|---|
 | us/las | United States | Las Vegas |
+| us/ewr | United States | Newark |
 | de/fra | Germany | Frankfurt |
 | de/fkb | Germany | Karlsruhe |
 
@@ -813,9 +841,11 @@ Creates a volume within the virtual data center. This will NOT attach the volume
 | size | **yes** | int | The size of the volume in GB. |
 | bus | no | string | The bus type of the volume (VIRTIO or IDE). Default: VIRTIO. |
 | image | no | string | The image or snapshot ID. |
+| imageAlias | no | string | The alias of the image. |
 | type | no | string | The volume type, HDD or SSD. |
 | licenceType | no | string | The licence type of the volume. Options: LINUX, WINDOWS, WINDOWS2016, UNKNOWN, OTHER |
 | imagePassword | no | string | One-time password is set on the Image for the appropriate root or administrative account. This field may only be set in creation requests. When reading, it always returns *null*. The password has to contain 8-50 characters. Only these characters are allowed: [abcdefghjkmnpqrstuvxABCDEFGHJKLMNPQRSTUVX23456789] |
+| sshKeys | no | object | A collection of SSH keys to allow access to the volume via SSH. |
 | availabilityZone | no | string | The storage availability zone assigned to the volume. Valid values: AUTO, ZONE_1, ZONE_2, or ZONE_3. This only applies to HDD volumes. Leave blank or set to AUTO when provisioning SSD volumes. |
 
 **Licence Types**
@@ -1077,7 +1107,7 @@ Creates an IP block. IP blocks are attached to a location, so you must specify a
 
 | Name| Required | Type | Description |
 |---|:-:|---|---|
-| location | **yes** | string | This must be one of the locations: us/las, de/fra, de/fkb. |
+| location | **yes** | string | This must be one of the locations: us/las, us/ewr, de/fra, de/fkb. |
 | size | **yes** | int | The size of the IP block you want. |
 | name | no | string | A descriptive name for the IP block |
 
@@ -1086,6 +1116,7 @@ Creates an IP block. IP blocks are attached to a location, so you must specify a
 | Value| Country | City |
 |---|---|---|
 | us/las | United States | Las Vegas |
+| us/ewr | United States | Newark |
 | de/fra | Germany | Frankfurt |
 | de/fkb | Germany | Karlsruhe |
 
@@ -1193,8 +1224,9 @@ Performs updates to attributes of a LAN.
 |---|:-:|---|---|
 | datacenterId | **yes** | string | The ID of the VDC. |
 | lanId | **yes** | int | The ID of the LAN. |
-| Name | no | string | A descriptive name for the LAN. |
-| Public | no | bool | Boolean indicating if the LAN faces the public Internet or not. |
+| name | no | string | A descriptive name for the LAN. |
+| public | no | bool | Boolean indicating if the LAN faces the public Internet or not. |
+| ipFailover | no | object | A collection of IP fail-over instances. |
 
 After retrieving a LAN, either by getting it by ID, or as a create response object, you can change its properties and call the `update` method:
 
@@ -1203,10 +1235,12 @@ l.dataCenter=dc.read(datacenterId)
 l.read(lanId)
 l.name = "name"
 l._public = false
+l.ipFailover = [
+    new LAN.IPFailover(ip: '158.222.103.175', nicUuid: '43ec1562-042f-40ae-8162-44c97466ab52'),
+    new LAN.IPFailover(ip: '158.222.103.175', nicUuid: '7240dbbc-de87-4fec-8e50-5a5ce77690e0')
+]
 l.update()
 ```
-
-**NOTE**: You can also use `update()`, for that operation you will update all the properties.
 
 ---
 
@@ -1717,6 +1751,457 @@ lb.dataCenter=dc
 lb=lb.read(loadbalancerId)
 n=n.read(niceId)
 dissociate(lb, n)
+```
+
+---
+
+### Groups
+
+Create an instance of the API class:
+
+```groovy
+Group group = new Group()
+```
+
+#### List Groups
+
+Retrieves a list of all groups.
+
+```groovy
+group.all
+```
+
+---
+
+#### Get a Group
+
+Retrieves the attributes of a given group.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| groupId | **yes** | string | The ID of the group. |
+
+```groovy
+group.read(groupId)
+```
+
+---
+
+#### Create a Group
+
+Creates a new group and set group privileges.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| name | **yes** | string | The name of the group. |
+| createDataCenter | no | bool | Indicates if the group is allowed to create virtual data centers. |
+| createSnapshot | no | bool | Indicates if the group is allowed to create snapshots. |
+| reserveIp | no | bool | Indicates if the group is allowed to reserve IP addresses. |
+| accessActivityLog | no | bool | Indicates if the group is allowed to access activity log. |
+
+```groovy
+Group group = new Group(
+                name: "GroovyUserGroup",
+                createDataCenter: true,
+                createSnapshot: true,
+                reserveIp: true,
+                accessActivityLog: false
+            ).create()
+```
+
+---
+
+#### Update a Group
+
+Updates a group's name or privileges.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| groupId | **yes** | string | The ID of the group. |
+| name | **yes** | string | The ID of the group. |
+| createDatacenter | no | bool | Indicates if the group is allowed to create virtual data centers. |
+| createSnapshot | no | bool | Indicates if the group is allowed to create snapshots. |
+| reserveIp | no | bool | Indicates if the group is allowed to reserve IP addresses. |
+| accessActivityLog | no | bool | Indicates if the group is allowed to access activity log. |
+
+After retrieving a group, either by getting it by ID, or as a create response object, you can change its properties and call the `update` method:
+
+```groovy
+Group group = new Group()
+group = group.read(groupId) as Group
+group.createDatacenter = false
+group.update()
+```
+
+---
+
+#### Delete a Group
+
+Deletes the specified group.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| groupId | **yes** | string | The ID of the group. |
+
+After retrieving a group, either by getting it by ID, or as a create response object, you can call the `delete` method:
+
+```groovy
+def group = new Group().read(groupId) as Group
+group.delete()
+```
+
+---
+
+#### List Users in a Group
+
+Retrieves a list of all users that are members of a particular group.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| groupId | **yes** | Object | The ID of the group. |
+
+After retrieving a group by ID you can call the `listGroupUsers` command:
+
+```groovy
+def group = new Group().read(groupId)
+def users = listGroupUsers(group)
+```
+
+---
+
+#### Add User to Group
+
+Adds an existing user to a group.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| groupId | **yes** | string | The ID of the group. |
+| userId | **yes** | string | The ID of the user. |
+
+After retrieving a group and user by ID you can call the `addGroupUser` command:
+
+```groovy
+def group = new Group().read(groupId)
+def user = new User.read(userId)
+addGroupUser(group, user)
+```
+
+---
+
+#### Remove User from a Group
+
+Removes a user from a group.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| groupId | **yes** | string | The ID of the group. |
+| userId | **yes** | string | The ID of the user. |
+
+After retrieving a group and user by ID you can call the `removeGroupUser` command:
+
+```groovy
+def group = new Group().read(groupId)
+def user = new User.read(userId)
+removeGroupUser(group, user)
+```
+
+---
+
+### Shares
+
+Create an instance of the API class:
+
+```groovy
+Share sharedResource = new Share()
+```
+
+#### List Shares
+
+Retrieves a list of all shares though a group.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| groupId | **yes** | string | The ID of the group. |
+
+```groovy
+Group group = new Group().read(groupId) as Group
+Share sh = new Share(group)
+sh.all
+```
+
+---
+
+#### Get a Share
+
+Retrieves a specific resource share available to a group.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| groupId | **yes** | string | The ID of the group. |
+| resourceId | **yes** | string | The ID of the resource. |
+
+```groovy
+Group group = new Group().read(groupId) as Group
+Share sh = new Share(group).read(resourceId) as Share
+```
+
+---
+
+#### Add a Share
+
+Shares a resource through a group.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| groupId | **yes** | string | The ID of the group. |
+| resourceId | **yes** | string | The ID of the resource. |
+| editPrivilege | no | bool | Indicates that the group has permission to edit privileges on the resource. |
+| sharePrivilege | no | bool | Indicates that the group has permission to share the resource. |
+
+```groovy
+Group group = new Group().read(groupId) as Group
+Share s = share(group, resourceId, true, true)
+```
+
+---
+
+#### Update a Share
+
+Updates the permissions of a group for a resource share.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| groupId | **yes** | string | The ID of the group. |
+| resourceId | **yes** | string | The ID of the resource. |
+| editPrivilege | no | bool | Indicates that the group has permission to edit privileges on the resource. |
+| sharePrivilege | no | bool | Indicates that the group has permission to share the resource. |
+
+```groovy
+Group group = new Group().read(groupId) as Group
+Share s = new Share(group).read(resourceId) as Share
+s.editPrivilege = true
+s.sharePrivilege = false
+s.update()
+```
+
+---
+
+#### Delete a Share
+
+Removes a resource share from a group.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| groupId | **yes** | string | The ID of the group. |
+| resourceId | **yes** | string | The ID of the resource. |
+
+```groovy
+Group group = new Group().read(groupId) as Group
+Share s = new Share(group).read(resourceId) as Share
+s.delete()
+```
+
+---
+
+### Users
+
+Create an instance of the API class:
+
+```groovy
+User user = new User()
+```
+
+#### List Users
+
+Retrieves a list of all users.
+
+```groovy
+user.all
+```
+
+---
+
+#### Get a User
+
+Retrieves a single user.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| userId | **yes** | string | The ID of the user. |
+
+```groovy
+user.read(userId)
+```
+
+---
+
+#### Create a User
+
+Creates a new user.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| firstname | **yes** | string | A name for the user. |
+| lastname | **yes**  | string | A name for the user. |
+| email | **yes**  | string | An e-mail address for the user. |
+| password | **yes**  | string | A password for the user. |
+| administrator | no | bool | Assigns the user have administrative rights. |
+| forceSecAuth | no | bool | Indicates if secure (two-factor) authentication should be forced for the user. |
+
+```groovy
+User user = new User(
+                firstname: "John",
+                lastname: "Doe",
+                email: "groovy.user@dev.org",
+                password: "HJhbjhjhbhhhgjhhhg6567fsdf234",
+                administrator: false,
+                forceSecAuth: false
+        ).create()
+```
+
+---
+
+#### Update a User
+
+Updates an existing user.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| userId | **yes** | string | The ID of the user. |
+| firstname | **yes** | string | A name for the user. |
+| lastname | **yes**  | string | A name for the user. |
+| email | **yes**  | string | An e-mail address for the user. |
+| administrator | **yes** | bool | Assigns the user have administrative rights. |
+| forceSecAuth | **yes** | bool | Indicates if secure (two-factor) authentication should be forced for the user. |
+
+After retrieving a user, either by getting it by ID, or as a create response object, you can change its properties and call the `update` method:
+
+```groovy
+User user = new User()
+user = user.read(userId) as User
+user.administrator = false
+user.update()
+```
+
+---
+
+#### Delete a User
+
+Removes a user.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| userId | **yes** | string | The ID of the user. |
+
+After retrieving a user, either by getting it by ID, or as a create response object, you can call the `delete` method:
+
+```groovy
+def user = new Group().read(groupId) as User
+user.delete()
+```
+
+---
+
+### Resources
+
+Create an instance of the API class:
+
+```groovy
+Resource res = new Resource(type: resourceType)
+```
+
+Available resource types are `datacenter`, `image`, `snapshot` and `ipblock`.
+
+#### List Resources
+
+Retrieves a list of all resources.
+
+```groovy
+def allResources = resources()
+```
+
+---
+
+#### List Resources by Type
+
+Retrieves all resources of a particular type.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| type | **yes** | ResourceType | The resource type enum with the values: `datacenter`, `image`, `snapshot` or `ipblock`. |
+
+```groovy
+Resource res = new Resource(type: resourceType)
+res.all
+```
+
+---
+
+#### Get a Resource of a Type
+
+Retrieves a single resource of a particular type.
+
+**Request Arguments**
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| type | **yes** | ResourceType | The resource type enum with the values: `datacenter`, `image`, `snapshot` or `ipblock`. |
+| resourceId | **yes** | string | The ID of the resource. |
+
+```groovy
+Resource res = new Resource(type: resourceType).read(resourceId) as Resource
+```
+
+---
+
+### Contract Resources
+
+Create an instance of the API class:
+
+```groovy
+Contract ct = new Contract()
+```
+
+#### List Contract Resources
+
+Retrieves information about the resource limits for a particular contract and the current resource usage.
+
+```groovy
+Contract ct = contract()
 ```
 
 ---

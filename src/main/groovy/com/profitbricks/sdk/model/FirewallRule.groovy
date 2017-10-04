@@ -5,7 +5,7 @@ import groovy.transform.*
 
 /**
  * a firewall rule POGO
- * see: https://devops.profitbricks.com/api/cloud/v3/#firewall-rules
+ * see: https://devops.profitbricks.com/api/cloud/v4/#firewall-rules
  *
  * Created by fudge on 03/02/17.
  * Copyright (c) 2017, ProfitBricks GmbH

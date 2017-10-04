@@ -1,11 +1,12 @@
 package com.profitbricks.sdk.model
 
 import com.profitbricks.sdk.annotation.Creatable
+import com.profitbricks.sdk.annotation.Readable
 import groovy.transform.*
 
 /**
  * an (reserved) IP block POGO
- * see: https://devops.profitbricks.com/api/cloud/v3/#ip-block
+ * see: https://devops.profitbricks.com/api/cloud/v4/#ip-block
  *
  * Created by fudge on 03/02/17.
  * Copyright (c) 2017, ProfitBricks GmbH
@@ -17,7 +18,7 @@ final class IPBlock extends ModelBase {
     String name, location
     @Creatable @SuppressWarnings("GroovyUnusedDeclaration")
     int size = 1
-    @SuppressWarnings("GroovyUnusedDeclaration")
+    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
     List<String> ips
 
     final String resource = 'ipblocks'

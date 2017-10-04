@@ -225,4 +225,84 @@ class Commands {
         request.id=data.id.split('/')[0]
         return request
     }
+
+    // --------------------------------- G R O U P   C O M M A N D S ---------------------------------
+
+    /**
+     * gets a list of all the users that are members of a particular group
+     *
+     * @param group the group with the associated users
+     * @return a list of user IDs
+     */
+    static final List<String> listGroupUsers(final Group group) {
+        API.get(requestFor("${group.resource}/${group.id}/users"))?.data?.items?.collect{it.id}
+    }
+
+    /**
+     * adds a user to a group
+     *
+     * @param group the group to add a user to
+     * @param user the user to be added
+     * @return true if the user was successfully added, false otherwise
+     */
+    final static boolean addGroupUser(final Group group, final User user) {
+        waitFor(API.post(requestFor("${group.resource}/${group.id}/users") + [body: [id: user.id]]))?.status == 202
+    }
+
+    /**
+     * removes a user from a group
+     *
+     * @param group the group to remove a user from
+     * @param user the user to be removed
+     * @return true if the user was successfully removed, false otherwise
+     */
+    final static boolean removeGroupUser(final Group group, final User user) {
+        waitFor(API.delete(requestFor("${group.resource}/${group.id}/users/${user.id}")))?.status == 202
+    }
+
+    // --------------------------------- S H A R E   C O M M A N D S ---------------------------------
+
+    /**
+     * adds a share resource to a given group
+     *
+     * @param group an existing group
+     * @param resourceId ID of an existing resource to share
+     * @param editPrivilege the group has permission to edit privileges on the resource
+     * @param sharePrivilege the  group has permission to share the resource
+     * @return the share added
+     */
+    static final Share share(final Group group, final String resourceId, final boolean editPrivilege = false, final boolean sharePrivilege = false) {
+        Share share = new Share(group: group, editPrivilege: editPrivilege, sharePrivilege: sharePrivilege)
+        def resp = waitFor(API.post(requestFor("${group.resource}/${group.id}/shares/${resourceId}") + [body: share.getCreateBody()]))
+        if (resp?.status == 202) {
+            share = share.from(resp?.data) as Share
+            share.group = group
+            return share
+        }
+        throw new HttpResponseException(resp?.status as int, "Share not added")
+    }
+
+    // --------------------------------- R E S O U R C E   C O M M A N D S ---------------------------------
+
+    /**
+     * gets all available resources of all types
+     *
+     * @return a list of resources
+     */
+    static final List<Resource> resources() {
+        API.get(requestFor("um/resources"))?.data?.items?.collect{
+            Resource r = new Resource().from(it) as Resource; r.type = it.type; r
+        }
+    }
+
+    // --------------------------------- C O N T R A C T   C O M M A N D S ---------------------------------
+
+    /**
+     * gets information about the resource limits for a particular contract and the current resource usage
+     *
+     * @return a contract
+     */
+    static final Contract contract() {
+        return new Contract().from(API.get(requestFor("contracts"))?.data) as Contract
+    }
 }

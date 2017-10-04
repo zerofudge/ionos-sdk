@@ -49,7 +49,7 @@ final class Common {
         [
          path              : "${URLParts.path}/${path}",
          headers           : [
-             'User-Agent'   : 'profitbricks-groovy-sdk/1.4',
+             'User-Agent'   : 'profitbricks-groovy-sdk/2.0',
              'Accept'       : JSON.acceptHeader,
              // omit resend-on-401 scheme
              'Authorization': "Basic " + encodeBase64String("${prop('api.user')}:${prop('api.password')}".bytes)
@@ -119,7 +119,7 @@ final class Common {
     private final static prop(final String name) { System.getProperty name }
 
     private final static getURLParts() {
-        def url = new URL(prop('api.URL') ?: 'https://api.profitbricks.com/cloudapi/v3')
+        def url = new URL(prop('api.URL') ?: 'https://api.profitbricks.com/cloudapi/v4')
         [prefix: "$url" - url.path, path: url.path]
     }
 }

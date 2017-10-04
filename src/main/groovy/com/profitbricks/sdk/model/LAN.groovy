@@ -5,7 +5,7 @@ import groovy.transform.*
 
 /**
  * a LAN POGO
- * see: https://devops.profitbricks.com/api/cloud/v3/#lans
+ * see: https://devops.profitbricks.com/api/cloud/v4/#lans
  *
  * Created by fudge on 03/02/17.
  * Copyright (c) 2017, ProfitBricks GmbH
@@ -18,6 +18,14 @@ final class LAN extends ModelBase {
     String name
     @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
     boolean _public = true
+    @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    List<IPFailover> ipFailover
+
+    @ToString(includeNames = true, ignoreNulls = true, includePackage = false)
+    static class IPFailover {
+        @SuppressWarnings("GroovyUnusedDeclaration")
+        String ip, nicUuid
+    }
 
     @Override
     final getId() { super.id as Integer }
