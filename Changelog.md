@@ -1,6 +1,5 @@
 ### release 2.1.0 (??/??/????)
 
-- fix: LAN is optional for NIC creation
 - change: the artifact was renamed to `groovy-sdk`
 
 ### release 2.0.0 (09/25/2017)

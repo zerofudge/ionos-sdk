@@ -42,8 +42,7 @@ final class NIC extends ModelBase {
     @Override
     protected final Map getCreateBody() {
         def body = super.createBody
-        if (lan)
-            body.properties.lan = lan.id
+        body.properties.lan = lan.id
         return body
     }
 
