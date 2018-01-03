@@ -49,7 +49,7 @@ final class Common {
         [
          path              : "${URLParts.path}/${path}",
          headers           : [
-             'User-Agent'   : 'profitbricks-groovy-sdk/2.0',
+             'User-Agent'   : 'profitbricks-groovy-sdk/2.1',
              'Accept'       : JSON.acceptHeader,
              // omit resend-on-401 scheme
              'Authorization': "Basic " + encodeBase64String("${prop('api.user')}:${prop('api.password')}".bytes)
