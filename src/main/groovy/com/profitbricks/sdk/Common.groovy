@@ -69,12 +69,15 @@ final class Common {
      */
     final static waitFor(final response) {
         final String loc = "${response?.headers?.Location}".trim()
-        if (loc && !(loc =~ /(?i)null/)) {
-            final start = new Date()
 
+        if (loc && !(loc =~ /(?i)null/)) {
+            double factor = prop('api.wait.factor') as Double ?: 1.87
+            BigDecimal wait = (prop('api.wait.init.milliseconds') as Integer ?: 100) / factor
+
+            final start = new Date()
             while (true) {
                 def path = loc.toURL().path - URLParts.path
-                if (path.getAt(0) == '/') {
+                if (path[0] == '/') {
                     path = path.substring(1)
                 }
                 final resp = API.get(requestFor(path))
@@ -87,12 +90,11 @@ final class Common {
                 if (status =~ /(?i)failed/)
                     throw new ClientProtocolException("${path}: FAILED!")
 
-                final int timeout = (prop('api.wait.timeout.seconds') as Integer ?: 240)
-                if (TimeCategory.minus(new Date(), start).toMilliseconds() > (timeout * 1000)) {
+                final long timeout = (prop('api.wait.timeout.seconds') as Long ?: 240) * 1000
+                if (TimeCategory.minus(new Date(), start).toMilliseconds() > timeout)
                     throw new ClientProtocolException("timeout (${timeout}s) exceeded while waiting for status DONE")
-                }
 
-                Thread.sleep 4000
+                Thread.sleep(Math.min(wait *= factor, prop('api.wait.max.milliseconds') as Double ?: 1500) as Long)
             }
         }
         return response

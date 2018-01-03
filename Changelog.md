@@ -1,6 +1,8 @@
 ### release 2.1.0 (??/??/????)
 
 - change: the artifact was renamed to `groovy-sdk`
+- change: the artifact is no fat jar anymore
+- fix: timings for status requests now actually work
 
 ### release 2.0.0 (09/25/2017)
 

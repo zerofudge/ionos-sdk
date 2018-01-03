@@ -17,7 +17,7 @@ applicationDefaultJvmArgs = [
     verifySSL: 'false'
 ].collect {
     "-Dapi.${it.key}=${it.value}"
-}
+} as Iterable<String>
 
 //noinspection GroovyUnusedAssignment
 sourceCompatibility = 8
@@ -48,17 +48,8 @@ publishing {
     repositories {
         maven {
             url 'http://artifacts.stage.pb.local/content/repositories/snapshots'
-            credentials {
-                username 'deployment'
-                password 'deployment'
-            }
         }
     }
-}
-
-configurations {
-    // configuration that holds jars to include in the jar
-    extraLibs
 }
 
 dependencies {
@@ -66,14 +57,7 @@ dependencies {
             'org.codehaus.groovy.modules.http-builder:http-builder:0.7.2',
             'org.codehaus.gpars:gpars:1.2.0',
             'org.apache.logging.log4j:log4j-core:2.7'
-    extraLibs 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.2'
-    runtime 'org.apache.logging.log4j:log4j-jcl:2.7',
-    configurations.compile.extendsFrom(configurations.extraLibs)
+    runtime 'org.apache.logging.log4j:log4j-jcl:2.7'
 }
 
-jar {
-    from {
-        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-}
-
+publish.dependsOn publishToMavenLocal
