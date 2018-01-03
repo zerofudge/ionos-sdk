@@ -4,7 +4,7 @@ apply plugin: 'idea'
 apply plugin: 'maven-publish'
 
 group 'com.profitbricks.sdk'
-version '2.0.0'
+version '2.1-SNAPSHOT'
 
 //noinspection GroovyUnusedAssignment
 mainClassName = 'SDKTester'
@@ -20,9 +20,9 @@ applicationDefaultJvmArgs = [
 }
 
 //noinspection GroovyUnusedAssignment
-sourceCompatibility = 7
+sourceCompatibility = 8
 //noinspection GroovyUnusedAssignment
-targetCompatibility = 7
+targetCompatibility = 8
 
 repositories {
     mavenCentral()
@@ -47,7 +47,11 @@ publishing {
     }
     repositories {
         maven {
-            url 'http://artifacts.stage.pb.local/content/repositories/releases'
+            url 'http://artifacts.stage.pb.local/content/repositories/snapshots'
+            credentials {
+                username 'deployment'
+                password 'deployment'
+            }
         }
     }
 }

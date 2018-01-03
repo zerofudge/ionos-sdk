@@ -1,6 +1,6 @@
 # Groovy SDK
 
-Version: profitbricks-sdk-groovy **2.0.0**
+Version: profitbricks-sdk-groovy **2.1.0**
 
 ## Table of Contents
 
@@ -176,26 +176,24 @@ c) Add the proper dependency:
   - Either in your build.gradle:
 
         dependencies {
-          compile 'com.profitbricks.sdk:groovy:1.4.1'
+          compile 'com.profitbricks.sdk:groovy-sdk:2.1.0'
         }
 
   - Or if you are using a maven project:
 
         <dependency>
-		<groupId>com.profitbricks.sdk</groupId>
-		<artifactId>groovy</artifactId>
-		<version>1.4.1</version>
+		  <groupId>com.profitbricks.sdk</groupId>
+		  <artifactId>groovy-sdk</artifactId>
+		  <version>2.1.0</version>
         </dependency>
 
 
-d) Use your ProfitBricks Credetnials by adding them to the gradle.build file:
+d) Use your ProfitBricks Credentials by adding them to the gradle.build file:
 
 ```
 applicationDefaultJvmArgs = [
-    // #credentials
     user: 'username',
     password: 'password',
-    verifySSL: 'false'
 ].collect {
     "-Dapi.${it.key}=${it.value}"
 }
