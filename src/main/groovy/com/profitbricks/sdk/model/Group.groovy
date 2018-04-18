@@ -8,7 +8,6 @@ import groovy.transform.*
  * see: https://devops.profitbricks.com/api/cloud/v4/#user-management
  *
  * Created by nurfet-becirevic on 14/09/17.
- * Copyright (c) 2017, ProfitBricks GmbH
  */
 @ToString(includeNames = true, ignoreNulls = true, includeSuperProperties = true, includePackage = false, excludes = ['resource'])
 @EqualsAndHashCode(callSuper = true)

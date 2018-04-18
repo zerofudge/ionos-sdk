@@ -4,8 +4,6 @@ import org.apache.http.client.HttpResponseException
 
 import static com.profitbricks.sdk.Commands.*
 
-// default run target: just `gradle run`
-// see also JVM args in build.gradle
 // TODO refactor this BS to actual tests
 class SDKTester {
     private final static rand = new Random(System.currentTimeMillis())
@@ -25,37 +23,6 @@ class SDKTester {
 
             loc = loc.read("us/las") as Location
             assert loc.id == "us/las"
-
-
-            // -------- datacenter ----------
-
-            DataCenter dc = new DataCenter(
-                    name: "Groovy SDK Test",
-                    location: 'us/las',
-                    description: 'Groovy SDK test datacenter'
-            ).create() as DataCenter
-
-            assert dc.name == 'Groovy SDK Test'
-            assert dc.description == 'Groovy SDK test datacenter'
-            assert dc.location == 'us/las'
-
-            try {
-                new DataCenter(name: "Groovy SDK Test").create()
-                assert false
-            } catch (HttpResponseException e) {
-                assert e.statusCode == 422
-            }
-
-            assert dc.all.size() > 0
-
-            assert dc == dc.read()
-
-            assert new DataCenter().read(fakeId) == null
-
-            dc.name = "Groovy SDK Test - RENAME"
-            dc.description = 'Groovy SDK test datacenter - RENAME'
-            assert dc.update()
-            assert dc == dc.read()
 
 
             // -------- server ---------

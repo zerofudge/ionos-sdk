@@ -13,10 +13,9 @@ import static groovyx.net.http.ContentType.JSON
 import static org.apache.commons.codec.binary.Base64.encodeBase64String
 
 /**
- * some static functions enclosing convenience functionality
+ * static functions enclosing common rest client functionality
  *
  * Created by fudge on 01/02/17.
- * Copyright (c) 2017, ProfitBricks GmbH
  */
 @Log4j2
 final class Common {
@@ -49,7 +48,7 @@ final class Common {
         [
          path              : "${URLParts.path}/${path}",
          headers           : [
-             'User-Agent'   : 'profitbricks-groovy-sdk/2.1',
+             'User-Agent'   : 'profitbricks-groovy-sdk/3.0.0',
              'Accept'       : JSON.acceptHeader,
              // omit resend-on-401 scheme
              'Authorization': "Basic " + encodeBase64String("${prop('api.user')}:${prop('api.password')}".bytes)
@@ -62,7 +61,7 @@ final class Common {
      * takes the response of a prior REST request and queries the 'Location' target
      * for as long as that returns 'done'
      * timings are configurable
-     * throws a ClientProtocolException if no 'done' was returned in time
+     * @throws ClientProtocolException if no 'done' was returned in time
      *
      * @param a valid REST response from the API
      * @return the original response object
@@ -111,12 +110,6 @@ final class Common {
         }
     }
 
-    /**
-     * get system property values
-     *
-     * @param name the name of a system property
-     * @return the value of the property or null
-     */
     private final static prop(final String name) { System.getProperty name }
 
     private final static getURLParts() {

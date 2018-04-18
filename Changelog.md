@@ -1,14 +1,15 @@
-### release 3.0.0 (??/??/2018)
+### release 3.0.0 (04/30/2018)
 
 - change: the artifact was renamed to `groovy-sdk`
 - change: the artifact is no fat jar anymore
 - fix: timings for status requests now actually work
-- removed some unnecessary code parts and refactored others, improved documentation
+- fix: removed some unnecessary code parts and refactored others
 - change: ~~~~ credentials handling ~~~~~
-- artifact now available from maven central
-- refactored test code to actual tests
+- change: artifact now available from maven central
+- change: refactored test code to actual tests
 - change: removed `Share` and `Resource` entities until the user management API is fixed
-- streamlined and corrected the documentation
+- fix: streamlined, corrected and improved the documentation
+- change: all CRUD methods can be called with an optional map argument
 
 
 ### release 2.0.0 (09/25/2017)
@@ -21,12 +22,11 @@
 - fix NIC update for boolean parameters set to false
 - fix load balancer update for boolean parameters set to false
 - fix IP block read for `ips` property
-- add and update tests
 
 
 ### release 1.4.1 (06/14/2017)
 
-- update Readme and provide an example app
+- update Readme and provided an example app
 - complete test coverage for all endpoints
 
 

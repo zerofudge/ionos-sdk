@@ -13,7 +13,6 @@ import static com.profitbricks.sdk.Common.*
  * all operations are blocking until the API result status is received
  *
  * Created by fudge on 01/02/17.
- * Copyright (c) 2017, ProfitBricks GmbH
  */
 @EqualsAndHashCode
 @Log4j2
@@ -42,7 +41,7 @@ abstract class ModelBase {
      * provides the 'list all' REST call
      * @return a list of resource IDs
      */
-    final List<String> getAll() {
+    final List<String> getAll(Map options = [:]) {
         API.get(requestFor(resource))?.data?.items?.collect{it.id}
     }
 
@@ -50,7 +49,7 @@ abstract class ModelBase {
      * provides the creation REST call
      * @return the response JSON object
      */
-    def create() {
+    def create(Map options = [:]) {
         from waitFor(API.post(requestFor(resource) + [body: createBody]))?.data
     }
 
@@ -58,7 +57,7 @@ abstract class ModelBase {
      * provides the 'get resource' REST call
      * @return the response JSON object
      */
-    def read(final id = id) {
+    def read(final id = id, Map options = [:]) {
         from API.get(requestFor("${resource}/${id}"))?.data
     }
 
@@ -67,7 +66,7 @@ abstract class ModelBase {
      * instead of PATCH (partial update)
      * @return the response JSON object
      */
-    boolean update() {
+    boolean update(Map options = [:]) {
         waitFor(API.put(requestFor("${resource}/${id}") + [body: updateBody]))?.status == 202
     }
 
@@ -75,7 +74,7 @@ abstract class ModelBase {
      * provides the 'delete resource' REST call
      * @return the response JSON object
      */
-    final boolean delete() {
+    final boolean delete(Map options = [:]) {
         waitFor(API.delete(requestFor("${resource}/$id")))?.status == 202
     }
 
@@ -88,9 +87,7 @@ abstract class ModelBase {
         final props = metaClass.properties.findAll{def n=it.name; propNames.contains(n) && this."$n"}.collectEntries{def n=it.name; [(n.toString()): this."$n"]}
 
         final rtn = [properties: [:]]
-        // surely looks a little off, but shortening or omitting this leads to a weird:
-        // net.sf.json.JSONException: java.lang.ClassCastException: JSON keys must be strings
-        // also, we have to spice up keywords with underscores
+        // we have to spice up keywords with underscores
         props.each { k, v -> rtn.properties."${k.toString().replaceAll(/_/, '')}" = v }
         if (log.isDebugEnabled()) log.debug "body: ${rtn}"
         return rtn

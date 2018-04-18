@@ -8,7 +8,6 @@ import groovy.transform.*
  * see: https://devops.profitbricks.com/api/cloud/v4/#data-centers
  *
  * Created by fudge on 31/01/17.
- * Copyright (c) 2017, ProfitBricks GmbH
  */
 @ToString(includeNames = true, ignoreNulls = true, includeSuperProperties = true, includePackage = false, excludes = ['resource'])
 @EqualsAndHashCode(callSuper = true)

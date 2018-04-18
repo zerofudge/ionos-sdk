@@ -96,6 +96,7 @@ Version: **3.0.0**
       * [List Group Users](#list-group-users)
       * [Add a User to a Group](#add-a-user-to-a-group)
       * [Remove a User from a Group](#remove-a-user-from-a-group)
+    * [Retrieve Contract Resource Statistics](#contract-resources)
 * [Example](#a-concise-example)
 * [TODO](#todo)
 * [Support](#support)
@@ -146,7 +147,7 @@ This SDK is available from the [ProfitBricks GitHub account](https://github.com/
 
 a) **optional**: build it: `./gradlew build`
 
-b) **optional**: publish the artifact to your local maven repository: `./gradlew publishToMavenLocal`
+b) **optional**: publish the artifact to your maven repository: `./gradlew publish`
 
 c) Add the proper dependency to your project:
 
@@ -174,7 +175,7 @@ The most convenient way to configure the API client is to use system properties.
 | name | default | notes |
 |---|---|---|
 | `api.URL` | https://api.profitbricks.com/cloudapi/v4 | The base API URL. |
-| `api.verifySSL` | `true` | Ignores all SSL certificate issues if `false`. |
+| `api.verifySSL` | `true` | set to `false` to ignore all SSL certificate issues |
 | `api.user`| - | The API user name for basic authentication. |
 | `api.password` | - | The API password for basic authentication. |
 | `api.wait.init.milliseconds` | 100 | If waiting for success, this is the initial time period between two checks. |
@@ -1365,6 +1366,14 @@ assert Commands.unassign(group, user)
 ```
 
 
+### Contract Resources
+
+Retrieve the current resource allocation statistics for this contract.
+
+```
+Contract c = new Contract().read()
+```
+
 ### A Concise Example
 
 ```
@@ -1431,7 +1440,7 @@ Please report any issues or bugs your encounter using the [GitHub Issue Tracker]
 
 ## Testing
 
-You can find a full list of tests below `src/test/groovy` class. You can run tests using the command `gradle test`.
+You can find a full test suite in `src/test/groovy`. You can run all tests using the command `./gradlew test -Dapi.user=YOUR_USERNAME -Dapi.password=YOUR_PASSWORD.
 
 
 ## Contributing

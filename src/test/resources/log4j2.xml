@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="error">
+            <AppenderRef ref="Console" />
+        </Root>
+        <Logger name="org.apache.http.headers" level="warn"/>
+        <Logger name="org.apache.http.wire" level="info"/>
+        <Logger name="com.profitbricks.sdk" level="trace"/>
+        <Logger name="com.profitbricks.sdk.Common$PooledClient" level="warn" additivity="false"/>
+    </Loggers>
+</Configuration>

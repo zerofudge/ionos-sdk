@@ -9,7 +9,6 @@ import static groovyx.net.http.ContentType.URLENC
  * provides commands for provisioned resources
  *
  * Created by fudge on 06/02/17.
- * Copyright (c) 2017, ProfitBricks GmbH
  */
 class Commands {
 
