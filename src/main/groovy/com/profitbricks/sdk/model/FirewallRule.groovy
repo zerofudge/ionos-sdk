@@ -14,7 +14,6 @@ import groovy.transform.*
 @EqualsAndHashCode(callSuper = true)
 final class FirewallRule extends ModelBase {
     NIC nic
-    @SuppressWarnings("GroovyUnusedDeclaration")
     @Creatable @Updatable
     String name, sourceMac, sourceIp, targetIp, portRangeStart, portRangeEnd, icmpType, icmpCode
     @Creatable

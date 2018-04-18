@@ -14,11 +14,11 @@ import groovy.transform.*
 @EqualsAndHashCode(callSuper = true)
 final class LAN extends ModelBase {
     DataCenter dataCenter
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     String name
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     boolean _public = true
-    @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Updatable
     List<IPFailover> ipFailover
 
     @ToString(includeNames = true, ignoreNulls = true, includePackage = false)

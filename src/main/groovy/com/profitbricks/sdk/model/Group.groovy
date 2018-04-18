@@ -14,20 +14,10 @@ import groovy.transform.*
 @EqualsAndHashCode(callSuper = true)
 final class Group extends ModelBase {
 
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     String name
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     boolean createDataCenter, createSnapshot, reserveIp, accessActivityLog
-
-    @Override
-    protected final Map getUpdateBody() {
-        def body = super.updateBody
-        body.properties.createDataCenter = String.valueOf(createDataCenter)
-        body.properties.createSnapshot = String.valueOf(createSnapshot)
-        body.properties.reserveIp = String.valueOf(reserveIp)
-        body.properties.accessActivityLog = String.valueOf(accessActivityLog)
-        return body
-    }
 
     final String resource = 'um/groups'
 }

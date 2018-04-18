@@ -14,11 +14,11 @@ import groovy.transform.*
 @EqualsAndHashCode(callSuper = true)
 final class Snapshot extends ModelBase {
 
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     String name, description, location, licenceType
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     boolean cpuHotPlug, cpuHotUnplug, ramHotPlug, ramHotUnplug, nicHotPlug, nicHotUnplug, discVirtioHotPlug, discVirtioHotUnplug, discScsiHotPlug, discScsiHotUnplug
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     int size
 
     final String resource = 'snapshots'

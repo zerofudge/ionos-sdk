@@ -14,9 +14,9 @@ import groovy.transform.*
 @EqualsAndHashCode(callSuper = true)
 final class LoadBalancer extends ModelBase {
     DataCenter dataCenter
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     String name, ip
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     boolean dhcp = true
 
     @Override

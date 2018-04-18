@@ -15,33 +15,38 @@ import groovy.transform.*
 final class Volume extends ModelBase {
     DataCenter dataCenter
 
-    @Creatable @SuppressWarnings("GroovyUnusedDeclaration")
-    String type = 'HDD', availabilityZone = 'AUTO', image, licenceType = 'UNKNOWN'
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable
+    String type = 'HDD',
+           availabilityZone = 'AUTO',
+           image,
+           licenceType = 'UNKNOWN',
+           imageAlias,
+           imagePassword
+    @Creatable @Updatable
     String name,  bus = 'VIRTIO'
-    @Creatable @SuppressWarnings("GroovyUnusedDeclaration")
-    String imageAlias
-    @Creatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable
     List<String> sshKeys
-    @Creatable @SuppressWarnings("GroovyUnusedDeclaration")
-    String imagePassword
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable
     int size
-    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Readable
     int deviceNumber
 
     @Override
     final Volume create() {
-        //in case both image and licenceType is provided ignore licenceType and take image
-        licenceType = (image != null || imageAlias != null) ? null : licenceType
-        (super.create() as Volume)?.with dataCenter 
+        (super.create() as Volume)?.with dataCenter
     }
 
     @Override
-    final Volume read(final id = id) { (super.read(id) as Volume)?.with dataCenter }
+    final Volume read(final id = id) {
+        (super.read(id) as Volume)?.with dataCenter
+    }
 
     @Override
-    final String getResource() { "${dataCenter.resource}/${dataCenter.id}/volumes" }
+    final String getResource() {
+        "${dataCenter.resource}/${dataCenter.id}/volumes"
+    }
 
-    private final Volume with(final DataCenter dc) { dataCenter = dc; this }
+    private final Volume with(final DataCenter dc) {
+        dataCenter = dc; this
+    }
 }

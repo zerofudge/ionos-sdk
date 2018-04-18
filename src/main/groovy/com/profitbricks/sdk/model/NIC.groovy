@@ -15,13 +15,13 @@ import groovy.transform.*
 final class NIC extends ModelBase {
     Server server
     LAN lan
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     String name
-    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Readable
     String mac
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     List<String> ips
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     boolean dhcp = true, nat = false, firewallActive = false
 
     @Override
@@ -42,16 +42,14 @@ final class NIC extends ModelBase {
     @Override
     protected final Map getCreateBody() {
         def body = super.createBody
-        body.properties.lan = lan.id
+        body.properties += [lan: lan.id]
         return body
     }
 
     @Override
     protected final Map getUpdateBody() {
         def body = createBody
-        body.properties.dhcp = String.valueOf(dhcp)
-        body.properties.nat = String.valueOf(nat)
-        body.properties.firewallActive = String.valueOf(firewallActive)
+        body.properties += [dhcp: dhcp, nat: nat, firewallActive: firewallActive]
         return body
     }
 

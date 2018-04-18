@@ -101,14 +101,13 @@ final class Common {
     }
 
     private final static class PooledClient extends RESTClient {
-        PooledClient(final Object defaultURI) throws URISyntaxException { super(defaultURI) }
+        PooledClient(final Object defaultURI) throws URISyntaxException {
+            super(defaultURI)
+        }
 
         @Override
         protected final HttpClient createClient(final HttpParams params) {
-            final cm = new PoolingClientConnectionManager()
-            cm.maxTotal = 200
-            cm.defaultMaxPerRoute = 20
-            new DefaultHttpClient(cm, params)
+            new DefaultHttpClient(new PoolingClientConnectionManager(maxTotal: 200, defaultMaxPerRoute: 20), params)
         }
     }
 

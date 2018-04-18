@@ -1,23 +1,8 @@
 apply plugin: 'groovy'
-apply plugin: 'application'
-apply plugin: 'idea'
 apply plugin: 'maven-publish'
 
 group 'com.profitbricks.sdk'
-version '2.1-SNAPSHOT'
-
-//noinspection GroovyUnusedAssignment
-mainClassName = 'SDKTester'
-
-//noinspection GroovyUnusedAssignment
-applicationDefaultJvmArgs = [
-    // #credentials
-    user: 'some.user@email.com',
-    password: 'your_password',
-    verifySSL: 'false'
-].collect {
-    "-Dapi.${it.key}=${it.value}"
-} as Iterable<String>
+version '3.0-SNAPSHOT'
 
 //noinspection GroovyUnusedAssignment
 sourceCompatibility = 8

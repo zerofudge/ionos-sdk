@@ -15,9 +15,9 @@ import groovy.transform.*
 class Location extends ModelBase {
     @Readable
     String name
-    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Readable
     List<String> features
-    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Readable
     List<String> imageAliases
 
     final String resource = 'locations'

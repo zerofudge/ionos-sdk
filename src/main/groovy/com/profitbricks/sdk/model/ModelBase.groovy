@@ -85,10 +85,10 @@ abstract class ModelBase {
      * @return a properly filled request body
      */
     protected final Map bodyFrom(final List propNames) {
-        final props = metaClass.properties.findAll{def n=it.name; propNames.contains(n) && this."$n"}.collectEntries{def n=it.name; ["$n": this."$n"]}
+        final props = metaClass.properties.findAll{def n=it.name; propNames.contains(n) && this."$n"}.collectEntries{def n=it.name; [(n.toString()): this."$n"]}
 
         final rtn = [properties: [:]]
-        // surely looks a little dumb, but shortening or omitting this leads to a weird:
+        // surely looks a little off, but shortening or omitting this leads to a weird:
         // net.sf.json.JSONException: java.lang.ClassCastException: JSON keys must be strings
         // also, we have to spice up keywords with underscores
         props.each { k, v -> rtn.properties."${k.toString().replaceAll(/_/, '')}" = v }

@@ -5,7 +5,6 @@ import org.apache.http.client.HttpResponseException
 
 import static com.profitbricks.sdk.Common.*
 import static groovyx.net.http.ContentType.URLENC
-
 /**
  * provides commands for provisioned resources
  *
@@ -14,95 +13,66 @@ import static groovyx.net.http.ContentType.URLENC
  */
 class Commands {
 
+    // --------------------------------- A T T A C H E M E N T   C O M M A N D S ---------------------------------
+
+    /**
+     * attaches a given volume or image to a given server
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#attach-a-volume"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#attach-a-cd-rom"/>
+     *
+     * @param server an existing server
+     * @param thing an existing volume or image
+     * @return true if attaching worked, false otherwise
+     * @throws IllegalArgumentException in case the given thing is neither volume or image
+     */
+    final static boolean attach(final Server server, final ModelBase thing) {
+        waitFor(
+            API.post(requestFor("${server.resource}/${server.id}/${pathFor(thing.class)}") + [body: [id: thing.id]])
+        )?.status == 202
+    }
+
+    /**
+     * lists the ids of all attached volumes or images for a given server
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-attached-volumes"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-attached-cd-roms"/>
+     *
+     * @param server a valid server instance
+     * @param type one of #Volume (default) or #Image
+     * @return a list of volume or image ids
+     * @throws IllegalArgumentException in case the given thing is neither volume or image
+     */
+    static final List<String> attached(final Server server, final Class<? extends ModelBase> attachedType = Volume) {
+        API.get(requestFor("${server.resource}/${server.id}/${pathFor(attachedType)}"))?.data?.items?.collect {it.id}
+    }
+    
+    /**
+     * detaches a given attached volume from a given server
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#detach-a-volume"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#detach-a-cd-rom"/>
+     *
+     * @param server an existing server
+     * @param thing an existing attached volume or image
+     * @return true if detaching worked, false otherwise
+     */
+    static final boolean detach(final Server server, final ModelBase thing) {
+        waitFor(API.delete(requestFor("${server.resource}/${server.id}/${pathFor(thing.class)}/${thing.id}")))?.status == 202
+    }
+
+    private final static String pathFor(final Class<? extends ModelBase> clz) {
+        switch (clz) {
+            case Volume: return 'volumes'
+            case Image: return 'cdroms'
+            default:
+                throw new IllegalArgumentException("unable to access attached resources of class ${clz?.simpleName}")
+        }
+    }
+
+
     // --------------------------------- S E R V E R   C O M M A N D S ---------------------------------
 
     /**
-     * attaches a given volume to a given server
-     *
-     * @param server an existing server
-     * @param volume an existing volume
-     * @return true if attaching worked, false otherwise
-     */
-    final static boolean attach(final Server server, final Volume volume) {
-        waitFor(API.post(requestFor("${server.resource}/${server.id}/volumes") + [body: [id: volume.id]]))?.status == 202
-    }
-
-    /**
-     * gets the attached volumes for a given server
-     *
-     * @param server the server with the attached volumes
-     * @return a list of attached volumes
-     */
-    static final List<Volume> attachedVolumes(final Server server) {
-        API.get(requestFor("${server.resource}/${server.id}/volumes"))?.data?.items?.collect{new Volume().from(it) as Volume}
-    }
-    
-    /**
-     * This will retrieve the properties of an attached volume.
-     *
-     * @param server the server with the attached volume
-     * @param volume an existing volume
-     * @returns the volume attached
-     */
-    static final Volume attachedVolume(final Server server,final String volumeId) {
-        return new Volume().from(API.get(requestFor("${server.resource}/${server.id}/volumes/${volumeId}"))?.data) as Volume
-    }
-
-    /**
-     * detaches a given attached volume from a given server
-     *
-     * @param server an existing server
-     * @param volume an existing attached volume
-     * @return true if detaching worked, false otherwise
-     */
-    static final boolean detach(final Server server, final Volume volume) {
-        waitFor(API.delete(requestFor("${server.resource}/${server.id}/volumes/${volume.id}")))?.status == 202
-    }
-
-    /**
-     * attaches a given CD-ROM image to a given server
-     *
-     * @param server an existing server
-     * @param cdROM an existing, accessible CD-ROM image
-     * @return true if attaching worked, false otherwise
-     */
-    static final boolean attach(final Server server, final Image cdROM) {
-        waitFor(API.post(requestFor("${server.resource}/${server.id}/cdroms") + [body: [id: cdROM.id]]))?.status == 202
-    }
-
-    /**
-     * gets the attached CD-ROM images for a given server
-     *
-     * @param server the server with the attached volumes
-     * @return a list of images
-     */
-    static final List<Image> attachedCDROMs(final Server server) {
-        API.get(requestFor("${server.resource}/${server.id}/cdroms"))?.data?.items?.collect{new Image().from(it) as Image}
-    }
-    
-    /**
-     * gets the attached CD-ROM image for a given server
-     * @param cdROM an existing, accessible CD-ROM image
-     * @param server the server with the attached volumes
-     * @return the image attached
-     */
-    static final Image attachedCDROM(final Server server, final String cdROMId) {
-        return new Image().from(API.get(requestFor("${server.resource}/${server.id}/cdroms/${cdROMId}"))?.data) as Image
-    }
-
-    /**
-     * detaches a given attached CD-ROM image from a given server
-     *
-     * @param server an existing server
-     * @param volume an existing attached CD-ROM image
-     * @return true if detaching worked, false otherwise
-     */
-    static final boolean detach(final Server server, final Image cdROM) {
-        waitFor(API.delete(requestFor("${server.resource}/${server.id}/cdroms/${cdROM.id}")))?.status == 202
-    }
-
-    /**
      * starts a given server
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#start-a-server"/>
      *
      * @param server
      * @param server an existing server
@@ -114,6 +84,7 @@ class Commands {
 
     /**
      * stops a given server
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#stop-a-server"/>
      *
      * @param server
      * @param server an existing server
@@ -121,11 +92,11 @@ class Commands {
      */
     static final boolean stop(final Server server) {
         waitFor(API.post(requestFor("${server.resource}/${server.id}/stop")))?.status == 202
-
     }
 
     /**
      * reboots a given server
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#reboot-a-server"/>
      *
      * @param server
      * @param server an existing server
@@ -136,10 +107,11 @@ class Commands {
     }
 
 
-    // --------------------------------- V O L U M E   C O M M A N D S ---------------------------------
+    // --------------------------------- S N A P S H O T   C O M M A N D S ---------------------------------
 
     /**
      * creates a snapshot of a given volume
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#create-volume-snapshot"/>
      *
      * @param volume an existing volume
      * @param name (optional) a name for the newly created snapshot
@@ -161,6 +133,7 @@ class Commands {
 
     /**
      * restores a given volume from a given snapshot
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#restore-volume-snapshot"/>
      *
      * @param volume an existing volume
      * @param snapshot an existing snapshot
@@ -177,6 +150,7 @@ class Commands {
 
     /**
      * associates a given NIC with a given load balancer
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#associate-nic-to-load-balancer"/>
      *
      * @param an existing load balancer
      * @param nic an existing NIC
@@ -191,17 +165,19 @@ class Commands {
     }
     
     /**
-     * gets the associated NICS of a loadbalancer
+     * fetches the ids of the associated NICs of a given load balancer
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-load-balanced-nics"/>
      *
-     * @param LoadBalancer the LoadBalancer with the associated NICS
-     * @return a list of associated NICS
+     * @param loadBalancer a valid load balancer instance
+     * @return a list of NIC ids
      */
-    static final List<String> associatedNics(final LoadBalancer loadBalancer) {
-        API.get(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics"))?.data?.items?.collect{it.id}
+    static final List<String> associatedNICs(final LoadBalancer loadBalancer) {
+        API.get(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics"))?.data?.items?.collect {it.id}
     }
     
     /**
      * removes the association of a given NIC and a given load balancer
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#remove-a-nic-association"/>
      *
      * @param an existing load balancer
      * @param nic an existing NIC
@@ -211,98 +187,41 @@ class Commands {
         waitFor(API.delete(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics/${nic.id}")))?.status == 202
     }
     
-    // --------------------------------- R E Q U E S T  C O M M A N D S ---------------------------------
-    
-    /**
-     * Returns a request status
-     *
-     * @param requestId id of the request you need the status for
-     * @return Request with status details
-     */
-    static final Request requestStatus(final String requestId) {
-        def data=API.get(requestFor("requests/${requestId}/status"))?.data
-        Request request=data.metadata as Request
-        request.id=data.id.split('/')[0]
-        return request
-    }
 
     // --------------------------------- G R O U P   C O M M A N D S ---------------------------------
 
     /**
-     * gets a list of all the users that are members of a particular group
+     * lists the ids of all users that are assigned to the given group
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-users-in-a-group"/>
      *
      * @param group the group with the associated users
      * @return a list of user IDs
      */
-    static final List<String> listGroupUsers(final Group group) {
+    static final List<String> userIDs(final Group group) {
         API.get(requestFor("${group.resource}/${group.id}/users"))?.data?.items?.collect{it.id}
     }
 
     /**
-     * adds a user to a group
+     * assigns a user to a group
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#add-user-to-group"/>
      *
-     * @param group the group to add a user to
-     * @param user the user to be added
-     * @return true if the user was successfully added, false otherwise
+     * @param group the group to assign to
+     * @param user the user to be assigned
+     * @return true if the user was successfully assigned, false otherwise
      */
-    final static boolean addGroupUser(final Group group, final User user) {
+    final static boolean assign(final Group group, final User user) {
         waitFor(API.post(requestFor("${group.resource}/${group.id}/users") + [body: [id: user.id]]))?.status == 202
     }
 
     /**
-     * removes a user from a group
+     * unassigns a user from a group
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#remove-user-from-a-group"/>
      *
-     * @param group the group to remove a user from
-     * @param user the user to be removed
-     * @return true if the user was successfully removed, false otherwise
+     * @param group the group to unassign from
+     * @param user the user to be unassigned
+     * @return true if the user was successfully unassigned, false otherwise
      */
-    final static boolean removeGroupUser(final Group group, final User user) {
+    final static boolean unassign(final Group group, final User user) {
         waitFor(API.delete(requestFor("${group.resource}/${group.id}/users/${user.id}")))?.status == 202
-    }
-
-    // --------------------------------- S H A R E   C O M M A N D S ---------------------------------
-
-    /**
-     * adds a share resource to a given group
-     *
-     * @param group an existing group
-     * @param resourceId ID of an existing resource to share
-     * @param editPrivilege the group has permission to edit privileges on the resource
-     * @param sharePrivilege the  group has permission to share the resource
-     * @return the share added
-     */
-    static final Share share(final Group group, final String resourceId, final boolean editPrivilege = false, final boolean sharePrivilege = false) {
-        Share share = new Share(group: group, editPrivilege: editPrivilege, sharePrivilege: sharePrivilege)
-        def resp = waitFor(API.post(requestFor("${group.resource}/${group.id}/shares/${resourceId}") + [body: share.getCreateBody()]))
-        if (resp?.status == 202) {
-            share = share.from(resp?.data) as Share
-            share.group = group
-            return share
-        }
-        throw new HttpResponseException(resp?.status as int, "Share not added")
-    }
-
-    // --------------------------------- R E S O U R C E   C O M M A N D S ---------------------------------
-
-    /**
-     * gets all available resources of all types
-     *
-     * @return a list of resources
-     */
-    static final List<Resource> resources() {
-        API.get(requestFor("um/resources"))?.data?.items?.collect{
-            Resource r = new Resource().from(it) as Resource; r.type = it.type; r
-        }
-    }
-
-    // --------------------------------- C O N T R A C T   C O M M A N D S ---------------------------------
-
-    /**
-     * gets information about the resource limits for a particular contract and the current resource usage
-     *
-     * @return a contract
-     */
-    static final Contract contract() {
-        return new Contract().from(API.get(requestFor("contracts"))?.data) as Contract
     }
 }

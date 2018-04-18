@@ -6,101 +6,87 @@ import static com.profitbricks.sdk.Commands.*
 
 // default run target: just `gradle run`
 // see also JVM args in build.gradle
+// TODO refactor this BS to actual tests
 class SDKTester {
     private final static rand = new Random(System.currentTimeMillis())
-    private final rnd = {rand.ints().findFirst().asInt}
+    private final static rnd = {rand.ints().findFirst().asInt}
 
     final static void main(final String[] args) {
-        def _start = new Date()
-        String fakeId = '00000000-0000-0000-0000-000000000000'
-        
-        new SDKTester().with { try {
+        final  _start = new Date()
+        final fakeId = UUID.randomUUID()
 
-            // -------- location list ----------
+        try {
+            // -------- location ----------
 
             Location loc = new Location()
             def locations = loc.all
             assert locations.size() > 0
             assert locations.contains("us/las")
 
-            // -------- location read ----------
-
             loc = loc.read("us/las") as Location
             assert loc.id == "us/las"
 
-            // -------- datacenter create ----------
 
-           DataCenter dc = new DataCenter(
-                name: "Groovy SDK Test",
-                location: 'us/las',
-                description: 'Groovy SDK test datacenter'
+            // -------- datacenter ----------
+
+            DataCenter dc = new DataCenter(
+                    name: "Groovy SDK Test",
+                    location: 'us/las',
+                    description: 'Groovy SDK test datacenter'
             ).create() as DataCenter
+
             assert dc.name == 'Groovy SDK Test'
             assert dc.description == 'Groovy SDK test datacenter'
             assert dc.location == 'us/las'
 
-            // -------- datacenter create failure ----------
-
             try {
-                new DataCenter(
-                        name: "Groovy SDK Test"
-                ).create()
+                new DataCenter(name: "Groovy SDK Test").create()
+                assert false
             } catch (HttpResponseException e) {
                 assert e.statusCode == 422
             }
 
-            // -------- datacenter list ----------
-
             assert dc.all.size() > 0
-
-            // -------- datacenter read ----------
 
             assert dc == dc.read()
 
-            // -------- datacenter read failure ----------
-
             assert new DataCenter().read(fakeId) == null
-
-            // -------- datacenter update ---------
 
             dc.name = "Groovy SDK Test - RENAME"
             dc.description = 'Groovy SDK test datacenter - RENAME'
             assert dc.update()
             assert dc == dc.read()
 
-            // -------- server create ---------
+
+            // -------- server ---------
 
             Server s = new Server(
-                dataCenter: dc,
-                name: "Groovy SDK Test",
-                cores: 1,
-                ram: 1024,
-                cpuFamily: 'INTEL_XEON',
-                availabilityZone: 'ZONE_1'
+                    dataCenter: dc,
+                    name: "Groovy SDK Test",
+                    cores: 1,
+                    ram: 1024,
+                    cpuFamily: 'INTEL_XEON',
+                    availabilityZone: 'ZONE_1'
             ).create()
+
             assert s.name == 'Groovy SDK Test'
             assert s.cores == 1
             assert s.ram == 1024
             assert s.cpuFamily == 'INTEL_XEON'
             assert s.availabilityZone == 'ZONE_1'
 
-            // -------- server create failure ----------
-
             try {
                 new Server(
-                    dataCenter: dc,
-                    name: "Groovy SDK Test",
-                    ram: 1024
+                        dataCenter: dc,
+                        name: "Groovy SDK Test",
+                        ram: 1024
                 ).create()
+                assert false
             } catch (HttpResponseException e) {
                 assert e.statusCode == 422
             }
 
-            // -------- server list ----------
-
             assert s.all.size() > 0
-
-            // -------- server read ----------
 
             s = s.read()
             assert s.vmState =~ /(?i)running/
@@ -110,24 +96,19 @@ class SDKTester {
             assert s.cpuFamily == 'INTEL_XEON'
             assert s.availabilityZone == 'ZONE_1'
 
-            // -------- server read failure ----------
-
             assert s.read(fakeId) == null
-
-            // -------- server update ---------
 
             s.name = "Groovy SDK Test - RENAME"
             assert s.update()
             s = s.read()
             assert s.name == "Groovy SDK Test - RENAME"
 
-            // -------- server delete ---------
-
             assert s.delete()
 
             s = s.create()
 
-            // -------- volume create ---------
+
+            // -------- volume ---------
 
             Volume vol = new Volume(
                     dataCenter: dc,
@@ -156,22 +137,14 @@ class SDKTester {
             assert v.availabilityZone == "ZONE_3"
             assert v.sshKeys == ["ssh-rsa AAAAB3NzaC1yc..."]
 
-            // -------- volume create failure ----------
-
             try {
-                new Volume(
-                        dataCenter: dc,
-                        name: "Groovy SDK Test",
-                ).create()
+                new Volume(dataCenter: dc, name: "Groovy SDK Test").create()
+                assert false
             } catch (HttpResponseException e) {
                 assert e.statusCode == 422
             }
 
-            // -------- volume list ----------
-
             assert v.all.size() > 0
-
-            // -------- read ----------
 
             v = v.read()
             assert v.name == "Groovy SDK Test"
@@ -181,11 +154,7 @@ class SDKTester {
             assert v.bus == "VIRTIO"
             assert v.availabilityZone == "ZONE_3"
 
-            // -------- volume read failure ----------
-
             assert v.read(fakeId) == null
-
-            // -------- volume update ---------
 
             v.name = "Groovy SDK Test - RENAME"
             v.size = 5
@@ -194,19 +163,18 @@ class SDKTester {
             assert v.name == "Groovy SDK Test - RENAME"
             assert v.size == 5
 
-            // -------- volume delete ---------
-
             assert vol.delete()
 
-            // -------- lan create ---------
+
+            // -------- lan ---------
 
             LAN l = new LAN(
-                dataCenter: dc,
-                name: "Groovy SDK Test",
-                _public: true
+                    dataCenter: dc,
+                    name: "Groovy SDK Test",
+                    _public: true
             ).create()
             assert l.name == "Groovy SDK Test"
-            assert l._public == true
+            assert l._public
 
             // -------- lan list ----------
 
@@ -238,16 +206,16 @@ class SDKTester {
             // -------- nic create ---------
 
             NIC n = new NIC(
-                server: s,
-                lan: l,
-                name: "Groovy SDK Test",
-                firewallActive: true,
-                ips: ["10.0.0.1"]
+                    server: s,
+                    lan: l,
+                    name: "Groovy SDK Test",
+                    firewallActive: true,
+                    ips: ["10.0.0.1"]
             ).create()
             assert n.name == "Groovy SDK Test"
-            assert n.nat == false
-            assert n.dhcp == true
-            assert n.firewallActive == true
+            assert !n.nat
+            assert n.dhcp
+            assert n.firewallActive
             assert n.ips.size() > 0
             assert n.lan.id == l.id
 
@@ -277,7 +245,7 @@ class SDKTester {
             assert n.update()
             n = n.read()
             assert n.name == "Groovy SDK Test - RENAME"
-            assert n.firewallActive == false
+            assert !n.firewallActive
 
             // -------- nic delete ---------
 
@@ -288,8 +256,8 @@ class SDKTester {
             // -------- loadbalancer create ---------
 
             LoadBalancer lb = new LoadBalancer(
-                dataCenter: dc,
-                name: "Groovy SDK Test"
+                    dataCenter: dc,
+                    name: "Groovy SDK Test"
             ).create()
             assert lb.name == "Groovy SDK Test"
             assert lb.dhcp
@@ -324,9 +292,9 @@ class SDKTester {
 
             // -------- IPBlock create ---------
             IPBlock ip = new IPBlock(
-                location: dc.location,
-                name: "Groovy SDK Test",
-                size: 2
+                    location: dc.location,
+                    name: "Groovy SDK Test",
+                    size: 2
             ).create() as IPBlock
 
             assert ip.name == "Groovy SDK Test"
@@ -364,12 +332,12 @@ class SDKTester {
             // -------- firewall rule create ---------
 
             FirewallRule fw = new FirewallRule(
-                nic: n,
-                name: 'SSH',
-                protocol: 'TCP',
-                portRangeStart: '22',
-                portRangeEnd: '22',
-                sourceMac: '01:23:45:67:89:00'
+                    nic: n,
+                    name: 'SSH',
+                    protocol: 'TCP',
+                    portRangeStart: '22',
+                    portRangeEnd: '22',
+                    sourceMac: '01:23:45:67:89:00'
             ).create()
             assert fw.name == 'SSH'
             assert fw.protocol == 'TCP'
@@ -440,9 +408,9 @@ class SDKTester {
 
             i = allImages.collect{i.read(it) as Image}.findAll{
                 it._public &&
-                it.location == dc.location &&
-                it.licenceType =~ /(?i)linux/ &&
-                it.imageType =~ /(?i)cdrom/
+                        it.location == dc.location &&
+                        it.licenceType =~ /(?i)linux/ &&
+                        it.imageType =~ /(?i)cdrom/
             }.first()
             assert i.location == dc.location
             assert i.name != null
@@ -511,26 +479,14 @@ class SDKTester {
             // attach volume
             assert attach(s, v)
             // list attached volumes
-            assert attachedVolumes(s).size() > 0
-            // get attached volume
-            Volume av = attachedVolume(s, v.id as String)
-            assert av.id == v.id
-            assert av.name == v.name
-            assert av.size == v.size
-            assert av.bus == v.bus
-            assert av.type == v.type
-            assert av.licenceType == v.licenceType
+            assert attached(s).size() > 0
             // detach volume
             assert detach(s, v)
 
             // attach CDROM
             assert attach(s, i)
-            // list attached CDROMs
-            assert attachedCDROMs(s).size() > 0
-            // get attached CDROM
-            Image cri =  attachedCDROM(s, i.id as String)
-            assert cri.id == i.id
-            assert cri.name == i.name
+            // list attached images
+            assert attached(s, Image).size() > 0
             // detach CDROM
             assert detach(s, i)
 
@@ -542,7 +498,7 @@ class SDKTester {
             assert (s = s.read()).vmState =~ /(?i)running/
             // reboot server
             assert reboot(s)
-            assert (s = s.read()).vmState =~ /(?i)running/
+            assert (s.read()).vmState =~ /(?i)running/
 
             // -------- commands: loadbalancer ---------
 
@@ -553,7 +509,7 @@ class SDKTester {
             def loadBalancer = lb.read()
 
             // list associated NICs
-            assert associatedNics(loadBalancer).size() > 0
+            assert associatedNICs(loadBalancer).size() > 0
 
             assert dissociate(lb, n)
 
@@ -585,7 +541,7 @@ class SDKTester {
                     password: "secretpassword123",
                     administrator: true,
                     forceSecAuth: false
-            ).create()
+            ).create() as User
 
             assert u.firstname == "John"
             assert u.lastname == "Doe"
@@ -642,14 +598,12 @@ class SDKTester {
                     createSnapshot: true,
                     reserveIp: true,
                     accessActivityLog: true
-            ).create()
+            ).create() as Group
 
             // -------- group create failure ---------
 
             try {
-                new Group(
-                        createDataCenter: true
-                ).create()
+                new Group(createDataCenter: true).create()
             } catch (HttpResponseException e) {
                 assert e.statusCode == 422
             }
@@ -685,96 +639,11 @@ class SDKTester {
             // -------- commands: group ---------
 
             // add user to group
-            assert addGroupUser(g, u)
+            assert assign(g, u)
             // list group users
-            assert listGroupUsers(g).size() > 0
+            assert userIDs(g).size() > 0
             // remove user from group
-            assert removeGroupUser(g, u)
-
-            // -------- commands: share ---------
-
-            Share sh = share(g, dc.id as String, true, true)
-            assert sh.editPrivilege
-            assert sh.sharePrivilege
-
-            // -------- share list ---------
-
-            assert sh.all.size() > 0
-
-            // -------- share read ---------
-
-            def sh1 = sh.read()
-            assert sh1.id == sh.id
-            assert sh1.editPrivilege == sh.editPrivilege
-            assert sh1.sharePrivilege == sh.sharePrivilege
-
-            // -------- share read failure ----------
-
-            assert sh.read(fakeId) == null
-
-            // -------- share update ---------
-
-            sh.editPrivilege = false
-            assert sh.update()
-            sh1 = sh.read()
-            assert sh1.id == sh.id
-            assert !sh1.editPrivilege
-
-            // -------- share delete ---------
-
-            assert sh.delete()
-
-            // -------- commands: resource ---------
-            // list all resources
-            assert resources().size() > 0
-
-            // -------- datacenter resource list ---------
-
-            Resource res = new Resource(type: 'datacenter')
-            assert res.all.size() > 0
-
-            // -------- datacenter resource get ---------
-
-            def res1 = res.read(dc.id)
-            assert res1.id == dc.id
-            assert res1.type == res.type
-
-            // -------- datacenter resource get failure ---------
-
-            assert new Resource(type: 'datacenter').read(fakeId) == null
-
-            // -------- snapshot resource list ---------
-
-            res = new Resource(type: 'snapshot')
-            assert res.all.size() > 0
-
-            // -------- snapshot resource get ---------
-
-            res1 = res.read(sn.id)
-            assert res1.id == sn.id
-            assert res1.type == res.type
-
-            // -------- ipblock resource list ---------
-
-            res = new Resource(type: 'ipblock')
-            assert res.all.size() > 0
-
-            // -------- ipblock resource get ---------
-
-            res1 = res.read(ip.id)
-            assert res1.id == ip.id
-            assert res1.type == res.type
-
-            // -------- image resource list ---------
-
-            res = new Resource(type: 'image')
-            assert res.all.size() > 0
-
-            // -------- image resource get ---------
-
-            res1 = res.read(i.id)
-            assert res1.id == i.id
-            assert res1.type == res.type
+            assert unassign(g, u)
 
             // -------- group delete ---------
 
@@ -794,30 +663,10 @@ class SDKTester {
             assert sn.delete()
 
             // -------- IPBlock delete ---------
-
             assert ip.delete()
 
-            // -------- request list ---------
-
-            Request r = new Request()
-            def rqs = r.all
-            assert rqs.size() > 0
-
-            // -------- request get ---------
-
-            assert r.read(rqs[0]).id == rqs[0]
-
-            // -------- request get failure ---------
-
-            assert r.read(fakeId) == null
-
-            // -------- request status---------
-
-            assert requestStatus(r.all[0]) != null
-
-            } finally {
-                println "that took me ${TimeCategory.minus(new Date(), _start)}"
-            }
+        } finally {
+            println "that took me ${TimeCategory.minus(new Date(), _start)}"
         }
     }
 }

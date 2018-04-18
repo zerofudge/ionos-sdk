@@ -17,22 +17,14 @@ import groovy.transform.ToString
 @EqualsAndHashCode(callSuper = true)
 final class User extends ModelBase {
 
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     String firstname, lastname, email
-    @Creatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable
     String password
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     boolean administrator, forceSecAuth
-    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Readable
     boolean secAuthActive
-
-    @Override
-    protected final Map getUpdateBody() {
-        def body = super.updateBody
-        body.properties.administrator = String.valueOf(administrator)
-        body.properties.forceSecAuth = String.valueOf(forceSecAuth)
-        return body
-    }
 
     final String resource = 'um/users'
 }

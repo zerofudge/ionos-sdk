@@ -1,6 +1,6 @@
 # Groovy SDK
 
-Version: profitbricks-sdk-groovy **2.1.0**
+Version: **3.0.0**
 
 ## Table of Contents
 
@@ -9,16 +9,16 @@ Version: profitbricks-sdk-groovy **2.1.0**
     * [Basic Objective](#basic-objective)
     * [Installation](#installation)
     * [Configuration](#configuration)
-* [Reference](#reference)
-    * [Data Centers](#data-centers)
-      * [List Data Centers](#list-data-centers)
-      * [Retrieve a Data Center](#retrieve-a-data-center)
-      * [Create a Data Center](#create-a-data-center)
-      * [Update a Data Center](#update-a-data-center)
-      * [Delete a Data Center](#delete-a-data-center)
+* [SDK Reference](#sdk-reference)
+    * [Data Centers](#datacenters)
+      * [List Data Centers](#list-datacenters)
+      * [Retrieve a Data Center](#retrieve-a-datacenter)
+      * [Create a Data Center](#create-a-datacenter)
+      * [Update a Data Center](#update-a-datacenter)
+      * [Delete a Data Center](#delete-a-datacenter)
     * [Locations](#locations)
       * [List Locations](#list-locations)
-      * [Get a Location](#get-a-location)
+      * [Retrieve a Location](#retrieve-a-location)
     * [Servers](#servers)
       * [List Servers](#list-servers)
       * [Retrieve a Server](#retrieve-a-server)
@@ -27,23 +27,19 @@ Version: profitbricks-sdk-groovy **2.1.0**
       * [Delete a Server](#delete-a-server)
       * [List Attached Volumes](#list-attached-volumes)
       * [Attach a Volume](#attach-a-volume)
-      * [Retrieve an Attached Volume](#retrieve-an-attached-volume)
       * [Detach a Volume](#detach-a-volume)
-      * [List Attached CD-ROMs](#list-attached-cd-roms)
-      * [Attach a CD-ROM](#attach-a-cd-rom)
-      * [Retrieve an Attached CD-ROM](#retrieve-an-attached-cd-rom)
-      * [Detach a CD-ROM](#detach-a-cd-rom)
+      * [List Attached ](#list-attached-images)
+      * [Attach an Image](#attach-an-image)
+      * [Detach an Image](#detach-an-image)
       * [Reboot a Server](#reboot-a-server)
       * [Start a Server](#start-a-server)
       * [Stop a Server](#stop-a-server)
     * [Images](#images)
       * [List Images](#list-images)
-      * [Get an Image](#get-an-image)
-      * [Update an Image](#update-an-image)
-      * [Delete an Image](#delete-an-image)
+      * [Retrieve an Image](#retrieve-an-image)
     * [Volumes](#volumes)
       * [List Volumes](#list-volumes)
-      * [Get a Volume](#get-a-volume)
+      * [Retrieve a Volume](#retrieve-a-volume)
       * [Create a Volume](#create-a-volume)
       * [Update a Volume](#update-a-volume)
       * [Delete a Volume](#delete-a-volume)
@@ -51,90 +47,74 @@ Version: profitbricks-sdk-groovy **2.1.0**
       * [Restore a Volume Snapshot](#restore-a-volume-snapshot)
     * [Snapshots](#snapshots)
       * [List Snapshots](#list-snapshots)
-      * [Get a Snapshot](#get-a-snapshot)
+      * [Retrieve a Snapshot](#retrieve-a-snapshot)
       * [Update a Snapshot](#update-a-snapshot)
       * [Delete a Snapshot](#delete-a-snapshot)
     * [IP Blocks](#ip-blocks)
       * [List IP Blocks](#list-ip-blocks)
-      * [Get an IP Block](#get-an-ip-block)
+      * [Retrieve an IP Block](#retrieve-an-ip-block)
       * [Create an IP Block](#create-an-ip-block)
       * [Delete an IP Block](#delete-an-ip-block)
     * [LANs](#lans)
       * [List LANs](#list-lans)
+      * [Retrieve a LAN](#retrieve-a-lan)
       * [Create a LAN](#create-a-lan)
-      * [Get a LAN](#get-a-lan)
       * [Update a LAN](#update-a-lan)
       * [Delete a LAN](#delete-a-lan)
     * [Network Interfaces (NICs)](#network-interfaces)
       * [List NICs](#list-nics)
-      * [Get a NIC](#get-a-nic)
+      * [Retrieve a NIC](#retrieve-a-nic)
       * [Create a NIC](#create-a-nic)
       * [Update a NIC](#update-a-nic)
       * [Delete a NIC](#delete-a-nic)
     * [Firewall Rules](#firewall-rules)
       * [List Firewall Rules](#list-firewall-rules)
-      * [Get a Firewall Rule](#get-a-firewall-rule)
+      * [Retrieve a Firewall Rule](#retrieve-a-firewall-rule)
       * [Create a Firewall Rule](#create-a-firewall-rule)
       * [Update a Firewall Rule](#update-a-firewall-rule)
       * [Delete a Firewall Rule](#delete-a-firewall-rule)
     * [Load Balancers](#load-balancers)
       * [List Load Balancers](#list-load-balancers)
-      * [Get a Load Balancer](#get-a-load-balancer)
+      * [Retrieve a Load Balancer](#retrieve-a-load-balancer)
       * [Create a Load Balancer](#create-a-load-balancer)
       * [Update a Load Balancer](#update-a-load-balancer)
       * [List Load Balanced NICs](#list-load-balanced-nics)
-      * [Get a Load Balanced NIC](#get-a-load-balanced-nic)
-      * [Associate NIC to a Load Balancer](#associate-nic-to-a-load-balancer)
-      * [Remove a NIC Association](#remove-a-nic-association)
-    * [Groups](#groups)
-      * [List Groups](#list-groups)
-      * [Get a Group](#get-a-group)
-      * [Create a Group](#create-a-group)
-      * [Update a Group](#update-a-group)
-      * [Delete a Group](#delete-a-group)
-      * [List Users in a Group](#list-users-in-a-group)
-      * [Add User to Group](#add-user-to-group)
-      * [Remove User from a Group](#remove-user-from-a-group)
-    * [Shares](#shares)
-      * [List Shares](#list-shares)
-      * [Get a Share](#get-a-share)
-      * [Add a Share](#add-a-share)
-      * [Update a Share](#update-a-share)
-      * [Delete a Share](#delete-a-share)
+      * [Associate NIC with a Load Balancer](#associate-a-nic-with-a-load-balancer)
+      * [Remove a NIC-Load-Balancer Association](#remove-a-nic-association)
     * [Users](#users)
       * [List Users](#list-users)
-      * [Get a User](#get-a-user)
+      * [Retrieve a User](#retrieve-a-user)
       * [Create a User](#create-a-user)
       * [Update a User](#update-a-user)
       * [Delete a User](#delete-a-user)
-    * [Resources](#resources)
-      * [List Resources](#list-resources)
-      * [List Resources by Type](#list-resources-by-type)
-      * [Get a Resource of a Type](#get-a-resource-of-a-type)
-    * [Contract Resources](#contract-resources)
-      * [List Contract Resources](#list-contract-resources)
-  * [Requests](#requests)
-      * [List Requests](#list-requests)
-      * [Get a Request Status](#get-a-request-status)
-* [Examples](#examples)
+    * [Groups](#groups)
+      * [List Groups](#list-groups)
+      * [Retrieve a Group](#retrieve-a-group)
+      * [Create a Group](#create-a-group)
+      * [Update a Group](#update-a-group)
+      * [Delete a Group](#delete-a-group)
+      * [List Group Users](#list-group-users)
+      * [Add a User to a Group](#add-a-user-to-a-group)
+      * [Remove a User from a Group](#remove-a-user-from-a-group)
+* [Example](#a-concise-example)
+* [TODO](#todo)
 * [Support](#support)
 * [Testing](#testing)
 * [Contributing](#contributing)
 
 
-## Description
+## Description 
 
-This Groovy library wraps the ProfitBricks Cloud API. All API operations are performed over a SSL/TLS secured connection and authenticated using your ProfitBricks portal credentials. The Cloud API can be accessed over the public Internet from any application that can send an HTTPS request and receive an HTTPS response.
+This Groovy library provides easy use of the ProfitBricks Cloud API. All API operations are performed over a SSL/TLS secured connection and authenticated using your ProfitBricks portal credentials.
 
-This guide will show you how to programmatically perform common management tasks using the [Groovy SDK](https://github.com/profitbricks/profitbricks-sdk-groovy) for the ProfitBricks Cloud API.
+This guide will show you how to programmatically perform common management tasks using this SDK.
 
-Apache Groovy is an object-oriented programming language for the Java platform. Groovy is dynamically compiled to Java virtual machine (JVM) bytecode, and interoperates with other Java code and libraries.
 
 ## Getting Started
 
 ### Basic Objective
 
-There is essentially only one pattern: Create an entity, then invoke one of the CRUD methods on it:
+There is essentially only one usage pattern: Create an entity, then invoke one of the CRUD methods on it:
 
 - `create()`: Effectively send a resource creation REST request.
 - `read()`: Fetch an existing REST resource by its UUID.
@@ -151,7 +131,7 @@ No extra modeling was made (e.g. no *parent* links or the like). The entities ju
 On a successfully-delivered REST `POST`, `PUT` or `DELETE` request, the Profitbricks API might send a `Location` header instead of the final resulting response to the requested action. This SDK will block on such a response, then continue polling for the final result. If a successful result does not come
 in time, an exception will be thrown.
 
-This decision was made to allow for easy and agile scripting, as the result matters most of the time, and such a behavior would be needed anyway.
+This was made to allow for easy and agile API scripting, as the result matters most of the time, and such a behavior would be needed anyway.
 
 For API resources which do not fit into the CRUD scheme, an extra command facade is provided. This provides functionality like attaching and detaching storage volumes to virtual servers or associating network interfaces with load balancers.
 
@@ -159,724 +139,486 @@ This implementation is based on Groovy 2, so it technically runs on any JVM vers
 
 Before you begin you will need to have [signed up](https://www.profitbricks.com/signup) for a ProfitBricks account. The credentials you set up during the sign-up process will be used to authenticate against the Cloud API.
 
+
 ### Installation
 
-The official Groovy library is available from the [ProfitBricks GitHub account](https://github.com/profitbricks/profitbricks-sdk-groovy).
+This SDK is available from the [ProfitBricks GitHub account](https://github.com/profitbricks/profitbricks-sdk-groovy).
 
-Gradle must also be installed. Please review the official Gradle installation documentation for details on the installation [here](https://docs.gradle.org/3.3/userguide/installation.html).
+a) **optional**: build it: `./gradlew build`
 
-After downloading the sdk follow these steps to add it to the local maven repository:
+b) **optional**: publish the artifact to your local maven repository: `./gradlew publishToMavenLocal`
 
-a) Build it by hand: `gradle build`
+c) Add the proper dependency to your project:
 
-b) Publish the sdk to your local maven repository using the command `gradle publishToMavenLocal`
-
-c) Add the proper dependency:
-
-  - Either in your build.gradle:
+  - example: gradle
 
         dependencies {
-          compile 'com.profitbricks.sdk:groovy-sdk:2.1.0'
+          compile 'com.profitbricks.sdk:groovy-sdk:3.0.0'
         }
 
-  - Or if you are using a maven project:
+  - example: maven
 
         <dependency>
 		  <groupId>com.profitbricks.sdk</groupId>
 		  <artifactId>groovy-sdk</artifactId>
-		  <version>2.1.0</version>
+		  <version>3.0.0</version>
         </dependency>
 
 
-d) Use your ProfitBricks Credentials by adding them to the gradle.build file:
-
-```
-applicationDefaultJvmArgs = [
-    user: 'username',
-    password: 'password',
-].collect {
-    "-Dapi.${it.key}=${it.value}"
-}
-```
-
-e) Run the application using the `gralde run` command.
-
-Take a look at the [build.gradle](#buildgradle) for a working example
-        
-
 ### Configuration
 
-The current implementation relies solely on system properties (and proper defaults).
+The most convenient way to configure the API client is to use system properties. The following table lists all those properties along with their default value (if any).
 
 **System Properties**
 
 | name | default | notes |
-| --- | :-- | :-- |
+|---|---|---|
 | `api.URL` | https://api.profitbricks.com/cloudapi/v4 | The base API URL. |
 | `api.verifySSL` | `true` | Ignores all SSL certificate issues if `false`. |
-| `api.user`| | The API user name for basic authentication. |
-| `api.password` | | The API password for basic authentication. |
+| `api.user`| - | The API user name for basic authentication. |
+| `api.password` | - | The API password for basic authentication. |
 | `api.wait.init.milliseconds` | 100 | If waiting for success, this is the initial time period between two checks. |
 | `api.wait.timeout.seconds` | 120 | If waiting for success, this is the timeout. |
 | `api.wait.max.milliseconds` | 1500 | If waiting for success, this is the maximum time period between two checks. |
 | `api.wait.factor`| 1.87 | If waiting for success, this is the factor by which the current time period value is multiplied. |
 
-## Reference
 
-This section provides details on all the available operations and the parameters they accept. Brief code snippets demonstrating usage are also included.
+## SDK Reference
 
-### Data Centers
+This section provides details on all the available operations and the parameters they accept. Also included are brief code snippets illustrating its usage.
 
-Virtual data centers (VDCs) are the foundation of the ProfitBricks platform. VDCs act as logical containers for all other objects you will be creating, e.g., servers. You can provision as many VDCs as you want. VDCs have their own private network and are logically segmented from each other to create isolation.
 
-Create an instance of the API class:
+### datacenters
 
-    DataCenter dc = new DataCenter();
+Virtual data centers (VDCs) are the foundation of the ProfitBricks platform. VDCs act as logical containers for all other objects you will be creating, e.g., servers. You can provision as many VDCs as you want. VDCs have their own private network and are logically isolated from each other.
 
-#### List Data Centers
+#### list datacenters
 
-Lists all currently provisioned VDCs that are accessible for your account credentials.
+Lists the ids of all currently provisioned datacenters that are accessible for your account credentials.
 
 ```
-def list =dc.all
+List<String> datacenterIDs = new DataCenter().all
 ```
 
----
+#### retrieve a datacenter
 
-#### Retrieve a Data Center
-
-Retrieves details about a specific VDC.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
 
 ```
-def datacenter =dc.read(datacenterId)
+DataCenter datacenter = new DataCenter(id: datacenterId).read()
 ```
 
----
+#### create a datacenter
 
-#### Create a Data Center
-
-Creates a new VDC. You can create a "simple" VDC by supplying just the required `name` and `location` parameters.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| Name | **yes** | string | The name of the data center. |
-| Location | **yes** | string | The physical ProfitBricks location where the VDC will be created. |
-| Description | no | string | A description for the data center, e.g. staging, production. |
-| Servers | no | collection | Details about creating one or more servers. See [create a server](#create-a-server). |
-| Volumes | no | collection | Details about creating one or more volumes. See [create a volume](#create-a-volume). |
-| Lans | no | collection | Details about creating one or more LANs. See [create a lan](#create-a-lan). |
-| Loadbalancers | no | collection | Details about creating one or more load balancers. See [create a load balancer](#create-a-load- balancer). |
+| Argument | Required |
+|---|---|
+| `DataCenter::name` | **yes** |
+| `DataCenter::location` | **yes** | 
+| `DataCenter::description` | no |
 
 **Supported Locations**
 
-| Value| Country | City |
+| Value | Country | City |
 |---|---|---|
-| us/las | United States | Las Vegas |
-| us/ewr | United States | Newark |
-| de/fra | Germany | Frankfurt |
-| de/fkb | Germany | Karlsruhe |
+| `us/las` | United States | Las Vegas |
+| `us/ewr` | United States | Newark |
+| `de/fra` | Germany | Frankfurt |
+| `de/fkb` | Germany | Karlsruhe |
 
 **NOTES**:
-- The value for `Name` cannot contain the following characters: (@, /, , |, ‘’, ‘).
-- You cannot change the virtual data center `Location` after it has been provisioned.
+- The value for `DataCenter::ame` cannot contain the following characters: `@, /, , |, ‘’, ‘`.
+- You cannot change `DataCenter::location` after creation.
 
 ```
 def dc = new DataCenter(
-	name: "name",
-	location: 'de/fkb',
-	description: 'desc'
+	name: "groovy name",
+	location: 'us/ewr',
+	description: 'groovy description'
 ).create()
 
+assert dc.id
 ```
 
----
+#### update a datacenter
 
-#### Update a Data Center
-
-After retrieving a data center, either by getting it by ID, or as a create response object, you can change its properties by calling the `update`. Some parameters may not be changed using either of the update methods.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| Name | no | string | The new name of the VDC. |
-| Description | no | string | The new description of the VDC. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `DataCenter::name` | no |
+| `DataCenter::description` | no |
 
 ```
-def datacenter =dc.read(datacenterId)
-dc.name = "updated name"
-dc.description = "groovy new datacenter!"
-dc.update()
+DataCenter datacenter = ...
+dc.name = "updated name from ${dc.name}"
+dc.description = "groovy new datacenter! (old: ${dc.description})"
+assert dc.update()
 ```
 
----
-
-#### Delete a Data Center
+#### delete a datacenter
 
 Removes all objects within the virtual data center AND removes the virtual data center object itself.
 
 **NOTE**: This is a highly destructive operation which should be used with extreme caution.
 
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC that you want to delete. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
 
 ```
-def _dc = dc.read(datacenterId)
-_dc.delete()
+DataCenter dc = ...
+dc.delete()
 ```
 
----
 
 ### Locations
 
-Locations are the physical ProfitBricks data centers where you can provision your VDCs.
+Locations are the physical ProfitBricks computing centers where you can provision your resources.
 
-Creates an instance of the API class:
+#### List locations
 
-```Location loc = new Location()```
-
-#### List Locations
-
-Returns the list of currently available locations.
-
+Retrieves the list of IDs of currently available locations.
 
 ```
-loc.all()
+List<String> locationIDs = new Location().all
 ```
 
----
+#### retrieve a location
 
-#### Get a Location
-
-Retrieves the attributes of a specific location.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| locationId | **yes** | string | The ID consisting of country/city. |
+| Argument | Required |
+|---|---|
+| `Location::id` | **yes** |
 
 ```
-loc.read(locationId)
+Location location = new Location(id: 'us/ewr').read()
 ```
 
----
 
 ### Servers
 
-Creates an instance of these API classes:
+A valid `DataCenter` instance is needed:
 
 ```
-Server s = new Server()
+DataCenter dc = ...
+Server s = new Server(dataCenter: dc)
 ```
 
 #### List Servers
 
-Retrieves a list of all the servers provisioned inside a specific VDC.
+Retrieves the list of IDs of created servers for a given datacenter.
 
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
 
 ```
-s.dataCenter=dc.read(datacenterId)
-s.all()
+DataCenter dc = ...
+List<String> serverIDs = new Server(dataCenter: dc).all
 ```
-
----
 
 #### Retrieve a Server
 
-Returns information about a specific server such as its configuration, provisioning status, etc.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
 
 ```
-s.dataCenter=dc.read(datacenterId)
-s.read(serverId)
+DataCenter dc = ...
+Server server = new Server(id: serverId, dataCenter: dc).read()
 ```
-
----
 
 #### Create a Server
 
-Creates a server within an existing VDC. You can configure additional properties such as specifying a boot volume and connecting the server to a LAN.
+| Argument | Required | Description |
+|---|---|---|
+| `DataCenter::id` | **yes** ||
+| `Server::name` | **yes** ||
+| `Server::cores` | **yes** | number of cores |
+| `Server::ram` | **yes** | amount of memory in MB, size must be specified in multiples of 256 |
+| `Server::availabilityZone` | no | fire zone (see table below) |
+| `Server::cpuFamily` | no | CPU family: `AMD_OPTERON` or `INTEL_XEON` default: `AMD_OPTERON` |
 
-**Request Arguments**
+**Supported Fire Zones**
 
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| name | **yes** | string | The name of the server. |
-| cores | **yes** | int | The total number of cores for the server. |
-| ram | **yes** | int | The amount of memory for the server in MB, e.g. 2048. Size must be specified in multiples of 256 MB with a minimum of 256 MB; however, if you set `ram_hot_plug` to *True* then you must use a minimum of 1024 MB. |
-| availabilityZone | no | string | The availability zone in which the server should exist. |
-| cpuFamily | no | string | Sets the CPU type. "AMD_OPTERON" or "INTEL_XEON". Defaults to "AMD_OPTERON". |
-
-
-**Supported Availability Zones**
-
-| Availability Zone | Comment |
+| firezone | comment |
 |---|---|
-| AUTO | Automatically Selected Zone |
-| ZONE_1 | Fire Zone 1 |
-| ZONE_2 | Fire Zone 2 |
+| `AUTO` | automatically selected zone, default |
+| `ZONE_1` | firezone 1 |
+| `ZONE_2` | firezone 2 |
 
 ```
-Server s = new Server(
-	dataCenter: dc.read(datacenterId),
+DataCenter dc = ...
+Server server = new Server(
+	dataCenter: dc,
 	name: "server name",
 	cores: 1,
-	ram: 1024
+	ram: 1024,
+	availabilityZone: "ZONE_1",
+	cpuFamily: "INTEL_XEON"
 ).create()
+assert server.id
 ```
-
----
 
 #### Update a Server
 
-Performs updates to the attributes of a server.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-| name | no | string | The name of the server. |
-| cores | no | int | The number of cores for the server. |
-| ram | no | int | The amount of memory in the server. |
-| availabilityZone | no | string | The new availability zone for the server. |
-| cpuFamily | no | string | Sets the CPU type. "AMD_OPTERON" or "INTEL_XEON". Defaults to "AMD_OPTERON". |
-
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `Server::name` | no |
+| `Server::cores` | no |
+| `Server::ram` | no |
+| `Server::availabilityZone` | no |
+| `Server::cpuFamily` | no |
 
 ```
-s.dataCenter=dc.read(datacenterId)
-s=s.read(serverId)
-s.name = "updated"
-s.cores = 2
-s.ram = 4
-s.update()
+Server server = ...
+server.name = "updated"
+server.cores += 2
+server.ram += 512
+server.update()
 ```
-
----
 
 #### Delete a Server
 
 Removes a server from a data center. **NOTE**: This will not automatically remove the storage volume(s) attached to a server. A separate operation is required to delete a storage volume.
 
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-
-After retrieving a server, either by getting it by ID, or as a create response object, you can call the `delete` method directly:
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
 
 ```
-def _s = s.read(serverId)
-_s.delete()
+Server server = ...
+server.delete()
 ```
 
----
+#### list attached volumes
 
-#### List Attached Volumes
+Retrieves a list of ids of all volumes currently attached to a given server.
 
-Retrieves a list of volumes attached to the server.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-
-After retrieving a server, either by getting it by ID, or as a create response object, you can call the `attachedVolumes` method directly:
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
 
 ```
-s.dataCenter=dc.read(datacenterId)
-s=s.read(serverId)
-attachedVolumes(s)
+Server server = ...
+List<String> volumeIDs = Commands.attached(server, Volume)
 ```
 
----
+#### attach a volume
 
-#### Attach a Volume
-
-Attaches a pre-existing storage volume to the server.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-| volumeId | **yes** | string | The ID of a storage volume. |
-
-After retrieving a server, either by getting it by ID, or as a create response object, you can call the `attach` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `Volume::id` | **yes** |
 
 ```
-Volume v = new Volume()
-v=v.read(volumeId)
-s.dataCenter=dc.read(datacenterId)
-s.read(serverId)
-attach(s, v)
+Server server = ...
+Volume volume = ...
+Commands.attach(server, volume)
 ```
 
----
+#### detach a volume
 
-#### Retrieve an Attached Volume
-
-Retrieves the properties of an attached volume.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-| volumeId | **yes** | string | The ID of the attached volume. |
-
-After retrieving a server, either by getting it by ID, or as a create response object, you can call the `attachedVolume` method directly.
-
-```
-Volume v = new Volume()
-v=v.read(volumeId)
-s.dataCenter=dc.read(datacenterId)
-s.read(serverId)
-attachedVolume(s,v)
-```
-
----
-
-#### Detach a Volume
-
-Detaches the volume from the server. Depending on the volume `hot_unplug` settings, this may result in the server being rebooted.
+Depending on the volume `hot_unplug` settings, this may result in the server being rebooted.
 
 This will NOT delete the volume from your virtual data center. You will need to make a separate request to delete a volume.
 
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-| volumeId | **yes** | string | The ID of the attached volume. |
-
-After retrieving a server, either by getting it by ID, or as a create response object, you can call the `detach` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `Volume::id` | **yes** |
 
 ```
-Volume v = new Volume()
-v=v.read(volumeId)
-s.dataCenter=dc.read(datacenterId)
-s.read(serverId)
-detach(s, v)
+Server server = ...
+Volume volume = ...
+Commands.detach(server, volume)
 ```
 
----
+#### list attached images
 
-#### List Attached CD-ROMs
+Retrieves a list of ids of all images (CDROMs) currently attached to a given server.
 
-Retrieves a list of CD-ROMs attached to a server.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-
-After retrieving a server, either by getting it by ID, or as a create response object, you can call the `attachedCDROMs` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
 
 ```
-s.dataCenter=dc.read(datacenterId)
-s=s.read(serverId)
-attachedCDROMs(s)
+Server server = ...
+List<String> imageIDs = Commands.attached(server, Image)
 ```
 
----
+#### attach an image
 
-#### Attach a CD-ROM
-
-Attaches a CD-ROM to an existing server.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-| imageId | **yes** | string | The ID of a CD-ROM. |
-
-After retrieving a server, either by getting it by ID, or as a create response object, you can call the `attach` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `Image::id` | **yes** |
 
 ```
-Image i = new Image()
-i=i.read(cdROMimageId)
-s.dataCenter=dc.read(datacenterId)
-s=s.read(serverId)
-attach(s, i)
+Server server = ...
+Image image = ...
+Commands.attach(server, image)
 ```
 
----
+#### detach an image
 
-#### Retrieve an Attached CD-ROM
-
-Retrieves a specific CD-ROM attached to the server.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-| imageId | **yes** | string | The ID of the attached CD-ROM. |
-
-After retrieving a server, either by getting it by ID, or as a create response object, you can call the `attachedCDROM` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `Image::id` | **yes** |
 
 ```
-Image i = new Image()
-i=i.read(cdROMimageId)
-s.dataCenter=dc.read(datacenterId)
-s=s.read(serverId)
-attachedCDROM(s,i)
+Server server = ...
+Image image = ...
+Commands.detach(server, image)
 ```
 
----
-
-#### Detach a CD-ROM
-
-Detaches a CD-ROM from the server.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-| imageId | **yes** | string | The ID of the attached CD-ROM. |
-
-After retrieving a server, either by getting it by ID, or as a create response object, you can call the `detach` method directly.
-
-```
-Image i = new Image()
-i=i.read(imageId)
-s.dataCenter=dc.read(datacenterId)
-s=s.read(serverId)
-attachedCDROM(s,i)
-detach(s, i)
-```
-
----
-
-#### Reboot a Server
+#### reboot a server
 
 Forces a hard reboot of the server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
 
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-
-After retrieving a server, either by getting it by ID, or as a create response object, you can call the `Reboot` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
 
 ```
-s.dataCenter=dc.read(datacenterId)
-s=s.read(serverId)
-reboot(s)
+Server server = ...
+Commands.reboot(server)
 ```
 
----
-
-#### Start a Server
+#### start a server
 
 Starts a server. If the server's public IP address was deallocated then a new IP address will be assigned.
 
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-
-After retrieving a server, either by getting it by ID, or as a create response object, you can call the `start` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
 
 ```
-s.dataCenter=dc.read(datacenterId)
-s=s.read(serverId)
-start(s)
+Server server = ...
+Commands.start(s)
 ```
 
----
-
-#### Stop a Server
+#### stop a server
 
 Stops a server. The machine will be forcefully powered off, billing will stop, and the public IP address, if one is allocated, will be deallocated.
 
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-
-After retrieving a server, either by getting it by ID, or as a create response object, you can call the `stop` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
 
 ```
-s.dataCenter=dc.read(datacenterId)
-s=s.read(serverId)
-stop(s)
+Server server = ...
+Commands.stop(s)
 ```
 
----
 
 ### Images
 
-Creates an instance of the API class:
+#### list images
 
-```Image i = new Image()```
-
-#### List Images
-
-Retrieves a list of images.
+Retrieves a list of ids of all available images (CDROMs).
 
 ```
-i.all
+List<String> imageIDs = new Image().all
 ```
 
----
+#### retrieve an image
 
-#### Get an Image
-
-Retrieves the attributes of a specific image.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| imageId | **yes** | string | The ID of the image. |
+| Argument | Required |
+|---|---|
+| `Image::id` | **yes** |
 
 ```
-i.read(imageId)
+Image image = new Image(id: imageID).read()
 ```
 
----
 
 ### Volumes
 
-Creates an instance of the API class:
+#### list volumes
 
-```Volume v = new Volume()```
+Retrieves a list of ids of volumes in a given datacenter.
+A valid `DataCenter` instance is needed for this.
 
-#### List Volumes
-
-Retrieves a list of volumes within the virtual data center. If you want to retrieve a list of volumes attached to a server please see the [List Attached Volumes](#list-attached-volumes) entry in the Server section for details.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
 
 ```
-v.dataCenter=dc.read(datacenterId)
-v.all
+DataCenter dc = ...
+List<String> volumeIDs = new Volume(dataCenter: dc).all
 ```
 
----
+#### retrieve a volume
 
-#### Get a Volume
-
-Retrieves the attributes of a given volume.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| volumeId | **yes** | string | The ID of the volume. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Volume::id` | **yes** |
 
 ```
-v.dataCenter=dc.read(datacenterId)
-v=v.read(volumeId)
+DataCenter dc = ...
+Volume volume = new Volume(dataCenter: dc, id: volumeId).read()
 ```
 
----
+#### create a volume
 
-#### Create a Volume
+Creates a volume within the virtual data center. This will **not** attach the volume to a server. Please see the [Attach a Volume](#attach-a-volume) entry in the Server section for details on how to attach storage volumes.
 
-Creates a volume within the virtual data center. This will NOT attach the volume to a server. Please see the [Attach a Volume](#attach-a-volume) entry in the Server section for details on how to attach storage volumes.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| name | **yes** | string | The name of the volume. |
-| size | **yes** | int | The size of the volume in GB. |
-| bus | no | string | The bus type of the volume (VIRTIO or IDE). Default: VIRTIO. |
-| image | no | string | The image or snapshot ID. |
-| imageAlias | no | string | The alias of the image. |
-| type | no | string | The volume type, HDD or SSD. |
-| licenceType | no | string | The licence type of the volume. Options: LINUX, WINDOWS, WINDOWS2016, UNKNOWN, OTHER |
-| imagePassword | no | string | One-time password is set on the Image for the appropriate root or administrative account. This field may only be set in creation requests. When reading, it always returns *null*. The password has to contain 8-50 characters. Only these characters are allowed: [abcdefghjkmnpqrstuvxABCDEFGHJKLMNPQRSTUVX23456789] |
-| sshKeys | no | object | A collection of SSH keys to allow access to the volume via SSH. |
-| availabilityZone | no | string | The storage availability zone assigned to the volume. Valid values: AUTO, ZONE_1, ZONE_2, or ZONE_3. This only applies to HDD volumes. Leave blank or set to AUTO when provisioning SSD volumes. |
+| Argument | Required | Description |
+|---|---|---|
+| `DataCenter::id` | **yes** | The ID of the VDC. |
+| `Volume::name` | **yes** | The name of the volume. |
+| `Volume::size` | **yes** | The size of the volume in GB. |
+| `Volume::bus` | no | The bus type of the volume (VIRTIO or IDE). Default: VIRTIO. |
+| `Volume::image` | no | The image or snapshot ID. |
+| `Volume::imageAlias` | no | The alias of the image. |
+| `Volume::type` | no | The volume type, HDD or SSD. |
+| `Volume::licenceType` | no | The licence type of the volume. Options: LINUX, WINDOWS, WINDOWS2016, UNKNOWN, OTHER |
+| `Volume::imagePassword` | no | One-time password is set on the Image for the appropriate root or administrative account. This field may only be set in creation requests. When reading, it always returns *null*. The password has to contain 8-50 characters. Only these characters are allowed: [abcdefghjkmnpqrstuvxABCDEFGHJKLMNPQRSTUVX23456789] |
+| `Volume::sshKeys` | no | A collection of SSH keys to allow access to the volume via SSH. |
+| `Volume::availabilityZone` | no | The storage availability zone assigned to the volume. Valid values: AUTO, ZONE_1, ZONE_2, or ZONE_3. This only applies to HDD volumes. Leave blank or set to AUTO when provisioning SSD volumes. |
 
 **Licence Types**
 
 | Licence Type | Comment |
 |---|---|
-| WINDOWS2016 | Use this for the Microsoft Windows Server 2016 operating system. |
-| WINDOWS | Use this for the Microsoft Windows Server 2008 and 2012 operating systems. |
-| LINUX |Use this for Linux distributions such as CentOS, Ubuntu, Debian, etc. |
-| OTHER | Use this for any volumes that do not match one of the other licence types. |
-| UNKNOWN | This value may be inherited when you've uploaded an image and haven't set the license type. Use one of the options above instead. |
+| `WINDOWS2016` | for Microsoft Windows Server 2016 |
+| `WINDOWS` | for Microsoft Windows Server 2008 and 2012 |
+| `LINUX` | for Linux |
+| `OTHER` | for any volumes that do not match one of the other licence types |
+| `UNKNOWN` | default value when you've uploaded an image and haven't set the license type |
 
 **Supported Storage Availability Zones**
 
 | Availability Zone | Comment |
 |---|---|
-| AUTO | Automatically Selected Zone |
-| ZONE_1 | Fire Zone 1 |
-| ZONE_2 | Fire Zone 2 |
-| ZONE_3 | Fire Zone 3 |
-
+| `AUTO` | Automatically Selected Zone |
+| `ZONE_1` | Fire Zone 1 |
+| `ZONE_2` | Fire Zone 2 |
+| `ZONE_3` | Fire Zone 3 |
 
 ```
-Volume v = new Volume(
-	dataCenter: dc,
-	name: "name",
-	size: 1
-).create()
+DataCenter dc = ...
+Volume v = new Volume(dataCenter: dc, name: "name", size: 1).create()
+assert v.id
 ```
 
----
-
-#### Update a Volume
+#### update a volume
 
 Various attributes on the volume can be updated (either in full or partially) although the following restrictions apply:
 
@@ -886,454 +628,304 @@ Various attributes on the volume can be updated (either in full or partially) al
 * The additional capacity is not added automatically added to any partition, therefore you will need to handle that inside the OS afterwards.
 * After you have increased the volume size you cannot decrease the volume size.
 
-Since an existing volume is being modified, none of the request parameters are specifically required as long as the changes being made satisfy the requirements for creating a volume.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| volumeId | **yes** | string | The ID of the volume. |
-| name | no | string | The name of the volume. |
-| size | no | int | The size of the volume in GB. Only increase when updating. |
-| bus | no | string | The bus type of the volume (VIRTIO or IDE). Default: VIRTIO. |
-| image | no | string | The image or snapshot ID. |
-| type | no | string | The volume type, HDD or SSD. |
-| licenceType | no | string | The licence type of the volume. Options: LINUX, WINDOWS, WINDOWS2016, UNKNOWN, OTHER |
-| availabilityZone | no | string | The storage availability zone assigned to the volume. Valid values: AUTO, ZONE_1, ZONE_2, or ZONE_3. This only applies to HDD volumes. Leave blank or set to AUTO when provisioning SSD volumes. |
-
-After retrieving a volume, either by getting it by id, or as a create response object, you can change its properties and call the `update` method:
+| Arguments | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Volume::id` | **yes** |
+| `Volume::name` | no |
+| `Volume::size` | no |
+| `Volume::bus` | no |
+| `Volume::image` | no |
+| `Volume::type` | no |
+| `Volume::licenceType` | no |
+| `Volume::availabilityZone` | no |
 
 ```
-v.dataCenter=dc.read(datacenterId)
-v=v.read(volumeId)
-v.name = "updated name"
+Volume v = ...
+v.name = "updated name from ${vname}"
 v.size = 2
 v.update()
 ```
 
----
-
-#### Delete a Volume
+#### delete a volume
 
 Deletes the specified volume. This will result in the volume being removed from your data center. Use this with caution.
 
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| volumeId | **yes** | string | The ID of the volume. |
-
-After retrieving a volume, either by getting it by ID, or as a create response object, you can call the `delete` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Volume::id` | **yes** |
 
 ```
-v.dataCenter=dc.read(datacenterId)
-v=v.read(volumeId)
+Volume v = ...
 v.delete()
 ```
 
----
-#### Create a Volume Snapshot
+#### create a volume snapshot
 
 Creates a snapshot of a volume within the virtual data center. You can use a snapshot to create a new storage volume or to restore a storage volume.
 
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| volumeId | **yes** | string | The ID of the volume. |
-| Name | no | string | The name of the snapshot. |
-| Description | no | string | The description of the snapshot. |
-
-After retrieving a volume, either by getting it by ID, or as a create response object, you can call the `CreateSnapshot` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Volume::id` | **yes** |
+| `Snapshot::name` | no |
+| `Snapshot::description` | no |
 
 ```
-Snapshot sn = new Snapshot()
-v.dataCenter=dc.read(datacenterId)
-v=v.read(volumeId)
-sn = snapshot(v)
+Volume v = ...
+Snapshot snapshot = Commands.snapshot(v, 'snapshot_4711', 'a fancy snapshot')
 ```
 
----
-
-#### Restore a Volume Snapshot
+#### restore a volume snapshot
 
 Restores a snapshot onto a volume. A snapshot is created as an image which can be used to create new volumes or to restore an existing volume.
 
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| volumeId | **yes** | string | The ID of the volume. |
-| snapshotId | **yes** | string |  The ID of the snapshot. |
-
-After retrieving a volume, either by getting it by ID, or as a create response object, you can call the `restore` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Volume::id` | **yes** |
+| `Snapshot::id` | **yes** |
 
 ```
-Snapshot sn = new Snapshot()
-v.dataCenter=dc.read(datacenterId)
-v=v.read(volumeId)
-restore(v, sn)
+Snapshot sn = ...
+Volume v = ...
+assert Commands.restore(v, sn)
 ```
-
----
 
 ### Snapshots
 
-Creates an instance of the API class:
+#### list snapshots
 
-```Snapshot sn = new Snapshot()```
-
-#### List Snapshots
-
-Retrieves a list of all available snapshots.
+Retrieves a list of ids of all available snapshots.
 
 ```
-sn.all
+List<String> snapshotIDs = new Snapshot().all
 ```
 
----
+#### retrieve a snapshot
 
-#### Get a Snapshot
-
-Retrieves the attributes of a specific snapshot.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| snapshotId | **yes** | string | The ID of the snapshot. |
+| Argument | Required |
+|---|---|
+| `Snapshot::id` | **yes** |
 
 ```
-sn.read(snapshotId)
+Snapshot snap = new Snapshot(id: snapshotId).read()
 ```
 
----
+#### update a snapshot
 
-#### Update a Snapshot
-
-Performs updates to attributes of a snapshot.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| snapshotId | **yes** | string | The ID of the snapshot. |
-| name | no | string | The name of the snapshot. |
-| description | no | string | The description of the snapshot. |
-| licenceType | no | string | The snapshot's licence type: LINUX, WINDOWS, WINDOWS2016, or OTHER. |
-| cpuHotPlug | no | bool | This volume is capable of CPU hot plug (no reboot required) |
-| cpuHotUnplug | no | bool | This volume is capable of CPU hot unplug (no reboot required) |
-| ramHotPlug | no | bool |  This volume is capable of memory hot plug (no reboot required) |
-| ramHotUnplug | no | bool | This volume is capable of memory hot unplug (no reboot required) |
-| nicHotPlug | no | bool | This volume is capable of NIC hot plug (no reboot required) |
-| nicHotUnplug | no | bool | This volume is capable of NIC hot unplug (no reboot required) |
-| siscVirtioHotPlug | no | bool | This volume is capable of VirtIO drive hot plug (no reboot required) |
-| discVirtioHotUnplug | no | bool | This volume is capable of VirtIO drive hot unplug (no reboot required) |
-| discScsiHotPlug | no | bool | This volume is capable of SCSI drive hot plug (no reboot required) |
-| discScsiHotUnplug | no | bool | This volume is capable of SCSI drive hot unplug (no reboot required) |
-
-After retrieving a snapshot, either by getting it by ID, or as a create response object, you can change its properties and call the `update` method:
+| Argument | Required | Description |
+|---|---|---|
+| `Snapshot::id` | **yes** |
+| `Snapshot::name` | no |
+| `Snapshot::description` | no |
+| `Snapshot::licenceType` | no | licence type: `LINUX`, `WINDOWS`, `WINDOWS2016` or `OTHER` |
+| `Snapshot::cpuHotPlug` | no | CPU hot plug capability |
+| `Snapshot::cpuHotUnplug` | no | CPU hot unplug capability |
+| `Snapshot::ramHotPlug` | no | memory hot plug capability |
+| `Snapshot::ramHotUnplug` | no | memory hot unplug capability |
+| `Snapshot::nicHotPlug` | no | NIC hot plug capability |
+| `Snapshot::nicHotUnplug` | no | NIC hot unplug capability |
+| `Snapshot::siscVirtioHotPlug` | no | VirtIO drive hot plug capability |
+| `Snapshot::discVirtioHotUnplug` | no | VirtIO drive hot unplug capability |
+| `Snapshot::discScsiHotPlug` | no | SCSI drive hot plug capability |
+| `Snapshot::discScsiHotUnplug` | no | SCSI drive hot unplug capability |
 
 ```
-sn=sn.read(snapshotId)
-sn.name="updated"
-sn.update()
+Snapshot snap = ...
+snap.name="updated from ${snap.name}"
+snap.ramHotPlug = true
+snap.update()
 ```
 
----
-
-#### Delete a Snapshot
+#### delete a snapshot
 
 Deletes the specified snapshot.
 
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| snapshotId | **yes** | string | The ID of the snapshot. |
-
-After retrieving a snapshot, either by getting it by ID, or as a create response object, you can call the `Delete` method directly.
+| Argument | Required |
+|---|---|
+| `Snapshot::id` | **yes** |
 
 ```
-sn=sn.read(snapshotId)
+Snapshot snap = ...
 sn.delete()
 ```
 
----
 
 ### IP Blocks
 
-The IP block operations assist with managing reserved/static public IP addresses.
+For management of reserved static public IP addresses.
 
-Creates an instance of the API class:
+#### list IP blocks
 
-```IPBlock ip = new IPBlock()```
-
-#### List IP Blocks
-
-Retrieves a list of available IP blocks.
+Retrieves a list of ids of previously reserved (created) IP blocks.
 
 ```
-ip.all
+List<String> ipBlockIDs = new IPBlock().all
 ```
 
-#### Get an IP Block
+#### retrieve an IP block
 
-Retrieves the attributes of a specific IP block.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| ipBlockId | **yes** | string | The ID of the IP block. |
+| Argument | Required |
+|---|---|
+| `IPBlock::id` | **yes** |
 
 ```
-ip.read(ipBlockId)
+IPBlock block = new IPBlock(id: ipBlockId).read()
 ```
 
----
-
-#### Create an IP Block
+#### create an IP block
 
 Creates an IP block. IP blocks are attached to a location, so you must specify a valid `location` along with a `size` parameter indicating the number of IP addresses you want to reserve in the IP block. Servers or other resources using an IP address from an IP block must be in the same `location`.
 
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| location | **yes** | string | This must be one of the locations: us/las, us/ewr, de/fra, de/fkb. |
-| size | **yes** | int | The size of the IP block you want. |
-| name | no | string | A descriptive name for the IP block |
-
-**Supported Locations**
-
-| Value| Country | City |
+| Argument | Required | Description |
 |---|---|---|
-| us/las | United States | Las Vegas |
-| us/ewr | United States | Newark |
-| de/fra | Germany | Frankfurt |
-| de/fkb | Germany | Karlsruhe |
-
-To create an IP block, establish the parameters, then call `create`.
+| `IPBlock::id` | **yes** ||
+| `IPBlock::location` | **yes** | One of the available location IDs. See table above |
+| `IPBlock::size` | **yes** | the number of IP addresses to reserve with this IP block |
+| `IPBlock::name` | no |||
 
 ```
-IPBlock ip = new IPBlock(
-	location: location,
-	name: "name",
-	size: 2
-).create()
+IPBlock block = new IPBlock(location: 'us/ewr', size: 2).create()
+assert block.id
 ```
 
----
+#### delete an IP block
 
-#### Delete an IP Block
-
-Deletes the specified IP Block.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| ipblockId | **yes** | string | The ID of the IP block. |
-
-After retrieving an IP block, either by getting it by ID, or as a create response object, you can call the `Delete` method directly.
+| Argument | Required | 
+|---|---|
+| `IPBlock::id` | **yes** |
 
 ```
-def _ip = ip.read(id) as IPBlock
-_ip.delete()
+IPBlock block = ...
+block.delete()
 ```
 
----
 
 ### LANs
 
-Creates an instance of the API class:
+#### list LANs
 
-```LAN l = new LAN()```
+Retrieves a list of LAN ids within the virtual data center. This needs a valid `DataCenter` instance.
 
-#### List LANs
-
-Retrieves a list of LANs within the virtual data center.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
 
 ```
-l.dataCenter=dc.read(datacenterId)
-l.all
+List<String> lanIDs = new LAN(dataCenter: datacenterId).all
 ```
 
----
+#### create a LAN
 
-#### Create a LAN
-
-Creates a LAN within a virtual data center.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| public | **Yes** | bool | Boolean indicating if the LAN faces the public Internet or not. |
-| name | no | string | The name of your LAN. |
+| Argument | Required | Description |
+|---|---|---|
+| `DataCenter::id` | **yes** ||
+| `LAN::_public` | **yes** | publicly reachable LAN? |
+| `LAN::name` | no ||
 
 ```
-LAN l = new LAN(
-	dataCenter: dc.read(datacenterId),
-	name: name,
-	_public: true
-).create()
+DataCenter dc = ...
+LAN lan = new LAN(dataCenter: dc, name: 'primary LAN', _public: true).create()
+assert lan.id
 ```
 
----
+#### retrieve a LAN
 
-#### Get a LAN
-
-Retrieves the attributes of a given LAN.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| lanId | **yes** | int | The ID of the LAN. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** | 
+| `LAN::id` | **yes** |
 
 ```
-l.dataCenter=dc.read(datacenterId)
-l.read(lanId)
+DataCenter dc = ...
+LAN lan = new LAN(dataCenter: dc, id: lanId).read()
+assert lan.id
 ```
 
----
+#### update a LAN
 
-#### Update a LAN
-
-Performs updates to attributes of a LAN.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| lanId | **yes** | int | The ID of the LAN. |
-| name | no | string | A descriptive name for the LAN. |
-| public | no | bool | Boolean indicating if the LAN faces the public Internet or not. |
-| ipFailover | no | object | A collection of IP fail-over instances. |
-
-After retrieving a LAN, either by getting it by ID, or as a create response object, you can change its properties and call the `update` method:
+| Argument | Required | Description |
+|---|---|---|
+| `DataCenter::id` | **yes** ||
+| `LAN::id` | **yes** ||
+| `LAN::name` | no ||
+| `LAN::_public` | no ||
+| `LAN::ipFailover` | no | a collection of `IPFailover` instances |
 
 ```
-l.dataCenter=dc.read(datacenterId)
-l.read(lanId)
+LAN lan = ...
 l.name = "name"
 l._public = false
 l.ipFailover = [
     new LAN.IPFailover(ip: '158.222.103.175', nicUuid: '43ec1562-042f-40ae-8162-44c97466ab52'),
     new LAN.IPFailover(ip: '158.222.103.175', nicUuid: '7240dbbc-de87-4fec-8e50-5a5ce77690e0')
 ]
-l.update()
+assert l.update()
 ```
 
----
+#### delete a LAN
 
-#### Delete a LAN
-
-Deletes the specified LAN.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| lanId | **yes** | string | The ID of the LAN. |
-
-After retrieving a LAN, either by getting it by ID, or as a create response object, you can call the `delete` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `LAN::id` | **yes** |
 
 ```
-l.dataCenter=datacenterId
-def _l = l.read(lanId)
-_l.delete()
+LAN lan = ...
+lan.delete()
 ```
-
----
 
 ### Network Interfaces
 
-Creates an instance of the API class:
+#### list NICs
 
-```NIC n = new NIC()```
+Retrieves a list of NIC ids for a given server. This needs a valid `Server` instance.
 
-#### List NICs
-
-Retrieves a list of LANs within the virtual data center.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
 
 ```
-n.dataCenter=dc.read(datacenterId)
-n.server=s.read(serverId)
-n.all;
+Server s = ...
+List<String> nicIDs = new NIC(server: s).all
 ```
 
----
+#### retrieve a NIC
 
-#### Get a NIC
-
-Retrieves the attributes of a given NIC.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-| niceId | **yes** | string | The ID of the NIC. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `NIC::id` | **yes** |
 
 ```
-n.dataCenter=dc.read(datacenterId)
-n.server=s.read(serverId)
-n.read(niceId)
+Server s = ...
+NIC nic = new NIC(server: s, id: nicID).read()
 ```
 
----
+#### create a NIC
 
-#### Create a NIC
-
-Adds a NIC to the target server.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string| The ID of the server. |
-| lan | **yes** | int | The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created. |
-| name | no | string | The name of the NIC. |
-| ips | no | string collection | IPs assigned to the NIC. This can be a collection. |
-| dhcp | no | bool | Set to FALSE if you wish to disable DHCP on the NIC. Default: TRUE. |
-| nat | no | bool | Indicates the private IP address has outbound access to the public internet. |
-| firewallActive | no | bool | Once you add a firewall rule this will reflect a true value. |
+| Argument | Required | Description |
+|---|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `NIC::lan` | **yes** | id of the LAN the NIC will be attached on  (if that LAN does not exist it will be created) |
+| `NIC::name` | no ||
+| `NIC::ips` | no | all IPs assigned to the NIC |
+| `NIC::dhcp` | no | DHCP enabled? default: true |
+| `NIC::nat` | no | if address translation should be performed |
+| `NIC::firewallActive` | no | if there are active firewall rules for this NIC |
 
 ```
-n.dataCenter=dc.read(datacenterId)
-n.server=s.read(serverId)
-n = n.create()
+Server s = ...
+LAN lan = ...
+NIC nic = new NIC(server: s, lan: lan, nat: true).create()
 ```
 
----
-
-#### Update a NIC
+#### update a NIC
 
 Various attributes on the NIC can be updated (either in full or partially) although the following restrictions apply:
 
@@ -1342,167 +934,115 @@ Various attributes on the NIC can be updated (either in full or partially) altho
 * The user can specify and assign private IPs manually.
 * Valid IP addresses for private networks are 10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16.
 
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string| The ID of the server. |
-| niceId | **yes** | string| The ID of the NIC. |
-| name | no | string | The name of the NIC. |
-| ips | no | string collection | IPs assigned to the NIC represented as a collection. |
-| dhcp | no | bool | Boolean value that indicates if the NIC is using DHCP or not. |
-| lan | no | int | The LAN ID the NIC sits on. |
-| nat | no | bool | Indicates the private IP address has outbound access to the public internet. |
-
-After retrieving a NIC, either by getting it by ID, or as a create response object, you can call the `update` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `NIC::id` | **yes** |
+| `NIC::lan` | no |
+| `NIC::name` | no |
+| `NIC::ips` | no |
+| `NIC::dhcp` | no |
+| `NIC::nat` | no |
+| `NIC::firewallActive` | no |
 
 ```
-n.dataCenter=dc.read(datacenterId)
-n.server=s.read(serverId)
-n=n.read(niceId)
-n.name = "name"
-n.ips = ['192.168.0.2']
-n.dhcp = false
-n.nat = false
-n.update()
+NIC nic = ...
+nic.name = "name"
+nic.ips = ['192.168.0.2']
+nic.dhcp = false
+nic.nat = false
+assert nic.update()
 ```
 
----
+#### delete a NIC
 
-#### Delete a NIC
-
-Deletes the specified NIC.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string| The ID of the server. |
-| niceId | **yes** | string| The ID of the NIC. |
-
-After retrieving a NIC, either by getting it by ID, or as a create response object, you can call the `delete` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `NIC::id` | **yes** |
 
 ```
-n.dataCenter=dc.read(datacenterId)
-n.server=s.read(serverId)
-n=n.read(niceId)
-def _n = n.read(id)
-_n.read()
+NIC nic = ...
+assert nic.delete()
 ```
 
----
 
 ### Firewall Rules
 
-Creates an instance of the API class:
+#### list firewall rules
 
-```FirewallRule fw = new FirewallRule()```
+Retrieves a list of firewall rules associated with a particular NIC. Needs a valid `NIC` instance.
 
-#### List Firewall Rules
-
-Retrieves a list of firewall rules associated with a particular NIC.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-| niceId | **yes** | string | The ID of the NIC. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `NIC::id` | **yes** |
 
 ```
-fw.dataCenter=dc.read(datacenterId)
-fw.server=s.read(serverId)
-fw.nic=n.read(niceId)
-fw.all
+NIC nic = ...
+List<String> fwRuleIDs = new FirewallRule(nic: nic).all
 ```
 
----
+#### Retrieve a firewall rule
 
-#### Get a Firewall Rule
-
-Retrieves the attributes of a given firewall rule.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-| niceId | **yes** | string | The ID of the NIC. |
-| fwId | **yes** | string | The ID of the firewall rule. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `NIC::id` | **yes** |
+| `FirewallRule::id` | **yes** |
 
 ```
-fw.dataCenter=dc.read(datacenterId)
-fw.server=new Server().read(serverId)
-fw.nic=n.read(niceId)
-fw.read(fwId)
+NIC nic = ...
+FirewallRule rule = new FirewallRule(nic: nic, id: ruleID).read()
 ```
 
----
+#### Create a firewall rule
 
-#### Create a Firewall Rule
-
-Adds a firewall rule to the NIC.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-| niceId | **yes** | string | The ID of the NIC. |
-| protocol | **yes** | string | The protocol for the rule: TCP, UDP, ICMP, ANY. |
-| name | no | string | The name of the firewall rule. |
-| sourceMac | no | string | Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. A *null* value allows all source MAC address. |
-| sourceIp | no | string | Only traffic originating from the respective IPv4 address is allowed. A *null* value allows all source IPs. |
-| targetIp | no | string | In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. A *null* value allows all target IPs. |
-| portRangeStart | no | string | Defines the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *null* to allow all ports. |
-| portRangeEnd | no | string | Defines the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *null* to allow all ports. |
-| icmpType | no | string | Defines the allowed type (from 0 to 254) if the protocol ICMP is chosen. A *null* value allows all types. |
-| icmpCode | no | string | Defines the allowed code (from 0 to 254) if protocol ICMP is chosen. A *null* value allows all codes. |
+| Argument | Required | Description |
+|---|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `NIC::id` | **yes** |
+| `FirewallRule::protocol` | **yes** | rule protocol: one of `TCP`, `UDP`, `ICMP` or `ANY` |
+| `FirewallRule::name` | no |
+| `FirewallRule::sourceMac` | no | Allow traffic from this MAC address. A *null* value allows any source MAC address. |
+| `FirewallRule::sourceIp` | no | Allow traffic from this IPv4 address. A *null* value allows all source IPs. |
+| `FirewallRule::targetIp` | no | In case this NIC has multiple IP addresses, allow traffic directed to this IP. A *null* value allows all target IPs. |
+| `FirewallRule::portRangeStart` | no | Defines the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *null* to allow all ports. |
+| `FirewallRule::portRangeEnd` | no | Defines the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *null* to allow all ports. |
+| `FirewallRule::icmpType` | no | Defines the allowed type (from 0 to 254) if the protocol ICMP is chosen. A *null* value allows all types. |
+| `FirewallRule::icmpCode` | no | Defines the allowed code (from 0 to 254) if protocol ICMP is chosen. A *null* value allows all codes. |
 
 ```
-FirewallRule fw =new FirewallRule()
-fw.dataCenter=dc.read(datacenterId)
-fw.server=new Server().read(serverId)
-fw= new FirewallRule(
-	nic: n.read(niceId),
-	protocol: 'UDP'
-).create()
+NIC nic = ...
+FirewallRule rule = new FirewallRule(nic: nic, protocol: 'UDP').create()
+assert rule.id
 ```
-
----
 
 #### Update a Firewall Rule
 
-Performs updates to attributes of a firewall rule.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-| niceId | **yes** | string | The ID of the NIC. |
-| fwId | **yes** | string | The ID of the firewall rule. |
-| name | no | string | The name of the firewall rule. |
-| sourceMac | no | string | Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. A *null* value allows all source MAC address. |
-| sourceIp | no | string | Only traffic originating from the respective IPv4 address is allowed. A *null* value allows all source IPs. |
-| targetIp | no | string | In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. A *null* value allows all target IPs. |
-| portRangeStart | no | string | Defines the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Leave `port_range_start` and `port_range_end` value as *null* to allow all ports. |
-| portRangeEnd | no | string | Defines the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Leave `port_range_start` and `port_range_end` value as *null* to allow all ports. |
-| icmpType | no | string | Defines the allowed type (from 0 to 254) if the protocol ICMP is chosen. A *null* value allows all types. |
-| icmpCode | no | string | Defines the allowed code (from 0 to 254) if protocol ICMP is chosen. A *null* value allows all codes. |
-
-After retrieving a firewall rule, either by getting it by ID, or as a create response object, you can change its properties and call the `update` method:
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `NIC::id` | **yes** |
+| `FirewallRule::id` | **yes** |
+| `FirewallRule::protocol` | no |
+| `FirewallRule::name` | no |
+| `FirewallRule::sourceMac` | no |
+| `FirewallRule::sourceIp` | no |
+| `FirewallRule::targetIp` | no |
+| `FirewallRule::portRangeStart` | no |
+| `FirewallRule::portRangeEnd` | no |
+| `FirewallRule::icmpType` | no |
+| `FirewallRule::icmpCode` | no |
 
 ```
-n=new NIC().read(niceId)
-fw.dataCenter=dc.read(datacenterId)
-fw.server=new Server().read(serverId)
+FirewallRule rule = ...
 fw.name = "name"
 fw.sourceMac = 'aa:bb:cc:dd:ee:ff'
 fw.sourceIp = '23.23.23.23'
@@ -1512,783 +1052,320 @@ fw.portRangeEnd = '4711'
 fw.update()
 ```
 
-**NOTE**: You can also use `Update()`, for that operation you will update all the properties.
-
----
-
 #### Delete a Firewall Rule
 
-Removes the specific firewall rule.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| serverId | **yes** | string | The ID of the server. |
-| niceId | **yes** | string | The ID of the NIC. |
-| fwId | **yes** | string | The ID of the firewall rule. |
-
-After retrieving a firewall rule, either by getting it by ID, or as a create response object, you can call the `Delete` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `Server::id` | **yes** |
+| `NIC::id` | **yes** |
+| `FirewallRule::id` | **yes** |
 
 ```
-n=new NIC().read(niceId)
-fw.dataCenter=dc.read(datacenterId)
-fw.server=new Server().read(serverId)
-fw.nic=n
-def _fw = fw.read(id)
-_fw.delete()
+FirewallRule rule = ...
+rule.delete()
 ```
-
----
-
 
 
 ### Load Balancers
 
-Creates an instance of the API class:
+#### list load balancers
 
-```LoadBalancer lb = new LoadBalancer()```
+Retrieves a list of load balancer ids within the data center. This needs a valid `DataCenter` instance.
 
-#### List Load Balancers
-
-Retrieves a list of load balancers within the data center.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
 
 ```
-lb.dataCenter=new DataCenter().read(datacenterId)
-lb.all
+DataCenter dc = ...
+List<String> loadbalancerIDs = new LoadBalancer(dataCenter: dc).all
 ```
 
----
+#### retrieve a load balancer
 
-#### Get a Load Balancer
-
-Retrieves the attributes of a given load balancer.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| loadbalancerId | **yes** | string | The ID of the load balancer. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `LoadBalancer::id` | **yes** |
 
 ```
-lb.dataCenter=new DataCenter().read(datacenterId)
-lb.read(loadbalancerId)
+DataCenter dc = ...
+LoadBalancer lb = new LoadBalancer(dataCenter: dc, id: loadbalancerId).read()
 ```
 
----
+#### create a load balancer
 
-#### Create a Load Balancer
-
-Creates a load balancer within the virtual data center. Load balancers can be used for traffic on either public or private IP addresses.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| name | **yes** | string | The name of the load balancer. |
-| ip | no | string | IPv4 address of the load balancer. All attached NICs will inherit this IP. |
-| dhcp | no | bool | Indicates if the load balancer will reserve an IP address using DHCP. |
+| Argument | Required | Description |
+|---|---|---|
+| `DataCenter::id` | **yes** |
+| `LoadBalancer::name` | **yes** ||
+| `LoadBalancer::ip` | no | IPv4 address of the load balancer. All attached NICs will inherit this address |
+| `LoadBalancer::dhcp` | no | if DHCP shall be used |
 
 ```
-def dc=new DataCenter().read(datacenterId)
-LoadBalancer lb = new LoadBalancer(
-	dataCenter: dc,
-	name: "loadbalancer name"
-).create()
+DataCenter dc = ...
+LoadBalancer lb = new LoadBalancer(dataCenter: dc, name: "frontend").create()
+assert lb.id
 ```
 
----
+#### update a load balancer
 
-#### Update a Load Balancer
-
-Performs updates to attributes of a load balancer.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| loadbalancerId | **yes** | string | The ID of the load balancer. |
-| name | no | string | The name of the load balancer. |
-| ip | no | string | The IP address of the load balancer. |
-| dhcp | no | bool | Indicates if the load balancer will reserve an IP address using DHCP. |
-
-After retrieving a load balancer, either by getting it by ID, or as a create response object, you can change its properties and call the `update` method:
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `LoadBalancer::id` | **yes** |
+| `LoadBalancer::name` | no |
+| `LoadBalancer::ip` | no |
+| `LoadBalancer::dhcp` | no |
 
 ```
-def dc=new DataCenter().read(datacenterId)
-lb=lb.read(loadbalancerId)
-lb.dataCenter=dc
+LoadBalancer lb = ...
 lb.name = "name"
 lb.dhcp = false
 lb.ip = '192.168.0.11'
 lb.update()
 ```
 
----
+#### delete a load balancer
 
-#### Delete a Load Balancer
-
-Deletes the specified load balancer.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| loadbalancerId | **yes** | string | The ID of the load balancer. |
-
-After retrieving a load balancer, either by getting it by ID, or as a create response object, you can call the `delete` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `LoadBalancer::id` | **yes** |
 
 ```
-def dc=new DataCenter().read(datacenterId)
-lb.dataCenter=dc
-def _lb = lb.read(loadbalancerId)
-_lb.delete()
+LoadBalancer lb = ...
+lb.delete()
 ```
 
----
+#### list load balanced NICs
 
-#### List Load Balanced NICs
+Retrieves a list of ids of NICs associated with the load balancer.
 
-Retrieves a list of NICs associated with the load balancer.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| loadbalancerId | **yes** | string | The ID of the load balancer. |
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `LoadBalancer::id` | **yes** |
 
 ```
-def dc=new DataCenter().read(datacenterId)
-lb.dataCenter=dc
-def loadBalancer=lb.read(loadbalancerId)
-associatedNics(loadBalancer)
+LoadBalancer lb = ...
+List<String> nicIDs = Commands.associatedNICs(lb)
 ```
 
----
+#### associate a NIC with a load balancer
 
-#### Get a Load Balanced NIC
-
-Retrieves the attributes of a given load balanced NIC.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| loadbalancerId | **yes** | string | The ID of the load balancer. |
-| niceId | **yes** | string | The ID of the NIC. |
-
-After retrieving a load balancer, either by getting it by ID, or as a create response object, you can call the `get_loadbalanced_nic` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `LoadBalancer::id` | **yes** |
+| `NIC::id` | **yes** |
 
 ```
-def dc=new DataCenter().read(datacenterId)
-lb.dataCenter=dc
-def loadBalancer=lb.read(loadbalancerId)
-associatedNic(loadBalancer,nic)
+LoadBalancer lb = ...
+NIC nic = ...
+assert Commands.associate(lb, nic);
 ```
 
----
+#### remove a NIC association
 
-#### Associate NIC to a Load Balancer
-
-Associates a NIC to a load balancer, which enables the NIC to participate in load-balancing.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| loadbalancerId | **yes** | string | The ID of the load balancer. |
-| niceId | **yes** | string | The ID of the NIC. |
-
-After retrieving a load balancer, either by getting it by ID, or as a create response object, you can call the `AttachNic` method directly.
+| Argument | Required |
+|---|---|
+| `DataCenter::id` | **yes** |
+| `LoadBalancer::id` | **yes** |
+| `NIC::id` | **yes** |
 
 ```
-def dc=new DataCenter().read(datacenterId)
-NIC n=new NIC()
-n.dataCenter=dc
-lb.dataCenter=dc
-lb=lb.read(loadbalancerId)
-n=n.read(niceId)
-associate(lb, n);
+LoadBalancer lb = ...
+NIC nic = ...
+assert Commands.dissociate(lb, nic);
 ```
 
----
 
-#### Remove a NIC Association
+### Users
 
-Removes the association of a NIC with a load balancer.
+#### list users
 
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| datacenterId | **yes** | string | The ID of the VDC. |
-| loadbalancerId | **yes** | string | The ID of the load balancer. |
-| niceId | **yes** | string | The ID of the NIC. |
-
-After retrieving a load balancer, either by getting it by ID, or as a create response object, you can call the `DetachNic` method directly.
+Retrieves a list of ids of all users for the current contract.
 
 ```
-def dc=new DataCenter().read(datacenterId)
-NIC n=new NIC()
-n.dataCenter=dc
-lb.dataCenter=dc
-lb=lb.read(loadbalancerId)
-n=n.read(niceId)
-dissociate(lb, n)
+List<String> userIDs = new User().all
 ```
 
----
+#### retrieve a user
+
+| Argument | Required |
+|---|---|
+| `User::id` | **yes** |
+
+```
+User user = new User(id: userId).read()
+```
+
+#### create a User
+
+| Argument | Required | Description |
+|---|---|---|
+| `User::firstname` | **yes** | user first name |
+| `User::lastname` | **yes** | user last name |
+| `User::email` | **yes** | user email address |
+| `User::password` | **yes** | user basic auth password |
+| `User::administrator` | no |  assigns administrative rights |
+| `User::forceSecAuth` | no | if two-factor auth should be forced |
+
+```
+User user = new User(
+    firstname: "John",
+    lastname: "Doe",
+    email: "groovy.user@dev.org",
+    password: "HJhbjhjhbhhhgjhhhg6567fsdf234",
+    administrator: true,
+    forceSecAuth: true
+).create()
+assert user.id
+```
+
+#### update a user
+
+| Argument | Required |
+|---|---|
+| `User::id` | **yes** |
+| `User::firstname` | no |
+| `User::lastname` | no |
+| `User::email` | no |
+| `User::administrator` | no |
+| `User::forceSecAuth` | no |
+
+```
+User user = ...
+user.administrator = false
+assert user.update()
+```
+
+#### delete a user
+
+| Argument | Required |
+|---|---|
+| `User::id` | **yes** |
+
+```
+User user = ...
+user.delete()
+```
+
 
 ### Groups
 
-Create an instance of the API class:
+#### list groups
 
-```groovy
-Group group = new Group()
 ```
-
-#### List Groups
-
-Retrieves a list of all groups.
-
-```groovy
-group.all
+List<String> groupIDs = new Group().all
 ```
 
 ---
 
-#### Get a Group
-
-Retrieves the attributes of a given group.
+#### retrieve a group
 
 **Request Arguments**
 
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| groupId | **yes** | string | The ID of the group. |
+| Argument | Required |
+|---|---|
+| `Group::id` | **yes** |
 
-```groovy
-group.read(groupId)
+```
+Group group = new Group(id: groupId).read()
 ```
 
----
+#### create a group
 
-#### Create a Group
+| Argument | Required | Description |
+|---|---|---|
+| `Group::name` | **yes** ||
+| `Group::createDataCenter` | no | permission to create data centers |
+| `Group::createSnapshot` | no | permission to create snapshots |
+| `Group::reserveIp` | no | permission to create IP blocks |
+| `Group::accessActivityLog` | no | permission to access the activity log |
 
-Creates a new group and set group privileges.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| name | **yes** | string | The name of the group. |
-| createDataCenter | no | bool | Indicates if the group is allowed to create virtual data centers. |
-| createSnapshot | no | bool | Indicates if the group is allowed to create snapshots. |
-| reserveIp | no | bool | Indicates if the group is allowed to reserve IP addresses. |
-| accessActivityLog | no | bool | Indicates if the group is allowed to access activity log. |
-
-```groovy
+```
 Group group = new Group(
-                name: "GroovyUserGroup",
-                createDataCenter: true,
-                createSnapshot: true,
-                reserveIp: true,
-                accessActivityLog: false
-            ).create()
+    name: "GroovyUserGroup",
+    createDataCenter: true,
+    createSnapshot: true,
+    reserveIp: true,
+    accessActivityLog: false
+).create()
+assert group.id
 ```
 
----
+#### update a group
 
-#### Update a Group
+| Argument | Required |
+|---|---|
+| `Group::id` | **yes** |
+| `Group::name` | no |
+| `Group::createDataCenter` | no |
+| `Group::createSnapshot` | no |
+| `Group::reserveIp` | no |
+| `Group::accessActivityLog` | no |
 
-Updates a group's name or privileges.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| groupId | **yes** | string | The ID of the group. |
-| name | **yes** | string | The ID of the group. |
-| createDatacenter | no | bool | Indicates if the group is allowed to create virtual data centers. |
-| createSnapshot | no | bool | Indicates if the group is allowed to create snapshots. |
-| reserveIp | no | bool | Indicates if the group is allowed to reserve IP addresses. |
-| accessActivityLog | no | bool | Indicates if the group is allowed to access activity log. |
-
-After retrieving a group, either by getting it by ID, or as a create response object, you can change its properties and call the `update` method:
-
-```groovy
-Group group = new Group()
-group = group.read(groupId) as Group
+```
+Group group = ...
 group.createDatacenter = false
 group.update()
 ```
 
----
+#### delete a group
 
-#### Delete a Group
+| Argument | Required |
+|---|---|
+| `Group::id` | **yes** |
 
-Deletes the specified group.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| groupId | **yes** | string | The ID of the group. |
-
-After retrieving a group, either by getting it by ID, or as a create response object, you can call the `delete` method:
-
-```groovy
-def group = new Group().read(groupId) as Group
+```
+Group group = ...
 group.delete()
 ```
 
----
+#### list group users
 
-#### List Users in a Group
+Retrieves a list of ids of all users that are members of a group.
 
-Retrieves a list of all users that are members of a particular group.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| groupId | **yes** | Object | The ID of the group. |
-
-After retrieving a group by ID you can call the `listGroupUsers` command:
-
-```groovy
-def group = new Group().read(groupId)
-def users = listGroupUsers(group)
-```
-
----
-
-#### Add User to Group
-
-Adds an existing user to a group.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| groupId | **yes** | string | The ID of the group. |
-| userId | **yes** | string | The ID of the user. |
-
-After retrieving a group and user by ID you can call the `addGroupUser` command:
-
-```groovy
-def group = new Group().read(groupId)
-def user = new User.read(userId)
-addGroupUser(group, user)
-```
-
----
-
-#### Remove User from a Group
-
-Removes a user from a group.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| groupId | **yes** | string | The ID of the group. |
-| userId | **yes** | string | The ID of the user. |
-
-After retrieving a group and user by ID you can call the `removeGroupUser` command:
-
-```groovy
-def group = new Group().read(groupId)
-def user = new User.read(userId)
-removeGroupUser(group, user)
-```
-
----
-
-### Shares
-
-Create an instance of the API class:
-
-```groovy
-Share sharedResource = new Share()
-```
-
-#### List Shares
-
-Retrieves a list of all shares though a group.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| groupId | **yes** | string | The ID of the group. |
-
-```groovy
-Group group = new Group().read(groupId) as Group
-Share sh = new Share(group)
-sh.all
-```
-
----
-
-#### Get a Share
-
-Retrieves a specific resource share available to a group.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| groupId | **yes** | string | The ID of the group. |
-| resourceId | **yes** | string | The ID of the resource. |
-
-```groovy
-Group group = new Group().read(groupId) as Group
-Share sh = new Share(group).read(resourceId) as Share
-```
-
----
-
-#### Add a Share
-
-Shares a resource through a group.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| groupId | **yes** | string | The ID of the group. |
-| resourceId | **yes** | string | The ID of the resource. |
-| editPrivilege | no | bool | Indicates that the group has permission to edit privileges on the resource. |
-| sharePrivilege | no | bool | Indicates that the group has permission to share the resource. |
-
-```groovy
-Group group = new Group().read(groupId) as Group
-Share s = share(group, resourceId, true, true)
-```
-
----
-
-#### Update a Share
-
-Updates the permissions of a group for a resource share.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| groupId | **yes** | string | The ID of the group. |
-| resourceId | **yes** | string | The ID of the resource. |
-| editPrivilege | no | bool | Indicates that the group has permission to edit privileges on the resource. |
-| sharePrivilege | no | bool | Indicates that the group has permission to share the resource. |
-
-```groovy
-Group group = new Group().read(groupId) as Group
-Share s = new Share(group).read(resourceId) as Share
-s.editPrivilege = true
-s.sharePrivilege = false
-s.update()
-```
-
----
-
-#### Delete a Share
-
-Removes a resource share from a group.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| groupId | **yes** | string | The ID of the group. |
-| resourceId | **yes** | string | The ID of the resource. |
-
-```groovy
-Group group = new Group().read(groupId) as Group
-Share s = new Share(group).read(resourceId) as Share
-s.delete()
-```
-
----
-
-### Users
-
-Create an instance of the API class:
-
-```groovy
-User user = new User()
-```
-
-#### List Users
-
-Retrieves a list of all users.
-
-```groovy
-user.all
-```
-
----
-
-#### Get a User
-
-Retrieves a single user.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| userId | **yes** | string | The ID of the user. |
-
-```groovy
-user.read(userId)
-```
-
----
-
-#### Create a User
-
-Creates a new user.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| firstname | **yes** | string | A name for the user. |
-| lastname | **yes**  | string | A name for the user. |
-| email | **yes**  | string | An e-mail address for the user. |
-| password | **yes**  | string | A password for the user. |
-| administrator | no | bool | Assigns the user have administrative rights. |
-| forceSecAuth | no | bool | Indicates if secure (two-factor) authentication should be forced for the user. |
-
-```groovy
-User user = new User(
-                firstname: "John",
-                lastname: "Doe",
-                email: "groovy.user@dev.org",
-                password: "HJhbjhjhbhhhgjhhhg6567fsdf234",
-                administrator: false,
-                forceSecAuth: false
-        ).create()
-```
-
----
-
-#### Update a User
-
-Updates an existing user.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| userId | **yes** | string | The ID of the user. |
-| firstname | **yes** | string | A name for the user. |
-| lastname | **yes**  | string | A name for the user. |
-| email | **yes**  | string | An e-mail address for the user. |
-| administrator | **yes** | bool | Assigns the user have administrative rights. |
-| forceSecAuth | **yes** | bool | Indicates if secure (two-factor) authentication should be forced for the user. |
-
-After retrieving a user, either by getting it by ID, or as a create response object, you can change its properties and call the `update` method:
-
-```groovy
-User user = new User()
-user = user.read(userId) as User
-user.administrator = false
-user.update()
-```
-
----
-
-#### Delete a User
-
-Removes a user.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| userId | **yes** | string | The ID of the user. |
-
-After retrieving a user, either by getting it by ID, or as a create response object, you can call the `delete` method:
-
-```groovy
-def user = new Group().read(groupId) as User
-user.delete()
-```
-
----
-
-### Resources
-
-Create an instance of the API class:
-
-```groovy
-Resource res = new Resource(type: resourceType)
-```
-
-Available resource types are `datacenter`, `image`, `snapshot` and `ipblock`.
-
-#### List Resources
-
-Retrieves a list of all resources.
-
-```groovy
-def allResources = resources()
-```
-
----
-
-#### List Resources by Type
-
-Retrieves all resources of a particular type.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| type | **yes** | ResourceType | The resource type enum with the values: `datacenter`, `image`, `snapshot` or `ipblock`. |
-
-```groovy
-Resource res = new Resource(type: resourceType)
-res.all
-```
-
----
-
-#### Get a Resource of a Type
-
-Retrieves a single resource of a particular type.
-
-**Request Arguments**
-
-| Name | Required | Type | Description |
-|---|:-:|---|---|
-| type | **yes** | ResourceType | The resource type enum with the values: `datacenter`, `image`, `snapshot` or `ipblock`. |
-| resourceId | **yes** | string | The ID of the resource. |
-
-```groovy
-Resource res = new Resource(type: resourceType).read(resourceId) as Resource
-```
-
----
-
-### Contract Resources
-
-Create an instance of the API class:
-
-```groovy
-Contract ct = new Contract()
-```
-
-#### List Contract Resources
-
-Retrieves information about the resource limits for a particular contract and the current resource usage.
-
-```groovy
-Contract ct = contract()
-```
-
----
-
-### Requests
-
-Each call to the ProfitBricks Cloud API is assigned a request ID. These operations can be used to get information about the requests that have been submitted and their current status.
-
-Creates an instance of the API class:
-
-```Request r=new Request()```
-
-#### List Requests
-
-Retrieves a list of requests.
+| Argument | Required |
+|---|---|
+| `Group::id` | **yes** |
 
 ```
-r.all
+Group group = ...
+List<String> userIDs = Commands.userIDs(group)
 ```
 
----
+#### add a user to a group
 
-#### Get a Request Status
-
-Retrieves the status of a request.
-
-**Request Arguments**
-
-| Name| Required | Type | Description |
-|---|:-:|---|---|
-| requestId | **yes** | string | The ID of the request. |
+| Argument | Required |
+|---|---|
+| `Group::id` | **yes** |
+| `User::id` | **yes** |
 
 ```
-requestStatus(requestId)
+Group group = ...
+User user = ...
+assert Commands.assign(group, user)
 ```
 
----
+#### remove a user from a group
 
-## Examples
-
-### build.gradle
-
-`build.gradle`
-
-```
-/*
- * This build file was auto generated by running the Gradle 'init' task
- * 
- * This generated file contains a sample Groovy project to get you started.
- * For more details take a look at the Groovy Quickstart chapter in the Gradle
- * user guide available at https://docs.gradle.org/3.2/userguide/tutorial_groovy_projects.html
- */
-
-// Apply the groovy plugin to add support for Groovy
-apply plugin: 'groovy'
-apply plugin: 'application'
-
-mainClassName = 'example'
-
-applicationDefaultJvmArgs = [
-    // #credentials
-    user: 'user@user.usr',
-    password: 'sosecurepass',
-    verifySSL: 'false'
-].collect {
-    "-Dapi.${it.key}=${it.value}"
-}
-
-
-
-
-// In this section you declare where to find the dependencies of your project
-repositories {
-    // Use 'jcenter' for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
-    mavenCentral()
-    mavenLocal()
-}
-
-// In this section you declare the dependencies for your production and test code
-
-dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.4.8',
-            'com.profitbricks.sdk:groovy:1.4.1'
-}
+| Argument | Required |
+|---|---|
+| `Group::id` | **yes** |
+| `User::id` | **yes** |
 
 ```
+Group group = ...
+User user = ...
+assert Commands.unassign(group, user)
+```
 
-### Example
+
+### A Concise Example
 
 ```
 import com.profitbricks.sdk.model.*
@@ -2297,104 +1374,46 @@ import static com.profitbricks.sdk.Commands.*
 class SDKExample {
     final static void main(final String[] args) {
 
-        // Creating a Data Center
-        println "Creating a Data Center"
+        // create a datacenter
+        DataCenter dc = new DataCenter(name: "Example DC", location: 'de/fkb', description: 'desc').create()
 
-        DataCenter dc = new DataCenter(
-            name: "Example DC",
-            location: 'de/fkb',
-            description: 'desc'
-        ).create() as DataCenter
-
-        println "Data Center Ready"
-
-        // Listing Data Centers
-        println "Listing Data Centers"
+        // list all datacenters
         println dc.all
 
+        // create a LAN
+        LAN lan = new LAN(dataCenter: dc, name: "public lan", _public: true).create()
 
-        // Add a LAN
-        println "Creating a public LAN"
-        LAN lan = new LAN(
-            dataCenter: dc,
-            name: "public lan",
-            _public: true
-        ).create()
+        // create a server
+        Server server = new Server(dataCenter: dc, name: "Example server", cores: 1, ram: 1024).create()
 
-        println "Public LAN Ready"
+        // add a NIC to server
+        NIC nic = new NIC(server: server, lan: lan, name: "example nic").create()
 
-        // Add a server
-        println "Creating a server"
-        Server server = new Server(
-            dataCenter: dc,
-            name: "Example server",
-            cores: 1,
-            ram: 1024
-        ).create()
-
-        println "Server Ready"
-
-        // Reading server
-        println "Read server"
-        println server.read()
-
-        // Adding NIC to the example server
-        println "Adding NIC to server"
-        NIC nic = new NIC(
-            server: server,
-            lan: lan,
-            name: "example nic"
-        ).create()
-        println "NIC Ready"
-
-        // Find a Linux image to attach to volume
-        println "Searching for a Linux image"
-        Image image = new Image()
-        image = image.all.collect{image.read(it) as Image}.findAll{
+        // find a linux image to attach to server
+        Image image = new Image().all.collect{image.read(it) as Image}.findAll {
             it._public &&
             it.location == dc.location &&
             it.licenceType =~ /(?i)linux/ &&
             it.imageType =~ /(?i)hdd/
         }.first()
 
-        println "Linux Image found: $image"
+        // create a volume from image
+        Volume volume = new Volume(dataCenter: dc, name: "OS volume", image: image.id, imagePassword: 'test1234').create()
 
-        // Create a volume
-        println "Creating a Volume"
-        Volume volume = new Volume(
-            dataCenter: dc,
-            name: "OS volume",
-            size: 4,
-            image: image.id,
-            type: "HDD",
-            imagePassword: "test1234"
-
-        ).create()
-        println "Volume Ready"
-
-
-        // Attach the OS volume to the example server
-        println "Attaching the OS volume to the example server"
+        // attach volume to server
         attach(server, volume)
-        println "Volume Attached"
 
-        // List attached volumes
-        println "Listing attached volumes"
+        // list attached volumes
         println attachedVolumes(server)
 
-        // Example cleaning
-        println "Started cleaning"
-        def _dc = dc.read(dc.id) as DataCenter
-        _dc.delete()
-        println "Cleaning Complete"
+        // delete datacenter
+        dc.delete()
     }
 }
-
-
 ```
 
 
-## Support
+## TODO
 
 Not all CRUD functionality needs to be instance methods on the entities. Especially `all` (a.k.a. `list`) and `read()` should be static members. This will be implemented in a future version.
 
@@ -2402,13 +1421,18 @@ The current configuration approach using system properties should be replaced by
 
 Having proper life cycle control over your entities is helpful in the long run. The current approach to query for `/request` resources will be replaced by a future/promise based mechanism.
 
+
+## Support
+
 You can engage with us in the ProfitBricks [DevOps Central community](https://devops.profitbricks.com/community) and we will be more than happy to answer any questions you might have about using this .NET library.
 
 Please report any issues or bugs your encounter using the [GitHub Issue Tracker](https://github.com/profitbricks/profitbricks-sdk-groovy/issues).
 
+
 ## Testing
 
-You can find a full list of tests inside the `SDKTester` class. You can run tests using the command `gradle run`.
+You can find a full list of tests below `src/test/groovy` class. You can run tests using the command `gradle test`.
+
 
 ## Contributing
 

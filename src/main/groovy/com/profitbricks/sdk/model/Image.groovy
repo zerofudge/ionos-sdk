@@ -13,11 +13,11 @@ import groovy.transform.*
 @ToString(includeNames = true, ignoreNulls = true, includeSuperProperties = true, includePackage = false, excludes = ['resource'])
 @EqualsAndHashCode(callSuper = true)
 final class Image extends ModelBase {
-    @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Updatable
     String name, description, location, licenceType, imageType
-    @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Updatable
     int size
-    @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Updatable
     boolean cpuHotPlug, cpuHotUnplug, ramHotPlug, ramHotUnplug, nicHotPlug, nicHotUnplug, discVirtioHotPlug, discVirtioHotUnplug, discScsiHotPlug, discScsiHotUnplug, _public
 
     /**

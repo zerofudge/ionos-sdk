@@ -16,9 +16,9 @@ final class Server extends ModelBase {
     DataCenter dataCenter
     @Creatable @Updatable
     int cores, ram
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     String name, availabilityZone = 'AUTO', cpuFamily = 'AMD_OPTERON'
-    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Readable
     String vmState, licenseType = 'AUTO'
 
     @Override

@@ -14,21 +14,14 @@ import groovy.transform.ToString
 @ToString(includeNames = true, ignoreNulls = true, includeSuperProperties = true, includePackage = false, excludes = ['resource'])
 @EqualsAndHashCode(callSuper = true)
 final class Contract extends ModelBase {
-    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Readable
     long contractNumber
-
-    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Readable
     String owner, status
-
-    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Readable
     Limits resourceLimits
 
     final String resource = 'contracts'
-
-    @Override
-    final Contract read() {
-        throw new NoSuchMethodException('read not implemented for Contracts. Use `contract` command.')
-    }
 
     @Override
     final Contract create() {
@@ -41,7 +34,7 @@ final class Contract extends ModelBase {
     }
 
     @ToString(includeNames = true, ignoreNulls = true, includePackage = false)
-    private static class Limits {
+    private final class Limits {
         @SuppressWarnings("GroovyUnusedDeclaration")
         int coresPerServer, coresPerContract, coresProvisioned, reservableIps, reservedIpsOnContract, reservedIpsInUse
         @SuppressWarnings("GroovyUnusedDeclaration")

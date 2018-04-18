@@ -14,11 +14,11 @@ import groovy.transform.*
 @ToString(includeNames = true, ignoreNulls = true, includeSuperProperties = true, includePackage = false, excludes = ['resource'])
 @EqualsAndHashCode(callSuper = true)
 final class IPBlock extends ModelBase {
-    @Creatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable
     String name, location
-    @Creatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable
     int size = 1
-    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Readable
     List<String> ips
 
     final String resource = 'ipblocks'
