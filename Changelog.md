@@ -1,15 +1,16 @@
 ### release 3.0.0 (04/30/2018)
 
-- change: the artifact was renamed to `groovy-sdk`
+- change: the artifact was renamed to `pb-groovy-sdk`, the groupname is `com.profitbricks`
 - change: the artifact is no fat jar anymore
 - fix: timings for status requests now actually work
 - fix: removed some unnecessary code parts and refactored others
-- change: ~~~~ credentials handling ~~~~~
 - change: artifact now available from maven central
 - change: refactored test code to actual tests
 - change: removed `Share` and `Resource` entities until the user management API is fixed
 - fix: streamlined, corrected and improved the documentation
-- change: all CRUD methods can be called with an optional map argument
+- change: all CRUD methods and commands can be called with an optional map argument
+- change: based on the previous change, credentials can now be stated per API call
+- fix: `Volume.update`, `LAN.update`, 
 
 
 ### release 2.0.0 (09/25/2017)

@@ -1,21 +1,38 @@
+/*
+   Copyright 2018 Profitbricks GmbH
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package com.profitbricks.sdk
 
 import groovy.time.TimeCategory
 import groovy.util.logging.Log4j2
 import groovyx.net.http.RESTClient
 import org.apache.http.client.*
-import org.apache.http.impl.client.*
+import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.impl.conn.PoolingClientConnectionManager
-import org.apache.http.params.*
+import org.apache.http.params.HttpParams
 import org.codehaus.groovy.runtime.StackTraceUtils
 
 import static groovyx.net.http.ContentType.JSON
 import static org.apache.commons.codec.binary.Base64.encodeBase64String
 
+
 /**
  * static functions enclosing common rest client functionality
  *
- * Created by fudge on 01/02/17.
+ * @author fudge <frank.geusch@profitbricks.com>
  */
 @Log4j2
 final class Common {
@@ -42,9 +59,10 @@ final class Common {
      * creates a request object to be handed to the REST client
      *
      * @param path the path part of the target URL
+     * @param options optional extra params
      * @return a new request object
      */
-    final static Map requestFor(final String path) {
+    final static Map requestFor(final String path, final Map options = [:]) {
         [
          path              : "${URLParts.path}/${path}",
          headers           : [

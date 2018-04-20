@@ -1,3 +1,19 @@
+/*
+   Copyright 2018 Profitbricks GmbH
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package com.profitbricks.sdk.model
 
 import com.profitbricks.sdk.annotation.*
@@ -10,12 +26,12 @@ import static com.profitbricks.sdk.Common.*
 
 /**
  * base class for all model entities
- * all operations are blocking until the API result status is received
+ * all operations are blocking until a proper request status is received
  *
- * Created by fudge on 01/02/17.
+ * @author fudge <frank.geusch@profitbricks.com>
  */
-@EqualsAndHashCode
 @Log4j2
+@EqualsAndHashCode
 abstract class ModelBase {
     def id
 
@@ -42,7 +58,7 @@ abstract class ModelBase {
      * @return a list of resource IDs
      */
     final List<String> getAll(Map options = [:]) {
-        API.get(requestFor(resource))?.data?.items?.collect{it.id}
+        API.get(requestFor(resource, options))?.data?.items?.collect{it.id}
     }
 
     /**
@@ -50,7 +66,7 @@ abstract class ModelBase {
      * @return the response JSON object
      */
     def create(Map options = [:]) {
-        from waitFor(API.post(requestFor(resource) + [body: createBody]))?.data
+        from waitFor(API.post(requestFor(resource, options) + [body: createBody]))?.data
     }
 
     /**
@@ -58,7 +74,7 @@ abstract class ModelBase {
      * @return the response JSON object
      */
     def read(final id = id, Map options = [:]) {
-        from API.get(requestFor("${resource}/${id}"))?.data
+        from API.get(requestFor("${resource}/${id}", options))?.data
     }
 
     /**
@@ -67,7 +83,7 @@ abstract class ModelBase {
      * @return the response JSON object
      */
     boolean update(Map options = [:]) {
-        waitFor(API.put(requestFor("${resource}/${id}") + [body: updateBody]))?.status == 202
+        waitFor(API.put(requestFor("${resource}/${id}", options) + [body: updateBody]))?.status == 202
     }
 
     /**
@@ -75,7 +91,7 @@ abstract class ModelBase {
      * @return the response JSON object
      */
     final boolean delete(Map options = [:]) {
-        waitFor(API.delete(requestFor("${resource}/$id")))?.status == 202
+        waitFor(API.delete(requestFor("${resource}/$id", options)))?.status == 202
     }
 
     /**
@@ -84,7 +100,7 @@ abstract class ModelBase {
      * @return a properly filled request body
      */
     protected final Map bodyFrom(final List propNames) {
-        final props = metaClass.properties.findAll{def n=it.name; propNames.contains(n) && this."$n"}.collectEntries{def n=it.name; [(n.toString()): this."$n"]}
+        final props = metaClass.properties.findAll{ propNames.contains(it.name) && this."${it.name}" != null }.collectEntries{ [(it.name): this."${it.name}"] }
 
         final rtn = [properties: [:]]
         // we have to spice up keywords with underscores
@@ -121,9 +137,9 @@ abstract class ModelBase {
             e = this.class.newInstance(id: data.id)
             if (!e) throw new InvalidObjectException("cannot construct ${this.class.name}")
 
-            (e?.propertyNames([Creatable, Updatable, Readable]))?.each {
+            (e.propertyNames([Creatable, Updatable, Readable]))?.each {
                 def val = data.properties?."${it.replaceAll(/_/, '')}"
-                if (val && !(val =~ /(?i)null/))
+                if (val != null && !(val =~ /(?i)null/))
                     e."$it" = val
             }
         }

@@ -1,7 +1,7 @@
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
 
-group 'com.profitbricks.sdk'
+group 'com.profitbricks'
 version '3.0-SNAPSHOT'
 
 targetCompatibility = 8
@@ -11,10 +11,6 @@ repositories {
     jcenter()
 }
 
-task sourceJar(type: Jar) {
-    //noinspection GrUnresolvedAccess, GroovyAssignabilityCheck
-    from sourceSets.main.allGroovy
-}
 
 publishing {
     publications {
@@ -22,14 +18,21 @@ publishing {
             from components.java
 
             //noinspection GroovyAssignabilityCheck
-            artifact sourceJar {
-                classifier 'sources'
+            artifact sourceJar
+            //noinspection GroovyAssignabilityCheck
+            artifact javadocJar
+        }
+
+        mavenCustom(MavenPublication) {
+            pom.withXml {
+                asNode().appendNode('description', 'The official groovy/java SDK for the Profitbricks Cloud API.')
             }
         }
     }
+
     repositories {
         maven {
-            url 'http://artifacts.stage.pb.local/content/repositories/snapshots'
+            url 'https://oss.sonatype.org/content/repositories/snapshots'
         }
     }
 }
@@ -41,13 +44,30 @@ dependencies {
                 'org.codehaus.groovy.modules.http-builder:http-builder:+',
                 'org.codehaus.gpars:gpars:+',
                 'org.apache.logging.log4j:log4j-core:2.+'
+    annotationProcessor 'org.apache.logging.log4j:log4j-core:2.+'
 }
 
 test {
+    maxParallelForks = 2
+
     ['user', 'password', 'URL'].each {
         systemProperty "api.${it}", System.getProperty("api.${it}")
     }
     systemProperty "api.verifySSL", false
 }
+
+
+
+task sourceJar(type: Jar) {
+    //noinspection GrUnresolvedAccess, GroovyAssignabilityCheck
+    from sourceSets.main.allGroovy
+    classifier 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from groovydoc
+    classifier = 'javadoc'
+}
+
 
 publish.dependsOn publishToMavenLocal

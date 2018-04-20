@@ -1,3 +1,19 @@
+/*
+   Copyright 2018 Profitbricks GmbH
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package com.profitbricks.sdk
 
 import com.profitbricks.sdk.model.*
@@ -5,10 +21,12 @@ import org.apache.http.client.HttpResponseException
 
 import static com.profitbricks.sdk.Common.*
 import static groovyx.net.http.ContentType.URLENC
+
+
 /**
  * provides commands for provisioned resources
  *
- * Created by fudge on 06/02/17.
+ * @author fudge <frank.geusch@profitbricks.com>
  */
 class Commands {
 
@@ -16,8 +34,8 @@ class Commands {
 
     /**
      * attaches a given volume or image to a given server
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#attach-a-volume"/>
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#attach-a-cd-rom"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#attach-a-volume">attach a volume</a>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#attach-a-cd-rom">attach a cd-rom</a>
      *
      * @param server an existing server
      * @param thing an existing volume or image
@@ -32,8 +50,8 @@ class Commands {
 
     /**
      * lists the ids of all attached volumes or images for a given server
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-attached-volumes"/>
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-attached-cd-roms"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-attached-volumes">list attached volumes</a>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-attached-cd-roms">list attached cd-roms</a>
      *
      * @param server a valid server instance
      * @param type one of #Volume (default) or #Image
@@ -46,8 +64,8 @@ class Commands {
     
     /**
      * detaches a given attached volume from a given server
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#detach-a-volume"/>
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#detach-a-cd-rom"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#detach-a-volume">detach a volume</a>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#detach-a-cd-rom">detach a cd-rom</a>
      *
      * @param server an existing server
      * @param thing an existing attached volume or image
@@ -71,7 +89,7 @@ class Commands {
 
     /**
      * starts a given server
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#start-a-server"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#start-a-server">start a server</a>
      *
      * @param server
      * @param server an existing server
@@ -83,7 +101,7 @@ class Commands {
 
     /**
      * stops a given server
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#stop-a-server"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#stop-a-server">stop a server</a>
      *
      * @param server
      * @param server an existing server
@@ -95,7 +113,7 @@ class Commands {
 
     /**
      * reboots a given server
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#reboot-a-server"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#reboot-a-server">reboot a server</a>
      *
      * @param server
      * @param server an existing server
@@ -110,7 +128,7 @@ class Commands {
 
     /**
      * creates a snapshot of a given volume
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#create-volume-snapshot"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#create-volume-snapshot">create volume snapshot</a>
      *
      * @param volume an existing volume
      * @param name (optional) a name for the newly created snapshot
@@ -132,7 +150,7 @@ class Commands {
 
     /**
      * restores a given volume from a given snapshot
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#restore-volume-snapshot"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#restore-volume-snapshot">restore volume snapshot</a>
      *
      * @param volume an existing volume
      * @param snapshot an existing snapshot
@@ -149,7 +167,7 @@ class Commands {
 
     /**
      * associates a given NIC with a given load balancer
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#associate-nic-to-load-balancer"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#associate-nic-to-load-balancer">associate nic to load balancer</a>
      *
      * @param an existing load balancer
      * @param nic an existing NIC
@@ -165,7 +183,7 @@ class Commands {
     
     /**
      * fetches the ids of the associated NICs of a given load balancer
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-load-balanced-nics"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-load-balanced-nics">list load balanced nics</a>
      *
      * @param loadBalancer a valid load balancer instance
      * @return a list of NIC ids
@@ -176,7 +194,7 @@ class Commands {
     
     /**
      * removes the association of a given NIC and a given load balancer
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#remove-a-nic-association"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#remove-a-nic-association">remove a NIC association</a>
      *
      * @param an existing load balancer
      * @param nic an existing NIC
@@ -191,7 +209,7 @@ class Commands {
 
     /**
      * lists the ids of all users that are assigned to the given group
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-users-in-a-group"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-users-in-a-group">list users in a group</a>
      *
      * @param group the group with the associated users
      * @return a list of user IDs
@@ -202,7 +220,7 @@ class Commands {
 
     /**
      * assigns a user to a group
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#add-user-to-group"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#add-user-to-group">add user to group</a>
      *
      * @param group the group to assign to
      * @param user the user to be assigned
@@ -214,7 +232,7 @@ class Commands {
 
     /**
      * unassigns a user from a group
-     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#remove-user-from-a-group"/>
+     * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#remove-user-from-a-group">remove user from a group</a>
      *
      * @param group the group to unassign from
      * @param user the user to be unassigned

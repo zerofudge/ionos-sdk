@@ -1,9 +1,25 @@
+/*
+   Copyright 2018 Profitbricks GmbH
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package com.profitbricks.sdk.model
 
 import spock.lang.*
 
 /**
- * Created by fudge on 18.04.18.
+ * @author fudge <frank.geusch@profitbricks.com>
  */
 @Subject(DataCenter)
 @Title("unit tests DataCenter CRUD")
@@ -12,12 +28,12 @@ class DataCenterSpec extends Specification {
 
     @Subject
     DataCenter dataCenter
-    @Shared
-    String datacenterID
+
+    @Shared String datacenterID
 
     final 'datacenters can be created'() {
         given: 'a DataCenter POGO'
-        dataCenter = new DataCenter(name: "Groovy SDK Test", location: 'us/las', description: 'Groovy SDK test datacenter')
+        dataCenter = new DataCenter(name: "Groovy SDK Test", location: 'de/fkb', description: 'Groovy SDK test datacenter')
 
         when: 'its create() method is called'
         final _dc = dataCenter.create()
@@ -41,11 +57,11 @@ class DataCenterSpec extends Specification {
         final ids = dataCenter.all
 
         then: 'the result is non-empty and contains valid UUIDs'
-        ids
+        !ids.empty
         ids.size() == ids.collect {UUID.fromString(it)}.size()
     }
 
-    final 'datacenters can be read'() {
+    final 'datacenters can be retrieved'() {
         when: 'a DataCenter is retrieved'
         DataCenter _dc = new DataCenter(id: datacenterID).read() as DataCenter
 

@@ -2,6 +2,8 @@
 
 Version: **3.0.0**
 
+![Profitbricks Groovy/Java SDK](src/main/resources/grooy-sdk-logo.png)
+
 ## Table of Contents
 
 * [Description](#description)
@@ -143,9 +145,9 @@ Before you begin you will need to have [signed up](https://www.profitbricks.com/
 
 ### Installation
 
-This SDK is available from the [ProfitBricks GitHub account](https://github.com/profitbricks/profitbricks-sdk-groovy).
+This SDK is available from the [ProfitBricks GitHub account](https://github.com/profitbricks/profitbricks-sdk-groovy) as well as [Maven Central](https://oss.sonatype.org/#TBD)
 
-a) **optional**: build it: `./gradlew build`
+a) **optional**: build it: `./gradlew build` (you need JDK8 on your machine for this)
 
 b) **optional**: publish the artifact to your maven repository: `./gradlew publish`
 
@@ -154,13 +156,13 @@ c) Add the proper dependency to your project:
   - example: gradle
 
         dependencies {
-          compile 'com.profitbricks.sdk:groovy-sdk:3.0.0'
+          compile 'com.profitbricks:groovy-sdk:3.0.0'
         }
 
   - example: maven
 
         <dependency>
-		  <groupId>com.profitbricks.sdk</groupId>
+		  <groupId>com.profitbricks</groupId>
 		  <artifactId>groovy-sdk</artifactId>
 		  <version>3.0.0</version>
         </dependency>
@@ -175,7 +177,7 @@ The most convenient way to configure the API client is to use system properties.
 | name | default | notes |
 |---|---|---|
 | `api.URL` | https://api.profitbricks.com/cloudapi/v4 | The base API URL. |
-| `api.verifySSL` | `true` | set to `false` to ignore all SSL certificate issues |
+| `api.verifySSL` | `true` | set to `false` to ignore SSL certificate issues |
 | `api.user`| - | The API user name for basic authentication. |
 | `api.password` | - | The API password for basic authentication. |
 | `api.wait.init.milliseconds` | 100 | If waiting for success, this is the initial time period between two checks. |

@@ -9,8 +9,8 @@
         <Root level="error">
             <AppenderRef ref="Console" />
         </Root>
-        <Logger name="org.apache.http.headers" level="warn"/>
-        <Logger name="org.apache.http.wire" level="info"/>
+        <Logger name="org.apache.http.headers" level="info"/>
+        <Logger name="org.apache.http.wire" level="debug"/>
         <Logger name="com.profitbricks.sdk" level="trace"/>
         <Logger name="com.profitbricks.sdk.Common$PooledClient" level="warn" additivity="false"/>
     </Loggers>
