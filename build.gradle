@@ -11,7 +11,6 @@ repositories {
     jcenter()
 }
 
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -44,7 +43,6 @@ dependencies {
                 'org.codehaus.groovy.modules.http-builder:http-builder:+',
                 'org.codehaus.gpars:gpars:+',
                 'org.apache.logging.log4j:log4j-core:2.+'
-    annotationProcessor 'org.apache.logging.log4j:log4j-core:2.+'
 }
 
 test {
@@ -56,6 +54,9 @@ test {
     systemProperty "api.verifySSL", false
 }
 
+compileGroovy {
+    options.compilerArgs += '-proc:none'
+}
 
 
 task sourceJar(type: Jar) {
@@ -69,5 +70,7 @@ task javadocJar(type: Jar) {
     classifier = 'javadoc'
 }
 
-
-publish.dependsOn publishToMavenLocal
+//noinspection GroovyAssignabilityCheck
+tasks.withType(GroovyCompile) {
+    options.compilerArgs += '-proc:none'
+}

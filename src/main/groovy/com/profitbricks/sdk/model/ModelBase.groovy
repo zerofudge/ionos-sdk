@@ -74,7 +74,7 @@ abstract class ModelBase {
      * @return the response JSON object
      */
     def read(final id = id, Map options = [:]) {
-        from API.get(requestFor("${resource}/${id}", options))?.data
+        from API.get(requestFor("${resource}/${id ?: ''}", options))?.data
     }
 
     /**
@@ -90,7 +90,7 @@ abstract class ModelBase {
      * provides the 'delete resource' REST call
      * @return the response JSON object
      */
-    final boolean delete(Map options = [:]) {
+    boolean delete(Map options = [:]) {
         waitFor(API.delete(requestFor("${resource}/$id", options)))?.status == 202
     }
 

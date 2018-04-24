@@ -17,8 +17,7 @@
 package com.profitbricks.sdk.model
 
 import com.profitbricks.sdk.annotation.Readable
-import groovy.transform.EqualsAndHashCode
-import groovy.transform.ToString
+import groovy.transform.*
 
 /**
  * a contract resources POGO
@@ -28,31 +27,47 @@ import groovy.transform.ToString
  */
 @ToString(includeNames = true, ignoreNulls = true, includeSuperProperties = true, includePackage = false, excludes = ['resource'])
 @EqualsAndHashCode(callSuper = true)
-final class Contract extends ModelBase {
+final class ContractStats extends ModelBase {
     @Readable
     long contractNumber
     @Readable
     String owner, status
     @Readable
-    Limits resourceLimits
+    ResourceLimits resourceLimits
 
     final String resource = 'contracts'
 
     @Override
-    final Contract create() {
-        throw new NoSuchMethodException('create not implemented for Contracts')
+    final ContractStats create() {
+        throw new NoSuchMethodException('create not implemented for contract resources')
     }
 
     @Override
     final boolean update() {
-        throw new NoSuchMethodException('update not implemented for Contracts')
+        throw new NoSuchMethodException('update not implemented for contract resources')
+    }
+
+    @Override
+    boolean delete() {
+        throw new NoSuchMethodException('delete not implemented for contract resources')
     }
 
     @ToString(includeNames = true, ignoreNulls = true, includePackage = false)
-    private final class Limits {
-        @SuppressWarnings("GroovyUnusedDeclaration")
-        int coresPerServer, coresPerContract, coresProvisioned, reservableIps, reservedIpsOnContract, reservedIpsInUse
-        @SuppressWarnings("GroovyUnusedDeclaration")
-        long ramPerServer, ramPerContract, ramProvisioned, hddLimitPerVolume, hddLimitPerContract, hddVolumeProvisioned, ssdLimitPerVolume, ssdLimitPerContract, ssdVolumeProvisioned
+    private final class ResourceLimits {
+        int coresPerServer,
+            coresPerContract,
+            coresProvisioned,
+            reservableIps,
+            reservedIpsOnContract,
+            reservedIpsInUse
+        long ramPerServer,
+            ramPerContract,
+            ramProvisioned,
+            hddLimitPerVolume,
+            hddLimitPerContract,
+            hddVolumeProvisioned,
+            ssdLimitPerVolume,
+            ssdLimitPerContract,
+            ssdVolumeProvisioned
     }
 }

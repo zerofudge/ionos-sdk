@@ -17,6 +17,8 @@
 package com.profitbricks.sdk.model
 
 import spock.lang.*
+
+
 /**
  * @author fudge <frank.geusch@profitbricks.com>
  */

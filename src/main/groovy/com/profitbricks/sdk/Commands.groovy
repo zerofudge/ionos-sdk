@@ -205,7 +205,7 @@ class Commands {
     }
     
 
-    // --------------------------------- G R O U P   C O M M A N D S ---------------------------------
+    // --------------------------------- U S E R   G R O U P   C O M M A N D S ---------------------------------
 
     /**
      * lists the ids of all users that are assigned to the given group
@@ -214,7 +214,7 @@ class Commands {
      * @param group the group with the associated users
      * @return a list of user IDs
      */
-    static final List<String> userIDs(final Group group) {
+    static final List<String> userIDs(final UserGroup group) {
         API.get(requestFor("${group.resource}/${group.id}/users"))?.data?.items?.collect{it.id}
     }
 
@@ -226,7 +226,7 @@ class Commands {
      * @param user the user to be assigned
      * @return true if the user was successfully assigned, false otherwise
      */
-    final static boolean assign(final Group group, final User user) {
+    final static boolean assign(final UserGroup group, final User user) {
         waitFor(API.post(requestFor("${group.resource}/${group.id}/users") + [body: [id: user.id]]))?.status == 202
     }
 
@@ -238,7 +238,7 @@ class Commands {
      * @param user the user to be unassigned
      * @return true if the user was successfully unassigned, false otherwise
      */
-    final static boolean unassign(final Group group, final User user) {
+    final static boolean unassign(final UserGroup group, final User user) {
         waitFor(API.delete(requestFor("${group.resource}/${group.id}/users/${user.id}")))?.status == 202
     }
 }
