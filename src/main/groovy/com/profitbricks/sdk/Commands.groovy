@@ -171,7 +171,7 @@ class Commands {
      *
      * @param an existing load balancer
      * @param nic an existing NIC
-     * @return true if the association worked, false otherwise
+     * @return the given (updated) NIC
      */
     static final NIC associate(final LoadBalancer loadBalancer, final NIC nic) {
         def resp = waitFor(API.post(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics") + [body: [id: nic.id]]))

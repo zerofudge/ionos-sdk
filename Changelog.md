@@ -10,7 +10,8 @@
 - fix: streamlined, corrected and improved the documentation
 - change: all CRUD methods and commands can be called with an optional map argument
 - change: based on the previous change, credentials can now be stated per API call
-- fix: `Volume.update`, `LAN.update`, 
+- fix: updating `Volume`s, `LAN`s and `Snapshot`s works now
+- change: `Server.update()` now always include `allowReboot: true`
 
 
 ### release 2.0.0 (09/25/2017)

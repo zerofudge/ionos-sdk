@@ -17,7 +17,6 @@
 package com.profitbricks.sdk.model
 
 import spock.lang.*
-
 /**
  * @author fudge <frank.geusch@profitbricks.com>
  */
@@ -33,7 +32,7 @@ class DataCenterSpec extends Specification {
 
     final 'datacenters can be created'() {
         given: 'a DataCenter POGO'
-        dataCenter = new DataCenter(name: "Groovy SDK Test", location: 'de/fkb', description: 'Groovy SDK test datacenter')
+        dataCenter = new DataCenter(name: 'Groovy SDK Test Fixture', location: 'de/fkb', description: 'Groovy SDK test datacenter')
 
         when: 'its create() method is called'
         final _dc = dataCenter.create()
@@ -63,7 +62,7 @@ class DataCenterSpec extends Specification {
 
     final 'datacenters can be retrieved'() {
         when: 'a DataCenter is retrieved'
-        DataCenter _dc = new DataCenter(id: datacenterID).read() as DataCenter
+        final _dc = testDataCenter
 
         then: 'the returned object is a properly populated datacenter'
         _dc instanceof DataCenter
@@ -74,7 +73,7 @@ class DataCenterSpec extends Specification {
 
     final 'datacenters can be updated'() {
         given: 'a valid datacenter POGO'
-        dataCenter = new DataCenter(id: datacenterID).read() as DataCenter
+        dataCenter = testDataCenter
         final change = 'foo'
 
         when: 'its properties are updated'
@@ -83,7 +82,7 @@ class DataCenterSpec extends Specification {
         dataCenter.update()
 
         and: 'it is read again'
-        dataCenter = dataCenter.read() as DataCenter
+        dataCenter = testDataCenter
 
         then: 'the changes should be reflected'
         dataCenter.name == change
@@ -91,16 +90,14 @@ class DataCenterSpec extends Specification {
     }
 
     final 'datacenters can be deleted'() {
-        given: 'a valid datacenter POGO'
-        dataCenter = new DataCenter(id: datacenterID).read() as DataCenter
-
         when: 'it is deleted'
-        dataCenter.delete()
+        testDataCenter.delete()
 
-        and: 'retrieved again'
-        dataCenter = new DataCenter(id: datacenterID).read() as DataCenter
+        then: 'it is gone'
+        !testDataCenter
+    }
 
-        then: 'that result is empty'
-        !dataCenter
+    private final DataCenter getTestDataCenter() {
+        new DataCenter(id: datacenterID).read() as DataCenter
     }
 }

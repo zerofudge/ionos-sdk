@@ -16,8 +16,7 @@
 
 package com.profitbricks.sdk.model
 
-import com.profitbricks.sdk.annotation.Creatable
-import com.profitbricks.sdk.annotation.Readable
+import com.profitbricks.sdk.annotation.*
 import groovy.transform.*
 
 /**

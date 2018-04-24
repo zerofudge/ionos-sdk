@@ -30,10 +30,12 @@ import groovy.transform.*
 final class Snapshot extends ModelBase {
 
     @Creatable @Updatable
-    String name, description, location, licenceType
+    String name, description, licenceType
+    @Creatable
+    String location
     @Creatable @Updatable
     boolean cpuHotPlug, cpuHotUnplug, ramHotPlug, ramHotUnplug, nicHotPlug, nicHotUnplug, discVirtioHotPlug, discVirtioHotUnplug, discScsiHotPlug, discScsiHotUnplug
-    @Creatable @Updatable
+    @Creatable
     int size
 
     final String resource = 'snapshots'

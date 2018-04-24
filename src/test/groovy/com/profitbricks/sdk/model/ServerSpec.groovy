@@ -25,7 +25,7 @@ import static com.profitbricks.sdk.Commands.*
  * @author fudge <frank.geusch@profitbricks.com>
  */
 @Subject(Server)
-@Title("unit tests server CRUD and commands")
+@Title('tests server CRUD and commands')
 @Stepwise
 class ServerSpec extends Specification {
 
@@ -36,7 +36,7 @@ class ServerSpec extends Specification {
     @Shared String serverID
 
     final setupSpec() {
-        dataCenter = new DataCenter(name: "Groovy SDK Test", location: 'de/fkb').create() as DataCenter
+        dataCenter = new DataCenter(name: 'Groovy SDK Test Fixture', location: 'de/fkb').create() as DataCenter
         assert dataCenter.id
     }
 
@@ -102,7 +102,7 @@ class ServerSpec extends Specification {
         server.update()
 
         and: 'it is read again'
-        server = server.read() as Server
+        server = testServer
 
         then: 'the changes should be reflected'
         server.name == 'foo'
@@ -150,17 +150,11 @@ class ServerSpec extends Specification {
     }
 
     final 'servers can be deleted'() {
-        given: 'a server'
-        server = testServer
+        when:
+        testServer.delete()
 
-        when: 'it is deleted'
-        server.delete()
-
-        and: 'retrieved again'
-        server = testServer
-
-        then: 'that result is empty'
-        !server
+        then:
+        !testServer
     }
 
     private final Server getTestServer() {

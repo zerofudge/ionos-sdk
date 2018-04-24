@@ -30,8 +30,7 @@ import static java.util.UUID.fromString
 @Stepwise
 class VolumeSpec extends Specification {
 
-    @Subject
-    Volume volume
+    @Subject Volume volume
 
     @Shared DataCenter dataCenter
     @Shared Image image
@@ -39,11 +38,11 @@ class VolumeSpec extends Specification {
     @Shared String volumeID
 
     final setupSpec() {
-        dataCenter = new DataCenter(name: 'Groovy SDK TestDatacenter', location: 'us/las').create() as DataCenter
+        dataCenter = new DataCenter(name: 'Groovy SDK Test Fixture', location: 'us/las').create() as DataCenter
         assert dataCenter.id
         image = new Image().all.collect{new Image(id:it).read() as Image}.find{it.name == 'us_las-3GiB'}
         assert image.id
-        server = new Server(dataCenter: dataCenter, name: 'Groovy SDK TestServer', ram: 256, cores: 1).create()
+        server = new Server(dataCenter: dataCenter, name: 'Server Fixture', ram: 256, cores: 1).create()
         assert server.id
     }
 
@@ -117,7 +116,7 @@ class VolumeSpec extends Specification {
         volume.update()
 
         and: 'it is read again'
-        volume = volume.read() as Volume
+        volume = testVolume
 
         then: 'the changes should be reflected'
         volume.name == 'foo'
@@ -141,7 +140,7 @@ class VolumeSpec extends Specification {
         given:
         volume = testVolume
 
-        when: 'the volume is attached to a server'
+        when: 'the volume is detached from the server'
         detach server, volume
         volume = testVolume
 
@@ -151,17 +150,11 @@ class VolumeSpec extends Specification {
     }
 
     final 'volumes can be deleted'() {
-        given:
-        volume = testVolume
-
-        when: 'it is deleted'
-        volume.delete()
-
-        and: 'retrieved again'
-        volume = testVolume
+        when:
+        testVolume.delete()
 
         then: 'that result is empty'
-        !volume
+        !testVolume
     }
 
     private final Volume getTestVolume() {

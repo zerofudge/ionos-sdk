@@ -35,7 +35,7 @@ class LANSpec extends Specification {
     @Shared int lanID
 
     final setupSpec() {
-        dataCenter = new DataCenter(name: "Groovy SDK Test", location: 'de/fkb').create() as DataCenter
+        dataCenter = new DataCenter(name: 'Groovy SDK Test Fixture', location: 'de/fkb').create() as DataCenter
         assert dataCenter.id
     }
 
@@ -86,10 +86,10 @@ class LANSpec extends Specification {
     final 'LANs can be updated'() {
         given:
         lan = testLAN
-        final crip = new IPBlock(name: 'fixture', location: dataCenter.location, size: 1).create() as IPBlock
+        final crip = new IPBlock(name: 'IP Fixture', location: dataCenter.location, size: 1).create() as IPBlock
         nic = new NIC(server:
-                new Server(dataCenter: dataCenter, name: 'fixture', cores: 1, ram: 256).create(),
-                lan: lan, name: 'fixture', ips: crip.ips).create()
+                new Server(dataCenter: dataCenter, name: 'Server Fixture', cores: 1, ram: 256).create(),
+                lan: lan, name: 'NIC Fixture', ips: crip.ips).create()
 
         when: 'its properties are updated'
         lan.name = 'foo'
@@ -113,14 +113,11 @@ class LANSpec extends Specification {
         lan.update()
         nic.delete()
 
-        when: 'it is deleted'
+        when:
         lan.delete()
 
-        and: 'retrieved again'
-        lan = testLAN
-
-        then: 'that result is empty'
-        !lan
+        then:
+        !testLAN
     }
 
     private final LAN getTestLAN() {

@@ -35,6 +35,8 @@ final class Server extends ModelBase {
     String name, availabilityZone = 'AUTO', cpuFamily = 'AMD_OPTERON'
     @Readable
     String vmState, licenseType = 'AUTO'
+    @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    final allowReboot = true
 
     @Override
     final String getResource() { "${dataCenter.resource}/${dataCenter.id}/servers" }

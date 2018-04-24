@@ -35,13 +35,6 @@ final class LoadBalancer extends ModelBase {
     boolean dhcp = true
 
     @Override
-    protected final Map getUpdateBody() {
-        def body = super.updateBody
-        body.properties.dhcp = String.valueOf(dhcp)
-        return body
-    }
-
-    @Override
     final LoadBalancer create() { (super.create() as LoadBalancer)?.with dataCenter }
 
     @Override
