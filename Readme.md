@@ -6,9 +6,9 @@ Version: **3.0.0**
 
 ## Table of Contents
 
-* [Description](#description)
+* [Abstract](#abstract)
+* [Design Objective](#design-objective)
 * [Getting Started](#getting-started)
-    * [Basic Objective](#basic-objective)
     * [Installation](#installation)
     * [Configuration](#configuration)
 * [SDK Reference](#sdk-reference)
@@ -106,67 +106,65 @@ Version: **3.0.0**
 * [Contributing](#contributing)
 
 
-## Description 
+## Abstract
 
-This Groovy library provides easy use of the ProfitBricks Cloud API. All API operations are performed over a SSL/TLS secured connection and authenticated using your ProfitBricks portal credentials.
+This Groovy library provides a convenient way to use the ProfitBricks Cloud API.
+This guide will show you how to programmatically perform infrastructure management operations with it.
 
-This guide will show you how to programmatically perform common management tasks using this SDK.
 
 
-## Getting Started
-
-### Basic Objective
+## Design Objective
 
 There is essentially only one usage pattern: Create an entity, then invoke one of the CRUD methods on it:
 
-- `create()`: Effectively send a resource creation REST request.
-- `read()`: Fetch an existing REST resource by its UUID.
-- `update()`: Send an update to an existing REST resource.
-- `delete()`: Delete an existing resource.
+- `create()`: Effectively send a resource creation REST request (`HTTP CREATE`).
+- `read()`: Fetch an existing REST resource by its UUID (`HTTP GET`).
+- `update()`: Send an update to an existing REST resource (`HTTP PUT`).
+- `delete()`: Delete an existing resource (`HTTP DELETE`).
 - `all`: This property implements a *list* operation to fetch UUIDs of existing REST resources.
 
-An entity must be sufficiently filled in order for the associated REST request to succeed. No extra validation will take place. If there is an error, you will see an exception with the cause. Note: For resources which exist within the context of another resource, that other resource must also be properly instantiated and injected.
+An entity must be sufficiently populated in order for the associated REST request to succeed. No extra validation will take place. If there is an error, you will see an exception with the cause. 
 
-For example: to successfully operate on a network interface, the entity (`NIC`) must also contain proper `Server` and `LAN` instances.
+For resources that exist within the context of another resource, that other resource must also be properly instantiated and injected.
 
-No extra modeling was made (e.g. no *parent* links or the like). The entities just enclose the transported JSON representations.
+_For example_: to successfully operate on a network interface, the entity (`NIC`) must also contain proper `Server` and `LAN` instances.
 
-On a successfully-delivered REST `POST`, `PUT` or `DELETE` request, the Profitbricks API might send a `Location` header instead of the final resulting response to the requested action. This SDK will block on such a response, then continue polling for the final result. If a successful result does not come
+No extra modeling was made (e.g. no *parent* links). The entities just enclose the transported JSON representations.
+
+On a successfully-delivered `POST`, `PUT` or `DELETE` request, the Profitbricks API might send a `Location` header instead of the final resulting response to the requested action. This SDK will block on such a response, then continue polling for the final result. If a successful result does not come
 in time, an exception will be thrown.
 
 This was made to allow for easy and agile API scripting, as the result matters most of the time, and such a behavior would be needed anyway.
 
 For API resources which do not fit into the CRUD scheme, an extra command facade is provided. This provides functionality like attaching and detaching storage volumes to virtual servers or associating network interfaces with load balancers.
 
-This implementation is based on Groovy 2, so it technically runs on any JVM version 1.7 or higher.
+This implementation is based on Groovy 2, so it technically runs on any JVM version 7 or later.
 
 Before you begin you will need to have [signed up](https://www.profitbricks.com/signup) for a ProfitBricks account. The credentials you set up during the sign-up process will be used to authenticate against the Cloud API.
 
 
+## Getting Started
+
 ### Installation
 
-This SDK is available from the [ProfitBricks GitHub account](https://github.com/profitbricks/profitbricks-sdk-groovy) as well as [Maven Central](https://oss.sonatype.org/#TBD)
+This SDK is available from the [ProfitBricks GitHub Page](https://github.com/profitbricks/profitbricks-sdk-groovy) as well as [Maven Central](https://oss.sonatype.org/#TBD)
 
-a) **optional**: build it: `./gradlew build` (you need JDK8 on your machine for this)
+- **optional**: build it: `./gradlew assemble -x test` (you need a JDK on your machine for this)
 
-b) **optional**: publish the artifact to your maven repository: `./gradlew publish`
-
-c) Add the proper dependency to your project:
-
+- add the dependency to your project:
   - example: gradle
 
         dependencies {
-          compile 'com.profitbricks:groovy-sdk:3.0.0'
+            compile 'com.profitbricks:groovy-sdk:3.0.0'
         }
 
   - example: maven
 
         <dependency>
-		  <groupId>com.profitbricks</groupId>
-		  <artifactId>groovy-sdk</artifactId>
-		  <version>3.0.0</version>
+		    <groupId>com.profitbricks</groupId>
+		    <artifactId>groovy-sdk</artifactId>
+		    <version>3.0.0</version>
         </dependency>
-
 
 ### Configuration
 
@@ -176,14 +174,13 @@ The most convenient way to configure the API client is to use system properties.
 
 | name | default | notes |
 |---|---|---|
-| `api.URL` | https://api.profitbricks.com/cloudapi/v4 | The base API URL. |
-| `api.verifySSL` | `true` | set to `false` to ignore SSL certificate issues |
-| `api.user`| - | The API user name for basic authentication. |
-| `api.password` | - | The API password for basic authentication. |
-| `api.wait.init.milliseconds` | 100 | If waiting for success, this is the initial time period between two checks. |
-| `api.wait.timeout.seconds` | 120 | If waiting for success, this is the timeout. |
-| `api.wait.max.milliseconds` | 1500 | If waiting for success, this is the maximum time period between two checks. |
-| `api.wait.factor`| 1.87 | If waiting for success, this is the factor by which the current time period value is multiplied. |
+| `api.verifySSL` | `true` | set to `false` to ignore SSL certificate verification issues |
+| `api.user`| - | the API user name for basic authentication. **required** |
+| `api.password` | - | the API password for basic authentication. **required**|
+| `api.wait.init.milliseconds` | 100 | if waiting for success, this is the initial time period between two checks. |
+| `api.wait.timeout.seconds` | 120 | if waiting for success, this is the timeout. |
+| `api.wait.max.milliseconds` | 1500 | if waiting for success, this is the maximum time period between two checks. |
+| `api.wait.factor`| 1.87 | if waiting for success, this is the factor by which the current time period value is multiplied. |
 
 
 ## SDK Reference
@@ -197,7 +194,7 @@ Virtual data centers (VDCs) are the foundation of the ProfitBricks platform. VDC
 
 #### list datacenters
 
-Lists the ids of all currently provisioned datacenters that are accessible for your account credentials.
+Lists the ids of all currently provisioned datacenters that are accessible for the current user.
 
 ```
 List<String> datacenterIDs = new DataCenter().all
@@ -223,16 +220,12 @@ DataCenter datacenter = new DataCenter(id: datacenterId).read()
 
 **Supported Locations**
 
-| Value | Country | City |
-|---|---|---|
-| `us/las` | United States | Las Vegas |
-| `us/ewr` | United States | Newark |
-| `de/fra` | Germany | Frankfurt |
-| `de/fkb` | Germany | Karlsruhe |
-
-**NOTES**:
-- The value for `DataCenter::ame` cannot contain the following characters: `@, /, , |, ‘’, ‘`.
-- You cannot change `DataCenter::location` after creation.
+| value | geographical location 
+|---|---|
+| `us/las` | US / Las Vegas |
+| `us/ewr` | US / Newark |
+| `de/fra` | Germany / Frankfurt |
+| `de/fkb` | Germany / Karlsruhe |
 
 ```
 def dc = new DataCenter(
@@ -591,12 +584,10 @@ Creates a volume within the virtual data center. This will **not** attach the vo
 | `Volume::image` | no | The image or snapshot ID. |
 | `Volume::imageAlias` | no | The alias of the image. |
 | `Volume::type` | no | The volume type, HDD or SSD. |
-| `Volume::licenceType` | no | The licence type of the volume. Options: LINUX, WINDOWS, WINDOWS2016, UNKNOWN, OTHER |
-| `Volume::imagePassword` | no | One-time password is set on the Image for the appropriate root or administrative account. This field may only be set in creation requests. When reading, it always returns *null*. The password has to contain 8-50 characters. Only these characters are allowed: [abcdefghjkmnpqrstuvxABCDEFGHJKLMNPQRSTUVX23456789] |
-| `Volume::sshKeys` | no | A collection of SSH keys to allow access to the volume via SSH. |
-| `Volume::availabilityZone` | no | The storage availability zone assigned to the volume. Valid values: AUTO, ZONE_1, ZONE_2, or ZONE_3. This only applies to HDD volumes. Leave blank or set to AUTO when provisioning SSD volumes. |
-
-**Licence Types**
+| `Volume::licenceType` | no | The licence type of the volume. see table below |
+| `Volume::imagePassword` | no | password for the root or administrative account, must consist of 8-50 alphanumeric characters|
+| `Volume::sshKeys` | no | collection of SSH public keys  |
+| `Volume::availabilityZone` | no | availability zone the volume should reside in, see table below |
 
 | Licence Type | Comment |
 |---|---|
@@ -605,8 +596,6 @@ Creates a volume within the virtual data center. This will **not** attach the vo
 | `LINUX` | for Linux |
 | `OTHER` | for any volumes that do not match one of the other licence types |
 | `UNKNOWN` | default value when you've uploaded an image and haven't set the license type |
-
-**Supported Storage Availability Zones**
 
 | Availability Zone | Comment |
 |---|---|
@@ -623,13 +612,8 @@ assert v.id
 
 #### update a volume
 
-Various attributes on the volume can be updated (either in full or partially) although the following restrictions apply:
-
-* The size of an existing storage volume can be increased.
-* The size of an existing storage volume cannot be decreased.
-* The volume size will be increased without requiring a reboot if the relevant hot plug settings have been set to `true`.
-* The additional capacity is not added automatically added to any partition, therefore you will need to handle that inside the OS afterwards.
-* After you have increased the volume size you cannot decrease the volume size.
+* The size of an existing storage volume can only be increased.
+* If no according hot plug settings are configured, this operation may cause a server reboot.
 
 | Arguments | Required |
 |---|---|
@@ -652,8 +636,6 @@ v.update()
 
 #### delete a volume
 
-Deletes the specified volume. This will result in the volume being removed from your data center. Use this with caution.
-
 | Argument | Required |
 |---|---|
 | `DataCenter::id` | **yes** |
@@ -665,8 +647,6 @@ v.delete()
 ```
 
 #### create a volume snapshot
-
-Creates a snapshot of a volume within the virtual data center. You can use a snapshot to create a new storage volume or to restore a storage volume.
 
 | Argument | Required |
 |---|---|
@@ -681,8 +661,6 @@ Snapshot snapshot = Commands.snapshot(v, 'snapshot_4711', 'a fancy snapshot')
 ```
 
 #### restore a volume snapshot
-
-Restores a snapshot onto a volume. A snapshot is created as an image which can be used to create new volumes or to restore an existing volume.
 
 | Argument | Required |
 |---|---|
@@ -744,8 +722,6 @@ snap.update()
 
 #### delete a snapshot
 
-Deletes the specified snapshot.
-
 | Argument | Required |
 |---|---|
 | `Snapshot::id` | **yes** |
@@ -757,8 +733,6 @@ sn.delete()
 
 
 ### IP Blocks
-
-For management of reserved static public IP addresses.
 
 #### list IP blocks
 
@@ -780,14 +754,11 @@ IPBlock block = new IPBlock(id: ipBlockId).read()
 
 #### create an IP block
 
-Creates an IP block. IP blocks are attached to a location, so you must specify a valid `location` along with a `size` parameter indicating the number of IP addresses you want to reserve in the IP block. Servers or other resources using an IP address from an IP block must be in the same `location`.
-
 | Argument | Required | Description |
 |---|---|---|
-| `IPBlock::id` | **yes** ||
-| `IPBlock::location` | **yes** | One of the available location IDs. See table above |
-| `IPBlock::size` | **yes** | the number of IP addresses to reserve with this IP block |
-| `IPBlock::name` | no |||
+| `IPBlock::location` | **yes** | a valid location ID, see table above |
+| `IPBlock::size` | **yes** | the number of IP addresses to reserve |
+| `IPBlock::name` | no ||
 
 ```
 IPBlock block = new IPBlock(location: 'us/ewr', size: 2).create()
@@ -930,13 +901,6 @@ NIC nic = new NIC(server: s, lan: lan, nat: true).create()
 
 #### update a NIC
 
-Various attributes on the NIC can be updated (either in full or partially) although the following restrictions apply:
-
-* The primary address of a NIC connected to a load balancer can only be changed by changing the IP of the load balancer.
-* You can also add additional reserved, public IPs to the NIC.
-* The user can specify and assign private IPs manually.
-* Valid IP addresses for private networks are 10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16.
-
 | Argument | Required |
 |---|---|
 | `DataCenter::id` | **yes** |
@@ -1010,15 +974,15 @@ FirewallRule rule = new FirewallRule(nic: nic, id: ruleID).read()
 | `DataCenter::id` | **yes** |
 | `Server::id` | **yes** |
 | `NIC::id` | **yes** |
-| `FirewallRule::protocol` | **yes** | rule protocol: one of `TCP`, `UDP`, `ICMP` or `ANY` |
+| `FirewallRule::protocol` | **yes** | one of `TCP`, `UDP`, `ICMP` or `ANY` |
 | `FirewallRule::name` | no |
-| `FirewallRule::sourceMac` | no | Allow traffic from this MAC address. A *null* value allows any source MAC address. |
-| `FirewallRule::sourceIp` | no | Allow traffic from this IPv4 address. A *null* value allows all source IPs. |
-| `FirewallRule::targetIp` | no | In case this NIC has multiple IP addresses, allow traffic directed to this IP. A *null* value allows all target IPs. |
-| `FirewallRule::portRangeStart` | no | Defines the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *null* to allow all ports. |
-| `FirewallRule::portRangeEnd` | no | Defines the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *null* to allow all ports. |
-| `FirewallRule::icmpType` | no | Defines the allowed type (from 0 to 254) if the protocol ICMP is chosen. A *null* value allows all types. |
-| `FirewallRule::icmpCode` | no | Defines the allowed code (from 0 to 254) if protocol ICMP is chosen. A *null* value allows all codes. |
+| `FirewallRule::sourceMac` | no | only allow connections from this MAC |
+| `FirewallRule::sourceIp` | no | only allow connections from this IPv4 address |
+| `FirewallRule::targetIp` | no | only allow connections to this IPv4 address |
+| `FirewallRule::portRangeStart` | no | only allow connections for ports in the given range, this defines the range start  |
+| `FirewallRule::portRangeEnd` | no | only allow connections for ports in the given range, this defines the range end |
+| `FirewallRule::icmpType` | no | only allow packets with the given ICMP type |
+| `FirewallRule::icmpCode` | no | only allow packets with the given ICMP code |
 
 ```
 NIC nic = ...
@@ -1144,7 +1108,7 @@ lb.delete()
 
 #### list load balanced NICs
 
-Retrieves a list of ids of NICs associated with the load balancer.
+Retrieves a list of ids of NICs associated with the load balancer. Needs valid `DataCenter` and `LoadBalancer` instances.
 
 | Argument | Required |
 |---|---|
@@ -1373,7 +1337,7 @@ assert Commands.unassign(group, user)
 Retrieve the current resource allocation statistics for this contract.
 
 ```
-Contract c = new Contract().read()
+ContractStats stats = new ContractStats().read()
 ```
 
 ### A Concise Example
@@ -1382,45 +1346,34 @@ Contract c = new Contract().read()
 import com.profitbricks.sdk.model.*
 import static com.profitbricks.sdk.Commands.*
 
-class SDKExample {
-    final static void main(final String[] args) {
+// create a datacenter
+DataCenter dc = new DataCenter(name: "Example DC", location: 'de/fkb', description: 'desc').create()
 
-        // create a datacenter
-        DataCenter dc = new DataCenter(name: "Example DC", location: 'de/fkb', description: 'desc').create()
+// create a LAN
+LAN lan = new LAN(dataCenter: dc, name: "public lan", _public: true).create()
 
-        // list all datacenters
-        println dc.all
+// create a server
+Server server = new Server(dataCenter: dc, name: "Example server", cores: 1, ram: 1024).create()
 
-        // create a LAN
-        LAN lan = new LAN(dataCenter: dc, name: "public lan", _public: true).create()
+// add a NIC to server
+NIC nic = new NIC(server: server, lan: lan, name: "example nic").create()
 
-        // create a server
-        Server server = new Server(dataCenter: dc, name: "Example server", cores: 1, ram: 1024).create()
+// find a linux image to attach to server
+Image image = new Image().all.collect{image.read(it) as Image}.findAll {
+    it._public &&
+    it.location == dc.location &&
+    it.licenceType =~ /(?i)linux/ &&
+    it.imageType =~ /(?i)hdd/
+}.first()
 
-        // add a NIC to server
-        NIC nic = new NIC(server: server, lan: lan, name: "example nic").create()
+// create a volume from that image
+Volume volume = new Volume(dataCenter: dc, name: "OS volume", image: image.id, imagePassword: 'test1234').create()
 
-        // find a linux image to attach to server
-        Image image = new Image().all.collect{image.read(it) as Image}.findAll {
-            it._public &&
-            it.location == dc.location &&
-            it.licenceType =~ /(?i)linux/ &&
-            it.imageType =~ /(?i)hdd/
-        }.first()
+// attach volume to server
+attach server, volume
 
-        // create a volume from image
-        Volume volume = new Volume(dataCenter: dc, name: "OS volume", image: image.id, imagePassword: 'test1234').create()
-
-        // attach volume to server
-        attach(server, volume)
-
-        // list attached volumes
-        println attachedVolumes(server)
-
-        // delete datacenter
-        dc.delete()
-    }
-}
+// delete datacenter
+dc.delete()
 ```
 
 
@@ -1435,14 +1388,17 @@ Having proper life cycle control over your entities is helpful in the long run. 
 
 ## Support
 
-You can engage with us in the ProfitBricks [DevOps Central community](https://devops.profitbricks.com/community) and we will be more than happy to answer any questions you might have about using this .NET library.
+You can engage with us in the ProfitBricks [DevOps Central community](https://devops.profitbricks.com/community) and we will be happy to answer any questions you might have about using this SDK.
 
 Please report any issues or bugs your encounter using the [GitHub Issue Tracker](https://github.com/profitbricks/profitbricks-sdk-groovy/issues).
 
 
 ## Testing
 
-You can find a full test suite in `src/test/groovy`. You can run all tests using the command `./gradlew test -Dapi.user=YOUR_USERNAME -Dapi.password=YOUR_PASSWORD.
+You can find a full test suite in `src/test/groovy`. You can run all tests issuing 
+```
+./gradlew test -Dapi.user=YOUR_USERNAME -Dapi.password=YOUR_PASSWORD
+```
 
 
 ## Contributing

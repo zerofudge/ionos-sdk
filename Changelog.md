@@ -9,8 +9,8 @@
 - change: removed `Share` and `Resource` entities until the user management API is fixed
 - fix: streamlined, corrected and improved the documentation
 - change: all CRUD methods and commands can be called with an optional map argument
-- change: based on the previous change, credentials can now be stated per API call
-- fix: updating `Volume`s, `LAN`s and `Snapshot`s works now
+- change: based on the previous change, credentials can now be given per API call
+- fix: updating `Volume`, `LAN` and `Snapshot` works now
 - change: `Server.update()` now always include `allowReboot: true`
 
 
