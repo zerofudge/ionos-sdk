@@ -1,6 +1,20 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1',
+                  'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0'
+    }
+}
+
+
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
+apply plugin: 'com.bmuschko.nexus'
+apply plugin: 'io.codearte.nexus-staging'
 
+archivesBaseName = 'groovy-sdk'
 group 'com.profitbricks'
 version '3.0-SNAPSHOT'
 
@@ -15,25 +29,53 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-
-            //noinspection GroovyAssignabilityCheck
-            artifact sourceJar
-            //noinspection GroovyAssignabilityCheck
-            artifact javadocJar
         }
+    }
+}
 
-        mavenCustom(MavenPublication) {
-            pom.withXml {
-                asNode().appendNode('description', 'The official groovy/java SDK for the Profitbricks Cloud API.')
+modifyPom {
+    //noinspection GroovyAssignabilityCheck
+    project {
+        //noinspection GroovyAssignabilityCheck
+        name 'Profitbricks Groovy SDK'
+        description 'The official groovy/java SDK for the Profitbricks Cloud API v4.'
+        url 'https://github.com/profitbricks/profitbricks-sdk-groovy'
+        inceptionYear '2018'
+        scm {
+            url 'https://github.com/profitbricks/profitbricks-sdk-groovy/tree/master'
+            connection 'scm:git:git://github.com/profitbricks/profitbricks-sdk-groovy.git'
+            developerConnection 'scm:git:ssh://github.com:profitbricks/profitbricks-sdk-groovy.git'
+        }
+        licenses {
+            license {
+                //noinspection GroovyAssignabilityCheck
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                //noinspection GroovyAssignabilityCheck
+                distribution 'repo'
+            }
+        }
+        developers {
+            developer {
+                id 'zerofudge'
+                //noinspection GroovyAssignabilityCheck
+                name 'Frank Geusch'
+                email 'frank.geusch@profitbricks.com'
             }
         }
     }
+}
 
-    repositories {
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots'
-        }
-    }
+extraArchive {
+    sources = true
+    tests = true
+    javadoc = true
+}
+
+nexus {
+    sign = true
+    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
 }
 
 dependencies {
@@ -41,7 +83,6 @@ dependencies {
     runtime     'org.apache.logging.log4j:log4j-jcl:2.+'
     compile     'org.codehaus.groovy:groovy-all:2.4.+',
                 'org.codehaus.groovy.modules.http-builder:http-builder:+',
-                'org.codehaus.gpars:gpars:+',
                 'org.apache.logging.log4j:log4j-core:2.+'
 }
 
@@ -58,17 +99,6 @@ compileGroovy {
     options.compilerArgs += '-proc:none'
 }
 
-
-task sourceJar(type: Jar) {
-    //noinspection GrUnresolvedAccess, GroovyAssignabilityCheck
-    from sourceSets.main.allGroovy
-    classifier 'sources'
-}
-
-task javadocJar(type: Jar) {
-    from groovydoc
-    classifier = 'javadoc'
-}
 
 //noinspection GroovyAssignabilityCheck
 tasks.withType(GroovyCompile) {

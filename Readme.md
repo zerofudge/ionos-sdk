@@ -2,7 +2,7 @@
 
 Version: **3.0.0**
 
-![Profitbricks Groovy/Java SDK](src/main/resources/grooy-sdk-logo.png)
+![Profitbricks Groovy/Java SDK](grooy-sdk-logo.png)
 
 ## Table of Contents
 
@@ -103,14 +103,12 @@ Version: **3.0.0**
 * [TODO](#todo)
 * [Support](#support)
 * [Testing](#testing)
-* [Contributing](#contributing)
 
 
 ## Abstract
 
-This Groovy library provides a convenient way to use the ProfitBricks Cloud API.
+This Groovy SDK provides a convenient way to use the ProfitBricks Cloud API from JVM based applications.
 This guide will show you how to programmatically perform infrastructure management operations with it.
-
 
 
 ## Design Objective
@@ -149,7 +147,11 @@ Before you begin you will need to have [signed up](https://www.profitbricks.com/
 
 This SDK is available from the [ProfitBricks GitHub Page](https://github.com/profitbricks/profitbricks-sdk-groovy) as well as [Maven Central](https://oss.sonatype.org/#TBD)
 
-- **optional**: build it: `./gradlew assemble -x test` (you need a JDK on your machine for this)
+- **optional**: build and deploy it to your local maven repository:
+
+```
+./gradlew assemble publishToMavenLocal -x test` 
+```
 
 - add the dependency to your project:
   - example: gradle
@@ -1400,11 +1402,3 @@ You can find a full test suite in `src/test/groovy`. You can run all tests issui
 ./gradlew test -Dapi.user=YOUR_USERNAME -Dapi.password=YOUR_PASSWORD
 ```
 
-
-## Contributing
-
-1. Fork it ( https://github.com/profitbricks/profitbricks-sdk-groovy/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
