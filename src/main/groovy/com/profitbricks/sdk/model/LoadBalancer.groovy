@@ -35,10 +35,10 @@ final class LoadBalancer extends ModelBase {
     boolean dhcp = true
 
     @Override
-    final LoadBalancer create() { (super.create() as LoadBalancer)?.with dataCenter }
+    final LoadBalancer create(final Map options = [:]) { (super.create(options) as LoadBalancer)?.with dataCenter }
 
     @Override
-    final LoadBalancer read(final id = id) { (super.read(id) as LoadBalancer)?.with dataCenter }
+    final LoadBalancer read(final id = id, final Map options = [:]) { (super.read(id, options) as LoadBalancer)?.with dataCenter }
 
     @Override
     final String getResource() { "${dataCenter.resource}/${dataCenter.id}/loadbalancers" }

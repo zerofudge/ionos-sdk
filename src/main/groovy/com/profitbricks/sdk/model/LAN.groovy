@@ -45,10 +45,10 @@ final class LAN extends ModelBase {
     final getId() { super.id as Integer }
 
     @Override
-    final LAN create() { (super.create() as LAN)?.with(dataCenter) }
+    final LAN create(final Map options = [:]) { (super.create(options) as LAN)?.with(dataCenter) }
 
     @Override
-    final LAN read(final id = id) { (super.read(id) as LAN)?.with(dataCenter) }
+    final LAN read(final id = id, final Map options = [:]) { (super.read(id, options) as LAN)?.with(dataCenter) }
 
     @Override
     final String getResource() { "${dataCenter.resource}/${dataCenter.id}/lans" }

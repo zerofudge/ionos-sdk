@@ -65,15 +65,15 @@ abstract class ModelBase {
      * provides the creation REST call
      * @return the response JSON object
      */
-    def create(Map options = [:]) {
-        from waitFor(API.post(requestFor(resource, options) + [body: createBody]))?.data
+    def create(final Map options = [:]) {
+        from waitFor(API.post(requestFor(resource, options) + [body: createBody]), options)?.data
     }
 
     /**
      * provides the 'get resource' REST call
      * @return the response JSON object
      */
-    def read(final id = id, Map options = [:]) {
+    def read(final id = id, final Map options = [:]) {
         from API.get(requestFor("${resource}/${id ?: ''}", options))?.data
     }
 
@@ -82,16 +82,16 @@ abstract class ModelBase {
      * instead of PATCH (partial update)
      * @return the response JSON object
      */
-    boolean update(Map options = [:]) {
-        waitFor(API.put(requestFor("${resource}/${id}", options) + [body: updateBody]))?.status == 202
+    boolean update(final Map options = [:]) {
+        waitFor(API.put(requestFor("${resource}/${id}", options) + [body: updateBody]), options)?.status == 202
     }
 
     /**
      * provides the 'delete resource' REST call
      * @return the response JSON object
      */
-    boolean delete(Map options = [:]) {
-        waitFor(API.delete(requestFor("${resource}/$id", options)))?.status == 202
+    boolean delete(final Map options = [:]) {
+        waitFor(API.delete(requestFor("${resource}/$id", options)), options)?.status == 202
     }
 
     /**
@@ -119,7 +119,6 @@ abstract class ModelBase {
     final List propertyNames(final List<Class<? extends Annotation>> annotations) {
         this.class.declaredFields.findAll {
             annotations.find { a ->
-                //noinspection GroovyInArgumentCheck
                 a in it.declaredAnnotations*.annotationType() }
         }.collect{it.name}
     }
@@ -139,7 +138,7 @@ abstract class ModelBase {
 
             (e.propertyNames([Creatable, Updatable, Readable]))?.each {
                 def val = data.properties?."${it.replaceAll(/_/, '')}"
-                if (val != null && !(val =~ /(?i)null/))
+                if (val != null && !(val =~ /(?i)null/)) // NB: PUT seems to be non RFC-like for some entities in the PBC API
                     e."$it" = val
             }
         }

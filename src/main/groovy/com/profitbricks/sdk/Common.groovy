@@ -38,14 +38,19 @@ import static org.apache.commons.codec.binary.Base64.encodeBase64String
 final class Common {
     private final static RESTClient client = new PooledClient(URLParts.prefix)
 
-    // statically initializes the REST client
-    static {
-        if (prop('api.verifySSL') =~ /(?i)false|no/) API.ignoreSSLIssues()
+    private final static String PWF = 'wait.factor',
+                                PWI = 'wait.init.milliseconds',
+                                PWT = 'wait.timeout.seconds',
+                                PWM = 'wait.max.milliseconds'
 
-        API.handler.'404' = { log.debug "--> Not found! ($it)" }
-        API.handler.'401' = { log.debug "--> Access denied! ($it)" }
+    static {
+        if (prop('verifySSL') ==~ /(?i)false|no|null|nil/) API.ignoreSSLIssues()
+
+        API.handler.'404' = { log.debug "[404] Not found! ($it)" }
+        API.handler.'401' = { log.debug "[401] Access denied! ($it)" }
         API.handler.failure = {
-            throw StackTraceUtils.deepSanitize(new HttpResponseException(it.status as int, it.data ?: it.statusLine as String))
+            throw StackTraceUtils.deepSanitize(
+                new HttpResponseException(it.status as int, it.data ?: it.statusLine as String))
         }
     }
 
@@ -56,22 +61,24 @@ final class Common {
     final static RESTClient getAPI() { client }
 
     /**
-     * creates a request object to be handed to the REST client
+     * creates a common request
      *
      * @param path the path part of the target URL
-     * @param options optional extra params
+     * @param options optional configuration options
      * @return a new request object
      */
     final static Map requestFor(final String path, final Map options = [:]) {
+        final user = options?.user ?: prop('user')
+        final pword = options?.password ?: prop('password')
+
         [
-         path              : "${URLParts.path}/${path}",
-         headers           : [
+         path               : "${URLParts.path}/${path}",
+         headers            : [
              'User-Agent'   : 'profitbricks-groovy-sdk/3.0.0',
              'Accept'       : JSON.acceptHeader,
-             // omit resend-on-401 scheme
-             'Authorization': "Basic " + encodeBase64String("${prop('api.user')}:${prop('api.password')}".bytes)
+             'Authorization': "Basic " + encodeBase64String("${user}:${pword}".bytes)
          ],
-         requestContentType: JSON
+         requestContentType : JSON
         ]
     }
 
@@ -82,14 +89,15 @@ final class Common {
      * @throws ClientProtocolException if no 'done' was returned in time
      *
      * @param a valid REST response from the API
+     * @param options optional configuration options
      * @return the original response object
      */
-    final static waitFor(final response) {
+    final static waitFor(final response, final Map options = [:]) {
         final String loc = "${response?.headers?.Location}".trim()
 
         if (loc && !(loc =~ /(?i)null/)) {
-            double factor = prop('api.wait.factor') as Double ?: 1.87
-            BigDecimal wait = (prop('api.wait.init.milliseconds') as Integer ?: 100) / factor
+            double factor = (options[PWF] ?: prop(PWF) ?: 1.87) as double
+            BigDecimal wait = ((options[PWI] ?: prop(PWI) ?: 100) as int) / factor
 
             final start = new Date()
             while (true) {
@@ -107,11 +115,11 @@ final class Common {
                 if (status =~ /(?i)failed/)
                     throw new ClientProtocolException("${path}: FAILED!")
 
-                final long timeout = (prop('api.wait.timeout.seconds') as Long ?: 240) * 1000
+                final long timeout = ((options[PWT] ?: prop(PWT) ?: 240) as long) * 1000
                 if (TimeCategory.minus(new Date(), start).toMilliseconds() > timeout)
                     throw new ClientProtocolException("timeout (${timeout}s) exceeded while waiting for status DONE")
 
-                Thread.sleep(Math.min(wait *= factor, prop('api.wait.max.milliseconds') as Double ?: 1500) as Long)
+                Thread.sleep(Math.min(wait *= factor, (options[PWM] ?: prop(PWM) ?: 1500) as double) as long)
             }
         }
         return response
@@ -128,10 +136,10 @@ final class Common {
         }
     }
 
-    private final static prop(final String name) { System.getProperty name }
+    private final static prop(final String name) { System.getProperty "com.profitbricks.sdk.${name}" }
 
     private final static getURLParts() {
-        def url = new URL(prop('api.URL') ?: 'https://api.profitbricks.com/cloudapi/v4')
+        def url = new URL(prop('URL') ?: 'https://api.profitbricks.com/cloudapi/v4')
         [prefix: "$url" - url.path, path: url.path]
     }
 }

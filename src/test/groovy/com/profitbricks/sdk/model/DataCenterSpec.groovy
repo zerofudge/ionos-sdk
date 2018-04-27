@@ -38,6 +38,7 @@ class DataCenterSpec extends Specification {
 
         when: 'its create() method is called'
         final _dc = dataCenter.create()
+        datacenterID = _dc.id
 
         then: 'the return value of that is a DataCenter POGO'
         _dc instanceof DataCenter
@@ -45,9 +46,6 @@ class DataCenterSpec extends Specification {
         and: 'it has a valid uuid'
         _dc.id
         UUID.fromString(_dc.id as String)
-
-        cleanup:
-        datacenterID = _dc.id
     }
 
     final 'datacenters can be listed'() {

@@ -42,9 +42,10 @@ class Commands {
      * @return true if attaching worked, false otherwise
      * @throws IllegalArgumentException in case the given thing is neither volume or image
      */
-    final static boolean attach(final Server server, final ModelBase thing) {
+    final static boolean attach(final Server server, final ModelBase thing, final Map options = [:]) {
         waitFor(
-            API.post(requestFor("${server.resource}/${server.id}/${pathFor(thing.class)}") + [body: [id: thing.id]])
+            API.post(requestFor("${server.resource}/${server.id}/${pathFor(thing.class)}", options) + [body: [id: thing.id]]),
+            options
         )?.status == 202
     }
 
@@ -58,8 +59,8 @@ class Commands {
      * @return a list of volume or image ids
      * @throws IllegalArgumentException in case the given thing is neither volume or image
      */
-    static final List<String> attached(final Server server, final Class<? extends ModelBase> attachedType = Volume) {
-        API.get(requestFor("${server.resource}/${server.id}/${pathFor(attachedType)}"))?.data?.items?.collect {it.id}
+    static final List<String> attached(final Server server, final Class<? extends ModelBase> attachedType = Volume, final Map options = [:]) {
+        API.get(requestFor("${server.resource}/${server.id}/${pathFor(attachedType)}", options))?.data?.items?.collect {it.id}
     }
     
     /**
@@ -71,8 +72,8 @@ class Commands {
      * @param thing an existing attached volume or image
      * @return true if detaching worked, false otherwise
      */
-    static final boolean detach(final Server server, final ModelBase thing) {
-        waitFor(API.delete(requestFor("${server.resource}/${server.id}/${pathFor(thing.class)}/${thing.id}")))?.status == 202
+    static final boolean detach(final Server server, final ModelBase thing, final Map options = [:]) {
+        waitFor(API.delete(requestFor("${server.resource}/${server.id}/${pathFor(thing.class)}/${thing.id}", options)), options)?.status == 202
     }
 
     private final static String pathFor(final Class<? extends ModelBase> clz) {
@@ -95,8 +96,8 @@ class Commands {
      * @param server an existing server
      * @return true if the start worked, false otherwise
      */
-    static final boolean start(final Server server) {
-        waitFor(API.post(requestFor("${server.resource}/${server.id}/start")))?.status == 202
+    static final boolean start(final Server server, final Map options = [:]) {
+        waitFor(API.post(requestFor("${server.resource}/${server.id}/start", options)), options)?.status == 202
     }
 
     /**
@@ -107,8 +108,8 @@ class Commands {
      * @param server an existing server
      * @return true if the stop worked, false otherwise
      */
-    static final boolean stop(final Server server) {
-        waitFor(API.post(requestFor("${server.resource}/${server.id}/stop")))?.status == 202
+    static final boolean stop(final Server server, final Map options = [:]) {
+        waitFor(API.post(requestFor("${server.resource}/${server.id}/stop", options)), options)?.status == 202
     }
 
     /**
@@ -119,8 +120,8 @@ class Commands {
      * @param server an existing server
      * @return true if the reboot worked, false otherwise
      */
-    static final boolean reboot(final Server server) {
-        waitFor(API.post(requestFor("${server.resource}/${server.id}/reboot")))?.status == 202
+    static final boolean reboot(final Server server, final Map options = [:]) {
+        waitFor(API.post(requestFor("${server.resource}/${server.id}/reboot", options)), options)?.status == 202
     }
 
 
@@ -135,13 +136,13 @@ class Commands {
      * @param description (optional) the description for the newly created snapshot
      * @return the newly created snapshot
      */
-    static final Snapshot snapshot(final Volume volume, final String name = '', final String description = '') {
-        def req = requestFor("${volume.resource}/${volume.id}/create-snapshot") + [body: [
+    static final Snapshot snapshot(final Volume volume, final String name = null, final String description = null, final Map options = [:]) {
+        def req = requestFor("${volume.resource}/${volume.id}/create-snapshot", options) + [body: [
             name: name ?: "snapshot_of_${volume.name}",
             description: description ?: "source volume: ${volume.name} (${volume.id}), created: ${new Date().format('dd.MM.yyyy HH:mm')}"
         ]]
         req.requestContentType = URLENC
-        def resp = waitFor(API.post(req))
+        def resp = waitFor(API.post(req), options)
         if (resp?.status == 202) {
             return new Snapshot().from(resp?.data) as Snapshot
         }
@@ -156,10 +157,10 @@ class Commands {
      * @param snapshot an existing snapshot
      * @return true if the restore worked, false otherwise
      */
-    static final boolean restore(final Volume volume, final Snapshot snapshot) {
-        final req = requestFor("${volume.resource}/${volume.id}/restore-snapshot") + [body: [snapshotId: snapshot.id]]
+    static final boolean restore(final Volume volume, final Snapshot snapshot, final Map options = [:]) {
+        final req = requestFor("${volume.resource}/${volume.id}/restore-snapshot", options) + [body: [snapshotId: snapshot.id]]
         req.requestContentType = URLENC
-        waitFor(API.post(req))?.status == 202
+        waitFor(API.post(req), options)?.status == 202
     }
 
 
@@ -173,8 +174,8 @@ class Commands {
      * @param nic an existing NIC
      * @return the given (updated) NIC
      */
-    static final NIC associate(final LoadBalancer loadBalancer, final NIC nic) {
-        def resp = waitFor(API.post(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics") + [body: [id: nic.id]]))
+    static final NIC associate(final LoadBalancer loadBalancer, final NIC nic, final Map options = [:]) {
+        def resp = waitFor(API.post(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics", options) + [body: [id: nic.id]]), options)
         if (resp?.status == 202) {
             return new NIC(server: nic.server, lan: nic.lan).from(resp?.data) as NIC
         }
@@ -188,8 +189,8 @@ class Commands {
      * @param loadBalancer a valid load balancer instance
      * @return a list of NIC ids
      */
-    static final List<String> associatedNICs(final LoadBalancer loadBalancer) {
-        API.get(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics"))?.data?.items?.collect {it.id}
+    static final List<String> associatedNICs(final LoadBalancer loadBalancer, final Map options = [:]) {
+        API.get(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics", options))?.data?.items?.collect {it.id}
     }
     
     /**
@@ -200,8 +201,8 @@ class Commands {
      * @param nic an existing NIC
      * @return true if the association was successfully removed, false otherwise
      */
-    static final boolean dissociate(final LoadBalancer loadBalancer, final NIC nic) {
-        waitFor(API.delete(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics/${nic.id}")))?.status == 202
+    static final boolean dissociate(final LoadBalancer loadBalancer, final NIC nic, final Map options = [:]) {
+        waitFor(API.delete(requestFor("${loadBalancer.resource}/${loadBalancer.id}/balancednics/${nic.id}", options)), options)?.status == 202
     }
     
 
@@ -214,8 +215,8 @@ class Commands {
      * @param group the group with the associated users
      * @return a list of user IDs
      */
-    static final List<String> userIDs(final UserGroup group) {
-        API.get(requestFor("${group.resource}/${group.id}/users"))?.data?.items?.collect{it.id}
+    static final List<String> userIDs(final UserGroup group, final Map options = [:]) {
+        API.get(requestFor("${group.resource}/${group.id}/users", options))?.data?.items?.collect{it.id}
     }
 
     /**
@@ -226,8 +227,8 @@ class Commands {
      * @param user the user to be assigned
      * @return true if the user was successfully assigned, false otherwise
      */
-    final static boolean assign(final UserGroup group, final User user) {
-        waitFor(API.post(requestFor("${group.resource}/${group.id}/users") + [body: [id: user.id]]))?.status == 202
+    final static boolean assign(final UserGroup group, final User user, final Map options = [:]) {
+        waitFor(API.post(requestFor("${group.resource}/${group.id}/users", options) + [body: [id: user.id]]), options)?.status == 202
     }
 
     /**
@@ -238,7 +239,7 @@ class Commands {
      * @param user the user to be unassigned
      * @return true if the user was successfully unassigned, false otherwise
      */
-    final static boolean unassign(final UserGroup group, final User user) {
-        waitFor(API.delete(requestFor("${group.resource}/${group.id}/users/${user.id}")))?.status == 202
+    final static boolean unassign(final UserGroup group, final User user, final Map options = [:]) {
+        waitFor(API.delete(requestFor("${group.resource}/${group.id}/users/${user.id}", options)), options)?.status == 202
     }
 }

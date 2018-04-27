@@ -89,12 +89,12 @@ Version: **3.0.0**
       * [Create a User](#create-a-user)
       * [Update a User](#update-a-user)
       * [Delete a User](#delete-a-user)
-    * [Groups](#groups)
-      * [List Groups](#list-groups)
-      * [Retrieve a Group](#retrieve-a-group)
-      * [Create a Group](#create-a-group)
-      * [Update a Group](#update-a-group)
-      * [Delete a Group](#delete-a-group)
+    * [User Groups](#user-groups)
+      * [List User Groups](#list-user-groups)
+      * [Retrieve a User Group](#retrieve-a-user-group)
+      * [Create a User Group](#create-a-user-group)
+      * [Update a User Group](#update-a-user-group)
+      * [Delete a User Group](#delete-a-user-group)
       * [List Group Users](#list-group-users)
       * [Add a User to a Group](#add-a-user-to-a-group)
       * [Remove a User from a Group](#remove-a-user-from-a-group)
@@ -176,13 +176,25 @@ The most convenient way to configure the API client is to use system properties.
 
 | name | default | notes |
 |---|---|---|
-| `api.verifySSL` | `true` | set to `false` to ignore SSL certificate verification issues |
-| `api.user`| - | the API user name for basic authentication. **required** |
-| `api.password` | - | the API password for basic authentication. **required**|
-| `api.wait.init.milliseconds` | 100 | if waiting for success, this is the initial time period between two checks. |
-| `api.wait.timeout.seconds` | 120 | if waiting for success, this is the timeout. |
-| `api.wait.max.milliseconds` | 1500 | if waiting for success, this is the maximum time period between two checks. |
-| `api.wait.factor`| 1.87 | if waiting for success, this is the factor by which the current time period value is multiplied. |
+| `com.profitbricks.sdk.verifySSL` | `true` | set to `false` to ignore SSL certificate verification issues |
+| `com.profitbricks.sdk.user`| - | the API user name for basic authentication. **required** |
+| `com.profitbricks.sdk.password` | - | the API password for basic authentication. **required**|
+| `com.profitbricks.sdk.wait.init.milliseconds` | 100 | if waiting for success, this is the initial time period between two checks. |
+| `com.profitbricks.sdk.wait.timeout.seconds` | 120 | if waiting for success, this is the timeout. |
+| `com.profitbricks.sdk.wait.max.milliseconds` | 1500 | if waiting for success, this is the maximum time period between two checks. |
+| `com.profitbricks.sdk.wait.factor`| 1.87 | if waiting for success, this is the factor by which the current time period value is multiplied. |
+
+
+Individual configuration values can also be overridden with each individual request.
+
+All CRUD (and list) methods as well as all commands can be invoked with an optional map as the last parameter. The keys in this map are expected to be named like the corresponding system property **minus** the prefix `com.profitbricks.sdk.`.
+
+**Note:** `verifySSL` can only be configured via system property and not be overridden.
+
+```groovy
+// for example
+datacenter.create(user: 'otheruser', password: 'otherpassword', 'wait.factor': Math.PI)
+```
 
 
 ## SDK Reference
@@ -198,8 +210,9 @@ Virtual data centers (VDCs) are the foundation of the ProfitBricks platform. VDC
 
 Lists the ids of all currently provisioned datacenters that are accessible for the current user.
 
-```
+```groovy
 List<String> datacenterIDs = new DataCenter().all
+assert datacenterIDs : 'no datacenters found!'
 ```
 
 #### retrieve a datacenter
@@ -208,8 +221,10 @@ List<String> datacenterIDs = new DataCenter().all
 |---|---|
 | `DataCenter::id` | **yes** |
 
-```
+```groovy
+assert datacenterId : 'datacenter id missing!'
 DataCenter datacenter = new DataCenter(id: datacenterId).read()
+assert datacenter : 'no such datacenter!'
 ```
 
 #### create a datacenter
@@ -229,14 +244,13 @@ DataCenter datacenter = new DataCenter(id: datacenterId).read()
 | `de/fra` | Germany / Frankfurt |
 | `de/fkb` | Germany / Karlsruhe |
 
-```
+```groovy
 def dc = new DataCenter(
 	name: "groovy name",
 	location: 'us/ewr',
 	description: 'groovy description'
 ).create()
-
-assert dc.id
+assert dc.id : 'datacenter creation failed!'
 ```
 
 #### update a datacenter
@@ -247,11 +261,11 @@ assert dc.id
 | `DataCenter::name` | no |
 | `DataCenter::description` | no |
 
-```
-DataCenter datacenter = ...
+```groovy
+assert datacenter : 'datacenter missing!'
 dc.name = "updated name from ${dc.name}"
 dc.description = "groovy new datacenter! (old: ${dc.description})"
-assert dc.update()
+assert dc.update() : 'datacenter update failed!'
 ```
 
 #### delete a datacenter
@@ -264,9 +278,9 @@ Removes all objects within the virtual data center AND removes the virtual data 
 |---|---|
 | `DataCenter::id` | **yes** |
 
-```
-DataCenter dc = ...
-dc.delete()
+```groovy
+assert datacenter : 'datacenter missing!'
+assert dc.delete() : 'datacenter deletion failed!'
 ```
 
 
@@ -278,8 +292,9 @@ Locations are the physical ProfitBricks computing centers where you can provisio
 
 Retrieves the list of IDs of currently available locations.
 
-```
+```groovy
 List<String> locationIDs = new Location().all
+assert locationIDs : 'no locations found!'
 ```
 
 #### retrieve a location
@@ -288,19 +303,15 @@ List<String> locationIDs = new Location().all
 |---|---|
 | `Location::id` | **yes** |
 
-```
+```groovy
 Location location = new Location(id: 'us/ewr').read()
+assert location : 'no such location!'
 ```
 
 
 ### Servers
 
-A valid `DataCenter` instance is needed:
-
-```
-DataCenter dc = ...
-Server s = new Server(dataCenter: dc)
-```
+A valid `DataCenter` instance is needed to manage servers.
 
 #### List Servers
 
@@ -310,9 +321,10 @@ Retrieves the list of IDs of created servers for a given datacenter.
 |---|---|
 | `DataCenter::id` | **yes** |
 
-```
-DataCenter dc = ...
-List<String> serverIDs = new Server(dataCenter: dc).all
+```groovy
+assert datacenter : 'datacenter missing!'
+List<String> serverIDs = new Server(dataCenter: datacenter).all
+assert serverIDs : 'no servers found!'
 ```
 
 #### Retrieve a Server
@@ -322,9 +334,11 @@ List<String> serverIDs = new Server(dataCenter: dc).all
 | `DataCenter::id` | **yes** |
 | `Server::id` | **yes** |
 
-```
-DataCenter dc = ...
-Server server = new Server(id: serverId, dataCenter: dc).read()
+```groovy
+assert datacenter : 'datacenter missing!'
+assert serverId : 'server id missing!'
+Server server = new Server(id: serverId, dataCenter: datacenter).read()
+assert server : 'no such server!'
 ```
 
 #### Create a Server
@@ -346,17 +360,17 @@ Server server = new Server(id: serverId, dataCenter: dc).read()
 | `ZONE_1` | firezone 1 |
 | `ZONE_2` | firezone 2 |
 
-```
-DataCenter dc = ...
+```groovy
+assert datacenter : 'datacenter missing!'
 Server server = new Server(
-	dataCenter: dc,
+	dataCenter: datacenter,
 	name: "server name",
 	cores: 1,
 	ram: 1024,
 	availabilityZone: "ZONE_1",
 	cpuFamily: "INTEL_XEON"
 ).create()
-assert server.id
+assert server.id : 'server creation failed!'
 ```
 
 #### Update a Server
@@ -371,12 +385,12 @@ assert server.id
 | `Server::availabilityZone` | no |
 | `Server::cpuFamily` | no |
 
-```
-Server server = ...
+```groovy
+assert server : 'server missing!'
 server.name = "updated"
 server.cores += 2
 server.ram += 512
-server.update()
+assert server.update() : 'server update failed!'
 ```
 
 #### Delete a Server
@@ -388,9 +402,9 @@ Removes a server from a data center. **NOTE**: This will not automatically remov
 | `DataCenter::id` | **yes** |
 | `Server::id` | **yes** |
 
-```
-Server server = ...
-server.delete()
+```groovy
+assert server : 'server missing!'
+assert server.delete() : 'server deletion failed!'
 ```
 
 #### list attached volumes
@@ -402,9 +416,10 @@ Retrieves a list of ids of all volumes currently attached to a given server.
 | `DataCenter::id` | **yes** |
 | `Server::id` | **yes** |
 
-```
-Server server = ...
+```groovy
+assert server : 'server missing!'
 List<String> volumeIDs = Commands.attached(server, Volume)
+assert volumeIDs : 'no volumes found!'
 ```
 
 #### attach a volume
@@ -415,10 +430,10 @@ List<String> volumeIDs = Commands.attached(server, Volume)
 | `Server::id` | **yes** |
 | `Volume::id` | **yes** |
 
-```
-Server server = ...
-Volume volume = ...
-Commands.attach(server, volume)
+```groovy
+assert server : 'server missing!'
+assert volume : 'volume missing!'
+assert Commands.attach(server, volume) : 'volume attachment failed!'
 ```
 
 #### detach a volume
@@ -433,10 +448,10 @@ This will NOT delete the volume from your virtual data center. You will need to 
 | `Server::id` | **yes** |
 | `Volume::id` | **yes** |
 
-```
-Server server = ...
-Volume volume = ...
-Commands.detach(server, volume)
+```groovy
+assert server : 'server missing!'
+assert volume : 'volume missing!'
+assert Commands.detach(server, volume) : 'volume detachment failed!'
 ```
 
 #### list attached images
@@ -448,9 +463,10 @@ Retrieves a list of ids of all images (CDROMs) currently attached to a given ser
 | `DataCenter::id` | **yes** |
 | `Server::id` | **yes** |
 
-```
-Server server = ...
+```groovy
+assert server : 'server missing!'
 List<String> imageIDs = Commands.attached(server, Image)
+assert imageIDs : 'no attached images!'
 ```
 
 #### attach an image
@@ -461,10 +477,10 @@ List<String> imageIDs = Commands.attached(server, Image)
 | `Server::id` | **yes** |
 | `Image::id` | **yes** |
 
-```
-Server server = ...
-Image image = ...
-Commands.attach(server, image)
+```groovy
+assert server : 'server missing!'
+assert image : 'image missing!'
+assert Commands.attach(server, image) : 'image attachment failed!'
 ```
 
 #### detach an image
@@ -475,10 +491,10 @@ Commands.attach(server, image)
 | `Server::id` | **yes** |
 | `Image::id` | **yes** |
 
-```
-Server server = ...
-Image image = ...
-Commands.detach(server, image)
+```groovy
+assert server : 'server missing!'
+assert image : 'image missing!'
+assert Commands.detach(server, image) : 'image detachment failed!'
 ```
 
 #### reboot a server
@@ -490,9 +506,9 @@ Forces a hard reboot of the server. Do not use this method if you want to gracef
 | `DataCenter::id` | **yes** |
 | `Server::id` | **yes** |
 
-```
-Server server = ...
-Commands.reboot(server)
+```groovy
+assert server : 'server missing!'
+assert Commands.reboot(server) : 'server reboot failed!'
 ```
 
 #### start a server
@@ -504,9 +520,9 @@ Starts a server. If the server's public IP address was deallocated then a new IP
 | `DataCenter::id` | **yes** |
 | `Server::id` | **yes** |
 
-```
-Server server = ...
-Commands.start(s)
+```groovy
+assert server : 'server missing!'
+assert Commands.start(s) : 'server start failed!'
 ```
 
 #### stop a server
@@ -518,9 +534,9 @@ Stops a server. The machine will be forcefully powered off, billing will stop, a
 | `DataCenter::id` | **yes** |
 | `Server::id` | **yes** |
 
-```
-Server server = ...
-Commands.stop(s)
+```groovy
+assert server : 'server missing!'
+assert Commands.stop(s) : 'server stop failed!'
 ```
 
 
@@ -530,8 +546,9 @@ Commands.stop(s)
 
 Retrieves a list of ids of all available images (CDROMs).
 
-```
+```groovy
 List<String> imageIDs = new Image().all
+assert imageIDs : 'no images found!'
 ```
 
 #### retrieve an image
@@ -540,8 +557,9 @@ List<String> imageIDs = new Image().all
 |---|---|
 | `Image::id` | **yes** |
 
-```
+```groovy
 Image image = new Image(id: imageID).read()
+assert image._public : 'image is not public!'
 ```
 
 
@@ -556,9 +574,10 @@ A valid `DataCenter` instance is needed for this.
 |---|---|
 | `DataCenter::id` | **yes** |
 
-```
-DataCenter dc = ...
+```groovy
+assert dc : 'datacenter missing!'
 List<String> volumeIDs = new Volume(dataCenter: dc).all
+assert volumeIDs : 'no volumes found!'
 ```
 
 #### retrieve a volume
@@ -568,9 +587,10 @@ List<String> volumeIDs = new Volume(dataCenter: dc).all
 | `DataCenter::id` | **yes** |
 | `Volume::id` | **yes** |
 
-```
-DataCenter dc = ...
+```groovy
+assert dc : 'datacenter missing!'
 Volume volume = new Volume(dataCenter: dc, id: volumeId).read()
+assert volume : 'no such volume!'
 ```
 
 #### create a volume
@@ -606,10 +626,10 @@ Creates a volume within the virtual data center. This will **not** attach the vo
 | `ZONE_2` | Fire Zone 2 |
 | `ZONE_3` | Fire Zone 3 |
 
-```
-DataCenter dc = ...
-Volume v = new Volume(dataCenter: dc, name: "name", size: 1).create()
-assert v.id
+```groovy
+assert datacenter : 'datacenter missing!'
+Volume v = new Volume(dataCenter: datacenter, name: "name", size: 1).create()
+assert v.id : 'volume creation failed!'
 ```
 
 #### update a volume
@@ -629,11 +649,11 @@ assert v.id
 | `Volume::licenceType` | no |
 | `Volume::availabilityZone` | no |
 
-```
-Volume v = ...
-v.name = "updated name from ${vname}"
-v.size = 2
-v.update()
+```groovy
+assert volume : 'volume missing!'
+volume.name = "updated name from ${vname}"
+volume.size = 2
+assert v.update() : 'volume update failed!'
 ```
 
 #### delete a volume
@@ -643,9 +663,9 @@ v.update()
 | `DataCenter::id` | **yes** |
 | `Volume::id` | **yes** |
 
-```
-Volume v = ...
-v.delete()
+```groovy
+assert volume : 'volume missing!'
+assert volume.delete() : 'volume deletion failed!'
 ```
 
 #### create a volume snapshot
@@ -657,9 +677,10 @@ v.delete()
 | `Snapshot::name` | no |
 | `Snapshot::description` | no |
 
-```
-Volume v = ...
+```groovy
+assert volume : 'volume missing!'
 Snapshot snapshot = Commands.snapshot(v, 'snapshot_4711', 'a fancy snapshot')
+assert snapshot : 'snapshot operation failed!'
 ```
 
 #### restore a volume snapshot
@@ -670,10 +691,10 @@ Snapshot snapshot = Commands.snapshot(v, 'snapshot_4711', 'a fancy snapshot')
 | `Volume::id` | **yes** |
 | `Snapshot::id` | **yes** |
 
-```
-Snapshot sn = ...
-Volume v = ...
-assert Commands.restore(v, sn)
+```groovy
+assert volume : 'volume missing!'
+assert snapshot : 'snapshot missing!'
+assert Commands.restore(v, sn) : 'restoration from snapshot failed!'
 ```
 
 ### Snapshots
@@ -682,8 +703,9 @@ assert Commands.restore(v, sn)
 
 Retrieves a list of ids of all available snapshots.
 
-```
+```groovy
 List<String> snapshotIDs = new Snapshot().all
+assert snapshotIDs : 'no snapshots found!'
 ```
 
 #### retrieve a snapshot
@@ -692,8 +714,9 @@ List<String> snapshotIDs = new Snapshot().all
 |---|---|
 | `Snapshot::id` | **yes** |
 
-```
+```groovy
 Snapshot snap = new Snapshot(id: snapshotId).read()
+assert snap : 'no such snapshot!'
 ```
 
 #### update a snapshot
@@ -715,11 +738,11 @@ Snapshot snap = new Snapshot(id: snapshotId).read()
 | `Snapshot::discScsiHotPlug` | no | SCSI drive hot plug capability |
 | `Snapshot::discScsiHotUnplug` | no | SCSI drive hot unplug capability |
 
-```
-Snapshot snap = ...
-snap.name="updated from ${snap.name}"
-snap.ramHotPlug = true
-snap.update()
+```groovy
+assert snapshot : 'snapshot missing!'
+snapshot.name = "updated from ${snapshot.name}"
+snapshot.ramHotPlug = true
+assert snapshot.update() : 'snapshot update failed!'
 ```
 
 #### delete a snapshot
@@ -728,9 +751,9 @@ snap.update()
 |---|---|
 | `Snapshot::id` | **yes** |
 
-```
-Snapshot snap = ...
-sn.delete()
+```groovy
+assert snapshot : 'snapshot missing!'
+assert snapshot.delete() : 'snapshot deletion failed!'
 ```
 
 
@@ -740,8 +763,9 @@ sn.delete()
 
 Retrieves a list of ids of previously reserved (created) IP blocks.
 
-```
+```groovy
 List<String> ipBlockIDs = new IPBlock().all
+assert ipBlockIDs : 'no reserverd IP blocks!'
 ```
 
 #### retrieve an IP block
@@ -750,8 +774,10 @@ List<String> ipBlockIDs = new IPBlock().all
 |---|---|
 | `IPBlock::id` | **yes** |
 
-```
+```groovy
+assert ipBlockId : 'IP block id missing!'
 IPBlock block = new IPBlock(id: ipBlockId).read()
+assert block : 'no such IP block!'
 ```
 
 #### create an IP block
@@ -762,9 +788,9 @@ IPBlock block = new IPBlock(id: ipBlockId).read()
 | `IPBlock::size` | **yes** | the number of IP addresses to reserve |
 | `IPBlock::name` | no ||
 
-```
+```groovy
 IPBlock block = new IPBlock(location: 'us/ewr', size: 2).create()
-assert block.id
+assert block.id : 'IP block creation failed!'
 ```
 
 #### delete an IP block
@@ -773,9 +799,9 @@ assert block.id
 |---|---|
 | `IPBlock::id` | **yes** |
 
-```
-IPBlock block = ...
-block.delete()
+```groovy
+assert block : 'IP block missing!'
+assert block.delete() : 'IP block deletion failed!'
 ```
 
 
@@ -789,8 +815,10 @@ Retrieves a list of LAN ids within the virtual data center. This needs a valid `
 |---|---|
 | `DataCenter::id` | **yes** |
 
-```
-List<String> lanIDs = new LAN(dataCenter: datacenterId).all
+```groovy
+assert datacenter : 'datacenter missing!'
+List<String> lanIDs = new LAN(dataCenter: datacenter).all
+assert lanIDs : 'no LANs in this datacenter!'
 ```
 
 #### create a LAN
@@ -801,10 +829,10 @@ List<String> lanIDs = new LAN(dataCenter: datacenterId).all
 | `LAN::_public` | **yes** | publicly reachable LAN? |
 | `LAN::name` | no ||
 
-```
-DataCenter dc = ...
-LAN lan = new LAN(dataCenter: dc, name: 'primary LAN', _public: true).create()
-assert lan.id
+```groovy
+assert datacenter : 'datacenter missing!'
+LAN lan = new LAN(dataCenter: datacenter, name: 'primary LAN', _public: true).create()
+assert lan.id : 'LAN creation failed!'
 ```
 
 #### retrieve a LAN
@@ -814,10 +842,11 @@ assert lan.id
 | `DataCenter::id` | **yes** | 
 | `LAN::id` | **yes** |
 
-```
-DataCenter dc = ...
+```groovy
+assert datacenter : 'datacenter missing!'
+assert lanId : 'LAN id missing!'
 LAN lan = new LAN(dataCenter: dc, id: lanId).read()
-assert lan.id
+assert lan : 'no such LAN!'
 ```
 
 #### update a LAN
@@ -830,15 +859,15 @@ assert lan.id
 | `LAN::_public` | no ||
 | `LAN::ipFailover` | no | a collection of `IPFailover` instances |
 
-```
-LAN lan = ...
-l.name = "name"
-l._public = false
-l.ipFailover = [
+```groovy
+assert lan : 'LAN missing!'
+lan.name = "name"
+lan._public = false
+lan.ipFailover = [
     new LAN.IPFailover(ip: '158.222.103.175', nicUuid: '43ec1562-042f-40ae-8162-44c97466ab52'),
     new LAN.IPFailover(ip: '158.222.103.175', nicUuid: '7240dbbc-de87-4fec-8e50-5a5ce77690e0')
 ]
-assert l.update()
+assert lan.update() : 'LAN update failed!'
 ```
 
 #### delete a LAN
@@ -848,9 +877,9 @@ assert l.update()
 | `DataCenter::id` | **yes** |
 | `LAN::id` | **yes** |
 
-```
-LAN lan = ...
-lan.delete()
+```groovy
+assert lan : 'LAN missing!'
+assert lan.delete() : 'LAN deletion failed!'
 ```
 
 ### Network Interfaces
@@ -864,9 +893,10 @@ Retrieves a list of NIC ids for a given server. This needs a valid `Server` inst
 | `DataCenter::id` | **yes** |
 | `Server::id` | **yes** |
 
-```
-Server s = ...
-List<String> nicIDs = new NIC(server: s).all
+```groovy
+assert server : 'server missing!'
+List<String> nicIDs = new NIC(server: server).all
+assert nicIDs : 'no NICs for this server!'
 ```
 
 #### retrieve a NIC
@@ -877,9 +907,11 @@ List<String> nicIDs = new NIC(server: s).all
 | `Server::id` | **yes** |
 | `NIC::id` | **yes** |
 
-```
-Server s = ...
+```groovy
+assert server : 'server missing!'
+assert nicID : 'NIC id missing!'
 NIC nic = new NIC(server: s, id: nicID).read()
+assert nic : 'no such NIC for this server!'
 ```
 
 #### create a NIC
@@ -895,10 +927,11 @@ NIC nic = new NIC(server: s, id: nicID).read()
 | `NIC::nat` | no | if address translation should be performed |
 | `NIC::firewallActive` | no | if there are active firewall rules for this NIC |
 
-```
-Server s = ...
-LAN lan = ...
-NIC nic = new NIC(server: s, lan: lan, nat: true).create()
+```groovy
+assert server : 'server missing!'
+assert lan : 'LAN missing!'
+NIC nic = new NIC(server: server, lan: lan, nat: true).create()
+assert nic.id : 'NIC creation failed!'
 ```
 
 #### update a NIC
@@ -915,13 +948,13 @@ NIC nic = new NIC(server: s, lan: lan, nat: true).create()
 | `NIC::nat` | no |
 | `NIC::firewallActive` | no |
 
-```
-NIC nic = ...
+```groovy
+assert nic : 'NIC missing!'
 nic.name = "name"
 nic.ips = ['192.168.0.2']
 nic.dhcp = false
 nic.nat = false
-assert nic.update()
+assert nic.update() : 'NIC update failed!'
 ```
 
 #### delete a NIC
@@ -932,9 +965,9 @@ assert nic.update()
 | `Server::id` | **yes** |
 | `NIC::id` | **yes** |
 
-```
-NIC nic = ...
-assert nic.delete()
+```groovy
+assert nic : 'NIC missing!'
+assert nic.delete() : 'NIC deletion failed!'
 ```
 
 
@@ -950,9 +983,10 @@ Retrieves a list of firewall rules associated with a particular NIC. Needs a val
 | `Server::id` | **yes** |
 | `NIC::id` | **yes** |
 
-```
-NIC nic = ...
+```groovy
+assert nic : 'NIC missing!'
 List<String> fwRuleIDs = new FirewallRule(nic: nic).all
+assert fwRuleIDs : 'no firewall rules for the given NIC!'
 ```
 
 #### Retrieve a firewall rule
@@ -964,9 +998,11 @@ List<String> fwRuleIDs = new FirewallRule(nic: nic).all
 | `NIC::id` | **yes** |
 | `FirewallRule::id` | **yes** |
 
-```
-NIC nic = ...
+```groovy
+assert nic : 'NIC missing!'
+assert ruleID : 'firewall rule id missing!'
 FirewallRule rule = new FirewallRule(nic: nic, id: ruleID).read()
+assert rule : 'no such firewall rule for this NIC!'
 ```
 
 #### Create a firewall rule
@@ -986,10 +1022,10 @@ FirewallRule rule = new FirewallRule(nic: nic, id: ruleID).read()
 | `FirewallRule::icmpType` | no | only allow packets with the given ICMP type |
 | `FirewallRule::icmpCode` | no | only allow packets with the given ICMP code |
 
-```
-NIC nic = ...
+```groovy
+assert nic : 'NIC missing!'
 FirewallRule rule = new FirewallRule(nic: nic, protocol: 'UDP').create()
-assert rule.id
+assert rule.id : 'firewall rule creation failed!'
 ```
 
 #### Update a Firewall Rule
@@ -1010,15 +1046,15 @@ assert rule.id
 | `FirewallRule::icmpType` | no |
 | `FirewallRule::icmpCode` | no |
 
-```
-FirewallRule rule = ...
-fw.name = "name"
-fw.sourceMac = 'aa:bb:cc:dd:ee:ff'
-fw.sourceIp = '23.23.23.23'
-fw.targetIp = n.ips.first()
-fw.portRangeStart = '1234'
-fw.portRangeEnd = '4711'
-fw.update()
+```groovy
+assert rule : 'firewall rule missing!'
+rule.name = "name"
+rule.sourceMac = 'aa:bb:cc:dd:ee:ff'
+rule.sourceIp = '23.23.23.23'
+rule.targetIp = n.ips.first()
+rule.portRangeStart = '1234'
+rule.portRangeEnd = '4711'
+assert rule.update() : 'firewall rule update failed!'
 ```
 
 #### Delete a Firewall Rule
@@ -1030,9 +1066,9 @@ fw.update()
 | `NIC::id` | **yes** |
 | `FirewallRule::id` | **yes** |
 
-```
-FirewallRule rule = ...
-rule.delete()
+```groovy
+assert rule : 'firewall rule missing!'
+assert rule.delete() : 'firewall rule deletion failed!'
 ```
 
 
@@ -1046,9 +1082,10 @@ Retrieves a list of load balancer ids within the data center. This needs a valid
 |---|---|
 | `DataCenter::id` | **yes** |
 
-```
-DataCenter dc = ...
-List<String> loadbalancerIDs = new LoadBalancer(dataCenter: dc).all
+```groovy
+assert datacenter : 'datacenter missing!'
+List<String> loadbalancerIDs = new LoadBalancer(dataCenter: datacenter).all
+assert loadbalancerIDs : 'no load balancers for this datacenter!'
 ```
 
 #### retrieve a load balancer
@@ -1058,9 +1095,11 @@ List<String> loadbalancerIDs = new LoadBalancer(dataCenter: dc).all
 | `DataCenter::id` | **yes** |
 | `LoadBalancer::id` | **yes** |
 
-```
-DataCenter dc = ...
-LoadBalancer lb = new LoadBalancer(dataCenter: dc, id: loadbalancerId).read()
+```groovy
+assert datacenter : 'datacenter missing!'
+assert loadbalancerId : 'load balancer id missing!'
+LoadBalancer lb = new LoadBalancer(dataCenter: datacenter, id: loadbalancerId).read()
+assert lb : 'no such load balancer!'
 ```
 
 #### create a load balancer
@@ -1072,10 +1111,10 @@ LoadBalancer lb = new LoadBalancer(dataCenter: dc, id: loadbalancerId).read()
 | `LoadBalancer::ip` | no | IPv4 address of the load balancer. All attached NICs will inherit this address |
 | `LoadBalancer::dhcp` | no | if DHCP shall be used |
 
-```
-DataCenter dc = ...
-LoadBalancer lb = new LoadBalancer(dataCenter: dc, name: "frontend").create()
-assert lb.id
+```groovy
+assert datacenter : 'datacenter missing!'
+LoadBalancer lb = new LoadBalancer(dataCenter: datacenter, name: "frontend").create()
+assert lb.id : 'load balancer creation failed!'
 ```
 
 #### update a load balancer
@@ -1088,12 +1127,12 @@ assert lb.id
 | `LoadBalancer::ip` | no |
 | `LoadBalancer::dhcp` | no |
 
-```
-LoadBalancer lb = ...
-lb.name = "name"
-lb.dhcp = false
-lb.ip = '192.168.0.11'
-lb.update()
+```groovy
+assert loadbalancer : 'load balancer missing!'
+loadbalancer.name = "name"
+loadbalancer.dhcp = false
+loadbalancer.ip = '192.168.0.11'
+assert loadbalancer.update() : 'load balancer update failed!'
 ```
 
 #### delete a load balancer
@@ -1103,9 +1142,9 @@ lb.update()
 | `DataCenter::id` | **yes** |
 | `LoadBalancer::id` | **yes** |
 
-```
-LoadBalancer lb = ...
-lb.delete()
+```groovy
+assert loadbalancer : 'load balancer missing!'
+assert loadbalancer.delete() : 'load balancer deletion failed!'
 ```
 
 #### list load balanced NICs
@@ -1117,9 +1156,10 @@ Retrieves a list of ids of NICs associated with the load balancer. Needs valid `
 | `DataCenter::id` | **yes** |
 | `LoadBalancer::id` | **yes** |
 
-```
-LoadBalancer lb = ...
-List<String> nicIDs = Commands.associatedNICs(lb)
+```groovy
+assert loadbalancer : 'load balancer missing!'
+List<String> nicIDs = Commands.associatedNICs(loadbalancer)
+assert nicIDs : 'no NICs associated with this load balancer!'
 ```
 
 #### associate a NIC with a load balancer
@@ -1130,10 +1170,10 @@ List<String> nicIDs = Commands.associatedNICs(lb)
 | `LoadBalancer::id` | **yes** |
 | `NIC::id` | **yes** |
 
-```
-LoadBalancer lb = ...
-NIC nic = ...
-assert Commands.associate(lb, nic);
+```groovy
+assert loadbalancer : 'load balancer missing!'
+assert nic : 'NIC missing!'
+assert Commands.associate(loadbalancer, nic) : 'nic to load balancer association failed!'
 ```
 
 #### remove a NIC association
@@ -1144,10 +1184,10 @@ assert Commands.associate(lb, nic);
 | `LoadBalancer::id` | **yes** |
 | `NIC::id` | **yes** |
 
-```
-LoadBalancer lb = ...
-NIC nic = ...
-assert Commands.dissociate(lb, nic);
+```groovy
+assert loadbalancer : 'load balancer missing!'
+assert nic : 'NIC missing!'
+assert Commands.dissociate(loadbalancer, nic) : 'nic from load balancer dissociation failed!'
 ```
 
 
@@ -1157,8 +1197,9 @@ assert Commands.dissociate(lb, nic);
 
 Retrieves a list of ids of all users for the current contract.
 
-```
+```groovy
 List<String> userIDs = new User().all
+assert userIDs : 'no users found!'
 ```
 
 #### retrieve a user
@@ -1167,8 +1208,10 @@ List<String> userIDs = new User().all
 |---|---|
 | `User::id` | **yes** |
 
-```
+```groovy
+assert userId : 'user id missing!'
 User user = new User(id: userId).read()
+assert user : 'no such user!'
 ```
 
 #### create a User
@@ -1182,7 +1225,7 @@ User user = new User(id: userId).read()
 | `User::administrator` | no |  assigns administrative rights |
 | `User::forceSecAuth` | no | if two-factor auth should be forced |
 
-```
+```groovy
 User user = new User(
     firstname: "John",
     lastname: "Doe",
@@ -1191,7 +1234,7 @@ User user = new User(
     administrator: true,
     forceSecAuth: true
 ).create()
-assert user.id
+assert user.id : 'user creation failed!'
 ```
 
 #### update a user
@@ -1205,10 +1248,10 @@ assert user.id
 | `User::administrator` | no |
 | `User::forceSecAuth` | no |
 
-```
-User user = ...
+```groovy
+assert user : 'user missing!'
 user.administrator = false
-assert user.update()
+assert user.update() : 'user update failed!'
 ```
 
 #### delete a user
@@ -1217,81 +1260,84 @@ assert user.update()
 |---|---|
 | `User::id` | **yes** |
 
+```groovy
+assert user : 'user missing!'
+assert user.delete() : 'user deletion failed!'
 ```
-User user = ...
-user.delete()
-```
 
 
-### Groups
+### User Groups
 
-#### list groups
+#### list user groups
 
-```
-List<String> groupIDs = new Group().all
+```groovy
+List<String> groupIDs = new UserGroup().all
+assert groupIDs : 'no user groups exist!'
 ```
 
 ---
 
-#### retrieve a group
+#### retrieve a user group
 
 **Request Arguments**
 
 | Argument | Required |
 |---|---|
-| `Group::id` | **yes** |
+| `UserGroup::id` | **yes** |
 
-```
-Group group = new Group(id: groupId).read()
+```groovy
+assert groupId : 'user group id missing!'
+UserGroup group = new UserGroup(id: groupId).read()
+assert group : 'no such user group!'
 ```
 
-#### create a group
+#### create a user group
 
 | Argument | Required | Description |
 |---|---|---|
-| `Group::name` | **yes** ||
-| `Group::createDataCenter` | no | permission to create data centers |
-| `Group::createSnapshot` | no | permission to create snapshots |
-| `Group::reserveIp` | no | permission to create IP blocks |
-| `Group::accessActivityLog` | no | permission to access the activity log |
+| `UserGroup::name` | **yes** ||
+| `UserGroup::createDataCenter` | no | permission to create data centers |
+| `UserGroup::createSnapshot` | no | permission to create snapshots |
+| `UserGroup::reserveIp` | no | permission to create IP blocks |
+| `UserGroup::accessActivityLog` | no | permission to access the activity log |
 
-```
-Group group = new Group(
-    name: "GroovyUserGroup",
+```groovy
+UserGroup group = new UserGroup(
+    name: 'Admin Group',
     createDataCenter: true,
     createSnapshot: true,
     reserveIp: true,
     accessActivityLog: false
 ).create()
-assert group.id
+assert group.id : 'user group creation failed!'
 ```
 
-#### update a group
+#### update a user group
 
 | Argument | Required |
 |---|---|
-| `Group::id` | **yes** |
-| `Group::name` | no |
-| `Group::createDataCenter` | no |
-| `Group::createSnapshot` | no |
-| `Group::reserveIp` | no |
-| `Group::accessActivityLog` | no |
+| `UserGroup::id` | **yes** |
+| `UserGroup::name` | no |
+| `UserGroup::createDataCenter` | no |
+| `UserGroup::createSnapshot` | no |
+| `UserGroup::reserveIp` | no |
+| `UserGroup::accessActivityLog` | no |
 
-```
-Group group = ...
-group.createDatacenter = false
-group.update()
+```groovy
+assert userGroup : 'user group missing!'
+userGroup.createDatacenter = false
+assert userGroup.update() : 'user group update failed!'
 ```
 
-#### delete a group
+#### delete a user group
 
 | Argument | Required |
 |---|---|
-| `Group::id` | **yes** |
+| `UserGroup::id` | **yes** |
 
-```
-Group group = ...
-group.delete()
+```groovy
+assert userGroup : 'user group missing!'
+assert group.delete() : 'user group deletion failed!'
 ```
 
 #### list group users
@@ -1300,37 +1346,38 @@ Retrieves a list of ids of all users that are members of a group.
 
 | Argument | Required |
 |---|---|
-| `Group::id` | **yes** |
+| `UserGroup::id` | **yes** |
 
-```
-Group group = ...
+```groovy
+assert userGroup : 'user group missing!'
 List<String> userIDs = Commands.userIDs(group)
+assert userIDs : 'no users in this group!'
 ```
 
 #### add a user to a group
 
 | Argument | Required |
 |---|---|
-| `Group::id` | **yes** |
+| `UserGroup::id` | **yes** |
 | `User::id` | **yes** |
 
-```
-Group group = ...
-User user = ...
-assert Commands.assign(group, user)
+```groovy
+assert userGroup : 'user group missing!'
+assert user : 'user missing!'
+assert Commands.assign(userGroup, user) : 'assigning user to user group failed!'
 ```
 
 #### remove a user from a group
 
 | Argument | Required |
 |---|---|
-| `Group::id` | **yes** |
+| `UserGroup::id` | **yes** |
 | `User::id` | **yes** |
 
-```
-Group group = ...
-User user = ...
-assert Commands.unassign(group, user)
+```groovy
+assert userGroup : 'user group missing!'
+assert user : 'user missing!'
+assert Commands.unassign(group, user) : 'assigning user to user group failed!'
 ```
 
 
@@ -1338,13 +1385,14 @@ assert Commands.unassign(group, user)
 
 Retrieve the current resource allocation statistics for this contract.
 
-```
+```groovy
 ContractStats stats = new ContractStats().read()
+assert stats : 'retrieval of contract stats failed!'
 ```
 
 ### A Concise Example
 
-```
+```groovy
 import com.profitbricks.sdk.model.*
 import static com.profitbricks.sdk.Commands.*
 
@@ -1359,6 +1407,7 @@ Server server = new Server(dataCenter: dc, name: "Example server", cores: 1, ram
 
 // add a NIC to server
 NIC nic = new NIC(server: server, lan: lan, name: "example nic").create()
+assert nic.ips
 
 // find a linux image to attach to server
 Image image = new Image().all.collect{image.read(it) as Image}.findAll {
@@ -1381,24 +1430,22 @@ dc.delete()
 
 ## TODO
 
-Not all CRUD functionality needs to be instance methods on the entities. Especially `all` (a.k.a. `list`) and `read()` should be static members. This will be implemented in a future version.
-
-The current configuration approach using system properties should be replaced by a properly provided externalized configuration within the class path. A draft for this can be found `src/main/resources/config.yaml`. This will be implemented in a future version.
-
-Having proper life cycle control over your entities is helpful in the long run. The current approach to query for `/request` resources will be replaced by a future/promise based mechanism.
+Having proper life cycle control over your entities is helpful in the long run. The current approach to query for `/request` resources should be replaced by a future/promise based mechanism.
 
 
 ## Support
 
-You can engage with us in the ProfitBricks [DevOps Central community](https://devops.profitbricks.com/community) and we will be happy to answer any questions you might have about using this SDK.
+You can engage with us in the ProfitBricks [DevOps Central community](https://devops.profitbricks.com/community), there we'll gladly answer any questions you might have about this SDK.
 
 Please report any issues or bugs your encounter using the [GitHub Issue Tracker](https://github.com/profitbricks/profitbricks-sdk-groovy/issues).
 
 
 ## Testing
 
-You can find a full test suite in `src/test/groovy`. You can run all tests issuing 
-```
-./gradlew test -Dapi.user=YOUR_USERNAME -Dapi.password=YOUR_PASSWORD
+You can find a full test suite in `src/test/groovy`. Run all tests by issuing 
+```bash
+./gradlew test \
+-Dcom.profitbricks.sdk.user=YOUR_USERNAME \
+-Dcom.profitbricks.sdk.password=YOUR_PASSWORD
 ```
 

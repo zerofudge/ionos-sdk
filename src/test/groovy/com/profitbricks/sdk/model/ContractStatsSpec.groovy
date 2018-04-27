@@ -34,7 +34,7 @@ class ContractStatsSpec extends Specification {
 
         then:
         stats.contractNumber > 0
-        stats.owner == System.properties['api.user']
+        stats.owner == System.properties['com.profitbricks.sdk.user']
         stats.status == 'BILLABLE'
         stats.resourceLimits.coresPerServer > 0
         stats.resourceLimits.coresPerContract > 0

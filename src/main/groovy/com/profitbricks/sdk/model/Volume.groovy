@@ -48,13 +48,13 @@ final class Volume extends ModelBase {
     int deviceNumber
 
     @Override
-    final Volume create() {
-        (super.create() as Volume)?.with dataCenter
+    final Volume create(final Map options = [:]) {
+        (super.create(options) as Volume)?.with dataCenter
     }
 
     @Override
-    final Volume read(final id = id) {
-        (super.read(id) as Volume)?.with dataCenter
+    final Volume read(final id = id, final Map options = [:]) {
+        (super.read(id, options) as Volume)?.with dataCenter
     }
 
     @Override

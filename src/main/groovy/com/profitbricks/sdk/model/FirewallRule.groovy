@@ -35,10 +35,10 @@ final class FirewallRule extends ModelBase {
     String protocol
 
     @Override
-    final FirewallRule create() { (super.create() as FirewallRule)?.with(nic) }
+    final FirewallRule create(final Map options = [:]) { (super.create(options) as FirewallRule)?.with(nic) }
 
     @Override
-    final FirewallRule read(final id = id) { (super.read(id) as FirewallRule)?.with(nic) }
+    final FirewallRule read(final id = id, final Map options = [:]) { (super.read(id, options) as FirewallRule)?.with(nic) }
 
     @Override
     final String getResource() { "${nic.resource}/${nic.id}/firewallrules" }

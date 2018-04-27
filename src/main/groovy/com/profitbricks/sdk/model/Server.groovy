@@ -42,10 +42,10 @@ final class Server extends ModelBase {
     final String getResource() { "${dataCenter.resource}/${dataCenter.id}/servers" }
 
     @Override
-    final Server create() { (super.create() as Server)?.with dataCenter }
+    final Server create(final Map options = [:]) { (super.create(options) as Server)?.with dataCenter }
 
     @Override
-    final Server read(final id = id) { (super.read(id) as Server)?.with dataCenter }
+    final Server read(final id = id, final Map options = [:]) { (super.read(id, options) as Server)?.with dataCenter }
 
     private final Server with(final DataCenter dc) { dataCenter = dc; this }
 }

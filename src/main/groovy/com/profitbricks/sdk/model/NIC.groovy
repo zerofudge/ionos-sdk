@@ -46,10 +46,10 @@ final class NIC extends ModelBase {
     }
 
     @Override
-    final NIC create() { _from super.create() }
+    final NIC create(final Map options = [:]) { _from super.create(options) }
 
     @Override
-    final NIC read(final id = id) { _from super.read(id) }
+    final NIC read(final id = id, final Map options = [:]) { _from super.read(id, options) }
 
     @Override
     final String getResource() { "${server.resource}/${server.id}/nics" }
