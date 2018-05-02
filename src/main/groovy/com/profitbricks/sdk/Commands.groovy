@@ -30,15 +30,15 @@ import static groovyx.net.http.ContentType.URLENC
  */
 class Commands {
 
-    // --------------------------------- A T T A C H E M E N T   C O M M A N D S ---------------------------------
+    // --------------------------------- S T O R A G E   A T T A C H E M E N T   C O M M A N D S ---------------------------------
 
     /**
      * attaches a given volume or image to a given server
      * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#attach-a-volume">attach a volume</a>
      * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#attach-a-cd-rom">attach a cd-rom</a>
      *
-     * @param server an existing server
-     * @param thing an existing volume or image
+     * @param server an existing {@link Server}
+     * @param thing an existing attached {@link Volume} or {@link Image}
      * @return true if attaching worked, false otherwise
      * @throws IllegalArgumentException in case the given thing is neither volume or image
      */
@@ -54,10 +54,10 @@ class Commands {
      * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-attached-volumes">list attached volumes</a>
      * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#list-attached-cd-roms">list attached cd-roms</a>
      *
-     * @param server a valid server instance
-     * @param type one of #Volume (default) or #Image
-     * @return a list of volume or image ids
-     * @throws IllegalArgumentException in case the given thing is neither volume or image
+     * @param server a valid {@link Server} instance
+     * @param type one of {@link Volume} (default) or {@link Image}
+     * @return a list of {@link Volume} or {@link Image} ids
+     * @throws IllegalArgumentException in case the given thing is neither {@link Volume} or {@link Image}
      */
     static final List<String> attached(final Server server, final Class<? extends ModelBase> attachedType = Volume, final Map options = [:]) {
         API.get(requestFor("${server.resource}/${server.id}/${pathFor(attachedType)}", options))?.data?.items?.collect {it.id}
@@ -68,8 +68,8 @@ class Commands {
      * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#detach-a-volume">detach a volume</a>
      * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#detach-a-cd-rom">detach a cd-rom</a>
      *
-     * @param server an existing server
-     * @param thing an existing attached volume or image
+     * @param server an existing {@link Server}
+     * @param thing an existing attached {@link Volume} or {@link Image}
      * @return true if detaching worked, false otherwise
      */
     static final boolean detach(final Server server, final ModelBase thing, final Map options = [:]) {
@@ -92,8 +92,7 @@ class Commands {
      * starts a given server
      * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#start-a-server">start a server</a>
      *
-     * @param server
-     * @param server an existing server
+     * @param server an existing {@link Server}
      * @return true if the start worked, false otherwise
      */
     static final boolean start(final Server server, final Map options = [:]) {
@@ -104,8 +103,7 @@ class Commands {
      * stops a given server
      * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#stop-a-server">stop a server</a>
      *
-     * @param server
-     * @param server an existing server
+     * @param server an existing {@link Server}
      * @return true if the stop worked, false otherwise
      */
     static final boolean stop(final Server server, final Map options = [:]) {
@@ -116,8 +114,7 @@ class Commands {
      * reboots a given server
      * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#reboot-a-server">reboot a server</a>
      *
-     * @param server
-     * @param server an existing server
+     * @param server an existing {@link Server}
      * @return true if the reboot worked, false otherwise
      */
     static final boolean reboot(final Server server, final Map options = [:]) {
@@ -131,10 +128,10 @@ class Commands {
      * creates a snapshot of a given volume
      * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#create-volume-snapshot">create volume snapshot</a>
      *
-     * @param volume an existing volume
-     * @param name (optional) a name for the newly created snapshot
-     * @param description (optional) the description for the newly created snapshot
-     * @return the newly created snapshot
+     * @param volume an existing {@link Volume|
+     * @param name (optional) a name for the newly created {@link Snapshot}
+     * @param description (optional) the description for the newly created {@link Snapshot}
+     * @return the newly created {@link Snapshot}
      */
     static final Snapshot snapshot(final Volume volume, final String name = null, final String description = null, final Map options = [:]) {
         def req = requestFor("${volume.resource}/${volume.id}/create-snapshot", options) + [body: [

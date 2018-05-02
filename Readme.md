@@ -125,12 +125,11 @@ An entity must be sufficiently populated in order for the associated REST reques
 
 For resources that exist within the context of another resource, that other resource must also be properly instantiated and injected.
 
-_For example_: to successfully operate on a network interface, the entity (`NIC`) must also contain proper `Server` and `LAN` instances.
+_For example_: to successfully operate on a network interface, the entity (`NIC`) must also contain proper `Server` and `LAN` instances, while in turn the `Server` and `LAN` instances must contain a proper `DataCenter` instance (which needs just a valid id).
 
-No extra modeling was made (e.g. no *parent* links). The entities just enclose the transported JSON representations.
+No extra modeling was made (e.g. no _parent_ links and in total ignorance about the `depth` API parameter). The entities just enclose the transported JSON representations.
 
-On a successfully-delivered `POST`, `PUT` or `DELETE` request, the Profitbricks API might send a `Location` header instead of the final resulting response to the requested action. This SDK will block on such a response, then continue polling for the final result. If a successful result does not come
-in time, an exception will be thrown.
+On a successfully-delivered `POST`, `PUT` or `DELETE` request, the Profitbricks API might send a `Location` header instead of the final resulting response to the requested action. This SDK will block on such a response, then continue polling for the final result. If a successful result does not come in time, an exception will be thrown.
 
 This was made to allow for easy and agile API scripting, as the result matters most of the time, and such a behavior would be needed anyway.
 
@@ -138,19 +137,19 @@ For API resources which do not fit into the CRUD scheme, an extra command facade
 
 This implementation is based on Groovy 2, so it technically runs on any JVM version 7 or later.
 
-Before you begin you will need to have [signed up](https://www.profitbricks.com/signup) for a ProfitBricks account. The credentials you set up during the sign-up process will be used to authenticate against the Cloud API.
+Before you begin you will need to have [signed up](https://www.profitbricks.com/signup) for a ProfitBricks account. The credentials you set up during the sign-up process must be used to authenticate against the Cloud API.
 
 
 ## Getting Started
 
 ### Installation
 
-This SDK is available from the [ProfitBricks GitHub Page](https://github.com/profitbricks/profitbricks-sdk-groovy) as well as [Maven Central](https://oss.sonatype.org/#TBD)
+This SDK is available from the [ProfitBricks GitHub Page](https://github.com/profitbricks/profitbricks-sdk-groovy) as well as [Maven Central](https://oss.sonatype.org/#nexus-search;quick~com.profitbricks)
 
 - **optional**: build and deploy it to your local maven repository:
 
 ```
-./gradlew assemble publishToMavenLocal -x test` 
+./gradlew assemble publishToMavenLocal -x test
 ```
 
 - add the dependency to your project:
@@ -163,20 +162,20 @@ This SDK is available from the [ProfitBricks GitHub Page](https://github.com/pro
   - example: maven
 
         <dependency>
-		    <groupId>com.profitbricks</groupId>
-		    <artifactId>groovy-sdk</artifactId>
-		    <version>3.0.0</version>
+            <groupId>com.profitbricks</groupId>
+            <artifactId>groovy-sdk</artifactId>
+            <version>3.0.0</version>
         </dependency>
 
 ### Configuration
 
-The most convenient way to configure the API client is to use system properties. The following table lists all those properties along with their default value (if any).
+One way to configure the API client is to use system properties. The following table lists all those properties along with their default value (if any).
 
 **System Properties**
 
 | name | default | notes |
 |---|---|---|
-| `com.profitbricks.sdk.verifySSL` | `true` | set to `false` to ignore SSL certificate verification issues |
+| `com.profitbricks.sdk.verifySSL` | `true` | set to `false` to ignore SSL certificate verification issues, see also note below |
 | `com.profitbricks.sdk.user`| - | the API user name for basic authentication. **required** |
 | `com.profitbricks.sdk.password` | - | the API password for basic authentication. **required**|
 | `com.profitbricks.sdk.wait.init.milliseconds` | 100 | if waiting for success, this is the initial time period between two checks. |
@@ -187,13 +186,16 @@ The most convenient way to configure the API client is to use system properties.
 
 Individual configuration values can also be overridden with each individual request.
 
-All CRUD (and list) methods as well as all commands can be invoked with an optional map as the last parameter. The keys in this map are expected to be named like the corresponding system property **minus** the prefix `com.profitbricks.sdk.`.
+All CRUD (and list) methods as well as all commands can be invoked with an optional map as the **last** parameter. The keys in this map are expected to be named like the corresponding system property **minus** the prefix `com.profitbricks.sdk.`.
 
-**Note:** `verifySSL` can only be configured via system property and not be overridden.
+**Note:** `verifySSL` can only be configured via system property before making the first API call and not be overridden.
 
 ```groovy
 // for example
-datacenter.create(user: 'otheruser', password: 'otherpassword', 'wait.factor': Math.PI)
+datacenter.create(user: 'otheruser', password: 'otherpassword', 'wait.factor': Math.PI/2)
+// or for read operations
+assert userID : 'user id missing'
+new User().read(userID, [password: 'mypassword'])
 ```
 
 
@@ -246,9 +248,9 @@ assert datacenter : 'no such datacenter!'
 
 ```groovy
 def dc = new DataCenter(
-	name: "groovy name",
-	location: 'us/ewr',
-	description: 'groovy description'
+    name: "groovy name",
+    location: 'us/ewr',
+    description: 'groovy description'
 ).create()
 assert dc.id : 'datacenter creation failed!'
 ```
@@ -363,12 +365,12 @@ assert server : 'no such server!'
 ```groovy
 assert datacenter : 'datacenter missing!'
 Server server = new Server(
-	dataCenter: datacenter,
-	name: "server name",
-	cores: 1,
-	ram: 1024,
-	availabilityZone: "ZONE_1",
-	cpuFamily: "INTEL_XEON"
+    dataCenter: datacenter,
+    name: "server name",
+    cores: 1,
+    ram: 1024,
+    availabilityZone: "ZONE_1",
+    cpuFamily: "INTEL_XEON"
 ).create()
 assert server.id : 'server creation failed!'
 ```
@@ -1430,19 +1432,20 @@ dc.delete()
 
 ## TODO
 
-Having proper life cycle control over your entities is helpful in the long run. The current approach to query for `/request` resources should be replaced by a future/promise based mechanism.
+- Having proper life cycle control over your entities is helpful in the long run. The current approach to query for `/request` resources should be replaced by a future/promise based mechanism.
+- To circumvent hitting the rate limit there should be a way to indicate slowing down depending on the value of the `X-RateLimit-Remaining` and `X-RateLimit-Burst` response headers.
 
 
 ## Support
 
-You can engage with us in the ProfitBricks [DevOps Central community](https://devops.profitbricks.com/community), there we'll gladly answer any questions you might have about this SDK.
+You can engage with us in the ProfitBricks [DevOps Central community](https://devops.profitbricks.com/community), there we'll gladly answer any questions you might have about this SDK or the Profitbricks Cloud API.
 
 Please report any issues or bugs your encounter using the [GitHub Issue Tracker](https://github.com/profitbricks/profitbricks-sdk-groovy/issues).
 
 
 ## Testing
 
-You can find a full test suite in `src/test/groovy`. Run all tests by issuing 
+You can find a full test suite in `src/test/groovy`. Run all tests by issuing
 ```bash
 ./gradlew test \
 -Dcom.profitbricks.sdk.user=YOUR_USERNAME \

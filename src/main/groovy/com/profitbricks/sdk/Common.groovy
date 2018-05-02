@@ -36,7 +36,7 @@ import static org.apache.commons.codec.binary.Base64.encodeBase64String
  */
 @Log4j2
 final class Common {
-    private final static RESTClient client = new PooledClient(URLParts.prefix)
+    private final static RESTClient client = new PooledClient()
 
     private final static String PWF = 'wait.factor',
                                 PWI = 'wait.init.milliseconds',
@@ -44,10 +44,11 @@ final class Common {
                                 PWM = 'wait.max.milliseconds'
 
     static {
-        if (prop('verifySSL') ==~ /(?i)false|no|null|nil/) API.ignoreSSLIssues()
+        if (prop('verifySSL') ==~ /(?i)false|no|null|nil/)
+            API.ignoreSSLIssues()
 
-        API.handler.'404' = { log.debug "[404] Not found! ($it)" }
-        API.handler.'401' = { log.debug "[401] Access denied! ($it)" }
+        API.handler.'404'   = { log.debug "[404] Not found! ($it)" }
+        API.handler.'401'   = { log.debug "[401] Access denied! ($it)" }
         API.handler.failure = {
             throw StackTraceUtils.deepSanitize(
                 new HttpResponseException(it.status as int, it.data ?: it.statusLine as String))
@@ -65,28 +66,36 @@ final class Common {
      *
      * @param path the path part of the target URL
      * @param options optional configuration options
-     * @return a new request object
+     * @return a new request object (for HTTPBuilder)
      */
     final static Map requestFor(final String path, final Map options = [:]) {
         final user = options?.user ?: prop('user')
         final pword = options?.password ?: prop('password')
 
-        [
-         path               : "${URLParts.path}/${path}",
-         headers            : [
-             'User-Agent'   : 'profitbricks-groovy-sdk/3.0.0',
-             'Accept'       : JSON.acceptHeader,
-             'Authorization': "Basic " + encodeBase64String("${user}:${pword}".bytes)
-         ],
-         requestContentType : JSON
+        final req = [
+            uri                : "${getAPIURL(options)}/${path}",
+            headers            : [
+                'User-Agent'   : 'profitbricks-groovy-sdk/3.0.0',
+                'Accept'       : JSON.acceptHeader,
+                'Authorization': "Basic " + encodeBase64String("${user}:${pword}".bytes)
+            ],
+            requestContentType : JSON
         ]
+
+        if (log.traceEnabled)
+            log.trace "base request generated: $req"
+
+        return req
     }
 
     /**
      * takes the response of a prior REST request and queries the 'Location' target
      * for as long as that returns 'done'
      * timings are configurable
-     * @throws ClientProtocolException if no 'done' was returned in time
+     * @throws ClientProtocolException if no 'done' was returned in time or
+     * the 'Location' target yielded an non-success response status
+     * @throws IllegalStateException if an unexpected response was received
+     * while querying the 'Location' target
      *
      * @param a valid REST response from the API
      * @param options optional configuration options
@@ -101,15 +110,18 @@ final class Common {
 
             final start = new Date()
             while (true) {
-                def path = loc.toURL().path - URLParts.path
+                def path = loc - getAPIURL(options)
                 if (path[0] == '/') {
                     path = path.substring(1)
                 }
-                final resp = API.get(requestFor(path))
+                final resp = API.get(requestFor(path, options))
                 final status = resp?.data?.metadata?.status
 
-                if (log.isTraceEnabled())
-                    log.trace "request ${loc.substring(loc.lastIndexOf('/') + 1)}: ${status}"
+                if (log.traceEnabled)
+                    log.trace "${loc.substring(loc.lastIndexOf('/') + 1)}: ${status}"
+
+                if (!status)
+                    throw new IllegalStateException("unexpected response: ${resp}!")
 
                 if (status =~ /(?i)done/) break
                 if (status =~ /(?i)failed/)
@@ -126,10 +138,6 @@ final class Common {
     }
 
     private final static class PooledClient extends RESTClient {
-        PooledClient(final Object defaultURI) throws URISyntaxException {
-            super(defaultURI)
-        }
-
         @Override
         protected final HttpClient createClient(final HttpParams params) {
             new DefaultHttpClient(new PoolingClientConnectionManager(maxTotal: 200, defaultMaxPerRoute: 20), params)
@@ -138,8 +146,7 @@ final class Common {
 
     private final static prop(final String name) { System.getProperty "com.profitbricks.sdk.${name}" }
 
-    private final static getURLParts() {
-        def url = new URL(prop('URL') ?: 'https://api.profitbricks.com/cloudapi/v4')
-        [prefix: "$url" - url.path, path: url.path]
+    private final static String getAPIURL(Map<String, ?> options) {
+        options?.URL ?: prop('URL') ?: 'https://api.profitbricks.com/cloudapi/v4'
     }
 }
