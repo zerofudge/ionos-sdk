@@ -33,7 +33,7 @@ apply plugin: 'io.codearte.nexus-staging'
 
 archivesBaseName = 'groovy-sdk'
 group 'com.profitbricks'
-version '3.0-SNAPSHOT'
+version '3.0.0'
 targetCompatibility = 7
 final ppx = 'com.profitbricks.sdk'
 
