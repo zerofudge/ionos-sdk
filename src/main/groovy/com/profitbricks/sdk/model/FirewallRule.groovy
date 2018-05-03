@@ -1,3 +1,19 @@
+/*
+   Copyright 2018 Profitbricks GmbH
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package com.profitbricks.sdk.model
 
 import com.profitbricks.sdk.annotation.*
@@ -5,26 +21,24 @@ import groovy.transform.*
 
 /**
  * a firewall rule POGO
- * see: https://devops.profitbricks.com/api/cloud/v4/#firewall-rules
+ * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#firewall-rules">Cloud API reference</a>
  *
- * Created by fudge on 03/02/17.
- * Copyright (c) 2017, ProfitBricks GmbH
+ * @author fudge <frank.geusch@profitbricks.com>
  */
 @ToString(includeNames = true, ignoreNulls = true, includeSuperProperties = true, includePackage = false, excludes = ['resource', 'nic'])
 @EqualsAndHashCode(callSuper = true)
 final class FirewallRule extends ModelBase {
     NIC nic
-    @SuppressWarnings("GroovyUnusedDeclaration")
     @Creatable @Updatable
     String name, sourceMac, sourceIp, targetIp, portRangeStart, portRangeEnd, icmpType, icmpCode
     @Creatable
     String protocol
 
     @Override
-    final FirewallRule create() { (super.create() as FirewallRule)?.with(nic) }
+    final FirewallRule create(final Map options = [:]) { (super.create(options) as FirewallRule)?.with(nic) }
 
     @Override
-    final FirewallRule read(final id = id) { (super.read(id) as FirewallRule)?.with(nic) }
+    final FirewallRule read(final id = id, final Map options = [:]) { (super.read(id, options) as FirewallRule)?.with(nic) }
 
     @Override
     final String getResource() { "${nic.resource}/${nic.id}/firewallrules" }

@@ -1,35 +1,57 @@
+/*
+   Copyright 2018 Profitbricks GmbH
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package com.profitbricks.sdk
 
 import groovy.time.TimeCategory
 import groovy.util.logging.Log4j2
 import groovyx.net.http.RESTClient
 import org.apache.http.client.*
-import org.apache.http.impl.client.*
+import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.impl.conn.PoolingClientConnectionManager
-import org.apache.http.params.*
+import org.apache.http.params.HttpParams
 import org.codehaus.groovy.runtime.StackTraceUtils
 
 import static groovyx.net.http.ContentType.JSON
 import static org.apache.commons.codec.binary.Base64.encodeBase64String
 
+
 /**
- * some static functions enclosing convenience functionality
+ * static functions enclosing common rest client functionality
  *
- * Created by fudge on 01/02/17.
- * Copyright (c) 2017, ProfitBricks GmbH
+ * @author fudge <frank.geusch@profitbricks.com>
  */
 @Log4j2
 final class Common {
-    private final static RESTClient client = new PooledClient(URLParts.prefix)
+    private final static RESTClient client = new PooledClient()
 
-    // statically initializes the REST client
+    private final static String PWF = 'wait.factor',
+                                PWI = 'wait.init.milliseconds',
+                                PWT = 'wait.timeout.seconds',
+                                PWM = 'wait.max.milliseconds'
+
     static {
-        if (prop('api.verifySSL') =~ /(?i)false|no/) API.ignoreSSLIssues()
+        if (prop('verifySSL') ==~ /(?i)false|no|null|nil/)
+            API.ignoreSSLIssues()
 
-        API.handler.'404' = { log.debug "--> Not found! ($it)" }
-        API.handler.'401' = { log.debug "--> Access denied! ($it)" }
+        API.handler.'404'   = { log.debug "[404] Not found! ($it)" }
+        API.handler.'401'   = { log.debug "[401] Access denied! ($it)" }
         API.handler.failure = {
-            throw StackTraceUtils.deepSanitize(new HttpResponseException(it.status as int, it.data ?: it.statusLine as String))
+            throw StackTraceUtils.deepSanitize(
+                new HttpResponseException(it.status as int, it.data ?: it.statusLine as String))
         }
     }
 
@@ -40,86 +62,91 @@ final class Common {
     final static RESTClient getAPI() { client }
 
     /**
-     * creates a request object to be handed to the REST client
+     * creates a common request
      *
      * @param path the path part of the target URL
-     * @return a new request object
+     * @param options optional configuration options
+     * @return a new request object (for HTTPBuilder)
      */
-    final static Map requestFor(final String path) {
-        [
-         path              : "${URLParts.path}/${path}",
-         headers           : [
-             'User-Agent'   : 'profitbricks-groovy-sdk/2.0',
-             'Accept'       : JSON.acceptHeader,
-             // omit resend-on-401 scheme
-             'Authorization': "Basic " + encodeBase64String("${prop('api.user')}:${prop('api.password')}".bytes)
-         ],
-         requestContentType: JSON
+    final static Map requestFor(final String path, final Map options = [:]) {
+        final user = options?.user ?: prop('user')
+        final pword = options?.password ?: prop('password')
+
+        final req = [
+            uri                : "${getAPIURL(options)}/${path}",
+            headers            : [
+                'User-Agent'   : 'profitbricks-groovy-sdk/3.0.0',
+                'Accept'       : JSON.acceptHeader,
+                'Authorization': "Basic " + encodeBase64String("${user}:${pword}".bytes)
+            ],
+            requestContentType : JSON
         ]
+
+        if (log.traceEnabled)
+            log.trace "base request generated: $req"
+
+        return req
     }
 
     /**
      * takes the response of a prior REST request and queries the 'Location' target
      * for as long as that returns 'done'
      * timings are configurable
-     * throws a ClientProtocolException if no 'done' was returned in time
+     * @throws ClientProtocolException if no 'done' was returned in time or
+     * the 'Location' target yielded an non-success response status
+     * @throws IllegalStateException if an unexpected response was received
+     * while querying the 'Location' target
      *
      * @param a valid REST response from the API
+     * @param options optional configuration options
      * @return the original response object
      */
-    final static waitFor(final response) {
+    final static waitFor(final response, final Map options = [:]) {
         final String loc = "${response?.headers?.Location}".trim()
-        if (loc && !(loc =~ /(?i)null/)) {
-            final start = new Date()
 
+        if (loc && !(loc =~ /(?i)null/)) {
+            double factor = (options[PWF] ?: prop(PWF) ?: 1.87) as double
+            BigDecimal wait = ((options[PWI] ?: prop(PWI) ?: 100) as int) / factor
+
+            final start = new Date()
             while (true) {
-                def path = loc.toURL().path - URLParts.path
-                if (path.getAt(0) == '/') {
+                def path = loc - getAPIURL(options)
+                if (path[0] == '/') {
                     path = path.substring(1)
                 }
-                final resp = API.get(requestFor(path))
+                final resp = API.get(requestFor(path, options))
                 final status = resp?.data?.metadata?.status
 
-                if (log.isTraceEnabled())
-                    log.trace "request ${loc.substring(loc.lastIndexOf('/') + 1)}: ${status}"
+                if (log.traceEnabled)
+                    log.trace "${loc.substring(loc.lastIndexOf('/') + 1)}: ${status}"
+
+                if (!status)
+                    throw new IllegalStateException("unexpected response: ${resp}!")
 
                 if (status =~ /(?i)done/) break
                 if (status =~ /(?i)failed/)
                     throw new ClientProtocolException("${path}: FAILED!")
 
-                final int timeout = (prop('api.wait.timeout.seconds') as Integer ?: 240)
-                if (TimeCategory.minus(new Date(), start).toMilliseconds() > (timeout * 1000)) {
+                final long timeout = ((options[PWT] ?: prop(PWT) ?: 240) as long) * 1000
+                if (TimeCategory.minus(new Date(), start).toMilliseconds() > timeout)
                     throw new ClientProtocolException("timeout (${timeout}s) exceeded while waiting for status DONE")
-                }
 
-                Thread.sleep 4000
+                Thread.sleep(Math.min(wait *= factor, (options[PWM] ?: prop(PWM) ?: 1500) as double) as long)
             }
         }
         return response
     }
 
     private final static class PooledClient extends RESTClient {
-        PooledClient(final Object defaultURI) throws URISyntaxException { super(defaultURI) }
-
         @Override
         protected final HttpClient createClient(final HttpParams params) {
-            final cm = new PoolingClientConnectionManager()
-            cm.maxTotal = 200
-            cm.defaultMaxPerRoute = 20
-            new DefaultHttpClient(cm, params)
+            new DefaultHttpClient(new PoolingClientConnectionManager(maxTotal: 200, defaultMaxPerRoute: 20), params)
         }
     }
 
-    /**
-     * get system property values
-     *
-     * @param name the name of a system property
-     * @return the value of the property or null
-     */
-    private final static prop(final String name) { System.getProperty name }
+    private final static prop(final String name) { System.getProperty "com.profitbricks.sdk.${name}" }
 
-    private final static getURLParts() {
-        def url = new URL(prop('api.URL') ?: 'https://api.profitbricks.com/cloudapi/v4')
-        [prefix: "$url" - url.path, path: url.path]
+    private final static String getAPIURL(Map<String, ?> options) {
+        options?.URL ?: prop('URL') ?: 'https://api.profitbricks.com/cloudapi/v4'
     }
 }

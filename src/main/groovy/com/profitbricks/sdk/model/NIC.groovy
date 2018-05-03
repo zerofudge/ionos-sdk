@@ -1,3 +1,19 @@
+/*
+   Copyright 2018 Profitbricks GmbH
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package com.profitbricks.sdk.model
 
 import com.profitbricks.sdk.annotation.*
@@ -5,23 +21,22 @@ import groovy.transform.*
 
 /**
  * a network interface POGO
- * see: https://devops.profitbricks.com/api/cloud/v4/#network-interfaces
+ * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#network-interfaces">Cloud API reference</a>
  *
- * Created by fudge on 03/02/17.
- * Copyright (c) 2017, ProfitBricks GmbH
+ * @author fudge <frank.geusch@profitbricks.com>
  */
 @ToString(includeNames = true, ignoreNulls = true, includeSuperProperties = true, includePackage = false, excludes = ['resource', 'server', 'lan'])
 @EqualsAndHashCode(callSuper = true)
 final class NIC extends ModelBase {
     Server server
     LAN lan
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     String name
-    @Readable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Readable
     String mac
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     List<String> ips
-    @Creatable @Updatable @SuppressWarnings("GroovyUnusedDeclaration")
+    @Creatable @Updatable
     boolean dhcp = true, nat = false, firewallActive = false
 
     @Override
@@ -31,10 +46,10 @@ final class NIC extends ModelBase {
     }
 
     @Override
-    final NIC create() { _from super.create() }
+    final NIC create(final Map options = [:]) { _from super.create(options) }
 
     @Override
-    final NIC read(final id = id) { _from super.read(id) }
+    final NIC read(final id = id, final Map options = [:]) { _from super.read(id, options) }
 
     @Override
     final String getResource() { "${server.resource}/${server.id}/nics" }
@@ -42,16 +57,14 @@ final class NIC extends ModelBase {
     @Override
     protected final Map getCreateBody() {
         def body = super.createBody
-        body.properties.lan = lan.id
+        body.properties += [lan: lan.id]
         return body
     }
 
     @Override
     protected final Map getUpdateBody() {
         def body = createBody
-        body.properties.dhcp = String.valueOf(dhcp)
-        body.properties.nat = String.valueOf(nat)
-        body.properties.firewallActive = String.valueOf(firewallActive)
+        body.properties += [dhcp: dhcp, nat: nat, firewallActive: firewallActive]
         return body
     }
 

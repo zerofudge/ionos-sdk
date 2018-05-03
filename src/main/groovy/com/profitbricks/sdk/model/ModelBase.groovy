@@ -1,3 +1,19 @@
+/*
+   Copyright 2018 Profitbricks GmbH
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package com.profitbricks.sdk.model
 
 import com.profitbricks.sdk.annotation.*
@@ -10,13 +26,12 @@ import static com.profitbricks.sdk.Common.*
 
 /**
  * base class for all model entities
- * all operations are blocking until the API result status is received
+ * all operations are blocking until a proper request status is received
  *
- * Created by fudge on 01/02/17.
- * Copyright (c) 2017, ProfitBricks GmbH
+ * @author fudge <frank.geusch@profitbricks.com>
  */
-@EqualsAndHashCode
 @Log4j2
+@EqualsAndHashCode
 abstract class ModelBase {
     def id
 
@@ -42,24 +57,24 @@ abstract class ModelBase {
      * provides the 'list all' REST call
      * @return a list of resource IDs
      */
-    final List<String> getAll() {
-        API.get(requestFor(resource))?.data?.items?.collect{it.id}
+    final List<String> getAll(Map options = [:]) {
+        API.get(requestFor(resource, options))?.data?.items?.collect{it.id}
     }
 
     /**
      * provides the creation REST call
      * @return the response JSON object
      */
-    def create() {
-        from waitFor(API.post(requestFor(resource) + [body: createBody]))?.data
+    def create(final Map options = [:]) {
+        from waitFor(API.post(requestFor(resource, options) + [body: createBody]), options)?.data
     }
 
     /**
      * provides the 'get resource' REST call
      * @return the response JSON object
      */
-    def read(final id = id) {
-        from API.get(requestFor("${resource}/${id}"))?.data
+    def read(final id = id, final Map options = [:]) {
+        from API.get(requestFor("${resource}/${id ?: ''}", options))?.data
     }
 
     /**
@@ -67,16 +82,16 @@ abstract class ModelBase {
      * instead of PATCH (partial update)
      * @return the response JSON object
      */
-    boolean update() {
-        waitFor(API.put(requestFor("${resource}/${id}") + [body: updateBody]))?.status == 202
+    boolean update(final Map options = [:]) {
+        waitFor(API.put(requestFor("${resource}/${id}", options) + [body: updateBody]), options)?.status == 202
     }
 
     /**
      * provides the 'delete resource' REST call
      * @return the response JSON object
      */
-    final boolean delete() {
-        waitFor(API.delete(requestFor("${resource}/$id")))?.status == 202
+    boolean delete(final Map options = [:]) {
+        waitFor(API.delete(requestFor("${resource}/$id", options)), options)?.status == 202
     }
 
     /**
@@ -85,12 +100,10 @@ abstract class ModelBase {
      * @return a properly filled request body
      */
     protected final Map bodyFrom(final List propNames) {
-        final props = metaClass.properties.findAll{def n=it.name; propNames.contains(n) && this."$n"}.collectEntries{def n=it.name; ["$n": this."$n"]}
+        final props = metaClass.properties.findAll{ propNames.contains(it.name) && this."${it.name}" != null }.collectEntries{ [(it.name): this."${it.name}"] }
 
         final rtn = [properties: [:]]
-        // surely looks a little dumb, but shortening or omitting this leads to a weird:
-        // net.sf.json.JSONException: java.lang.ClassCastException: JSON keys must be strings
-        // also, we have to spice up keywords with underscores
+        // we have to spice up keywords with underscores
         props.each { k, v -> rtn.properties."${k.toString().replaceAll(/_/, '')}" = v }
         if (log.isDebugEnabled()) log.debug "body: ${rtn}"
         return rtn
@@ -106,7 +119,6 @@ abstract class ModelBase {
     final List propertyNames(final List<Class<? extends Annotation>> annotations) {
         this.class.declaredFields.findAll {
             annotations.find { a ->
-                //noinspection GroovyInArgumentCheck
                 a in it.declaredAnnotations*.annotationType() }
         }.collect{it.name}
     }
@@ -124,9 +136,9 @@ abstract class ModelBase {
             e = this.class.newInstance(id: data.id)
             if (!e) throw new InvalidObjectException("cannot construct ${this.class.name}")
 
-            (e?.propertyNames([Creatable, Updatable, Readable]))?.each {
+            (e.propertyNames([Creatable, Updatable, Readable]))?.each {
                 def val = data.properties?."${it.replaceAll(/_/, '')}"
-                if (val && !(val =~ /(?i)null/))
+                if (val != null && !(val =~ /(?i)null/)) // NB: PUT seems to be non RFC-like for some entities in the PBC API
                     e."$it" = val
             }
         }

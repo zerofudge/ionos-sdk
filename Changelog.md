@@ -1,3 +1,20 @@
+### release 3.0.0 (05/03/2018)
+
+- change: the artifact was renamed to `groovy-sdk`, the group name changed to `com.profitbricks`
+- change: the artifact is no fat jar anymore, streamlined set of compile dependencies
+- fix: timings for status requests now actually work reliably
+- fix: removed some unnecessary code parts and refactored others
+- change: the artifacts are now available from official maven central
+- change: refactored test code to actual tests (Spock Specs)
+- change: removed `Share` and `Resource` entities until the user management API is fixed
+- fix: streamlined, corrected and improved the documentation
+- change: all API calls (all CRUD methods + list and commands) can be called with an optional map argument
+- change: based on the previous change, most configuration options can now be passed per API call
+- fix: `Volume.update()`, `LAN.update()` and `Snapshot.update()` works now reliably
+- change: `Server.update()` now always include `allowReboot: true`
+- change: regarding configuration options: the system property prefix has been renamed from `api.` to `com.profitbricks.sdk.`
+
+
 ### release 2.0.0 (09/25/2017)
 
 - add image aliases
@@ -8,11 +25,11 @@
 - fix NIC update for boolean parameters set to false
 - fix load balancer update for boolean parameters set to false
 - fix IP block read for `ips` property
-- add and update tests
+
 
 ### release 1.4.1 (06/14/2017)
 
-- update Readme and provide an example app
+- update Readme and provided an example app
 - complete test coverage for all endpoints
 
 

@@ -16,33 +16,24 @@
 
 package com.profitbricks.sdk.model
 
-import com.profitbricks.sdk.annotation.Updatable
+import com.profitbricks.sdk.annotation.*
 import groovy.transform.*
 
 /**
- * an image POGO
- * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#images">Cloud API reference</a>
+ * a group POGO
+ * @see <a href="https://devops.profitbricks.com/api/cloud/v4/#user-management">Cloud API reference</a>
  *
- * @author fudge <frank.geusch@profitbricks.com>
+ * @author nurfet-becirevic
  */
 @ToString(includeNames = true, ignoreNulls = true, includeSuperProperties = true, includePackage = false, excludes = ['resource'])
 @EqualsAndHashCode(callSuper = true)
-final class Image extends ModelBase {
-    @Updatable
-    String name, description, location, licenceType, imageType
-    @Updatable
-    int size
-    @Updatable
-    boolean cpuHotPlug, cpuHotUnplug, ramHotPlug, ramHotUnplug, nicHotPlug, nicHotUnplug, discVirtioHotPlug, discVirtioHotUnplug, discScsiHotPlug, discScsiHotUnplug, _public
+final class UserGroup extends ModelBase {
 
-    /**
-     * images cannot be created via the API, this just throws
-     * @see NoSuchMethodException
-     */
-    @Override
-    final Image create() {
-        throw new NoSuchMethodException('create not implemented for Images')
-    }
+    @Creatable @Updatable
+    String name
+    @Creatable @Updatable
+    boolean createDataCenter, createSnapshot, reserveIp, accessActivityLog
 
-    final String resource = 'images'
+    final String resource = 'um/groups'
 }
+
