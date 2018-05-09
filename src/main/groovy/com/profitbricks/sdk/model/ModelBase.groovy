@@ -36,6 +36,11 @@ abstract class ModelBase {
     def id
 
     /**
+     * all properties from the response data
+     */
+    protected final Map<String, ?> rawProperties = [:]
+
+    /**
      * the resource part of the API URL path
      * @return the resource path for this REST resource
      */
@@ -140,6 +145,10 @@ abstract class ModelBase {
                 def val = data.properties?."${it.replaceAll(/_/, '')}"
                 if (val != null && !(val =~ /(?i)null/)) // NB: PUT seems to be non RFC-like for some entities in the PBC API
                     e."$it" = val
+            }
+
+            data.properties?.each { _k, _v ->
+                rawProperties["${_k}"] = _v
             }
         }
         return e

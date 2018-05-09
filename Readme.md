@@ -1,6 +1,6 @@
 # Groovy SDK
 
-Version: **3.0.0**
+Version: **3.1.0**
 
 ![Profitbricks Groovy/Java SDK](grooy-sdk-logo.png)
 
@@ -149,14 +149,14 @@ This SDK is available from the [ProfitBricks GitHub Page](https://github.com/pro
 - **optional**: build and deploy it to your local maven repository:
 
 ```
-./gradlew assemble publishToMavenLocal -x test
+./gradlew clean build publishToMavenLocal -x test
 ```
 
 - add the dependency to your project:
   - example: gradle
 
         dependencies {
-            compile 'com.profitbricks:groovy-sdk:3.0.0'
+            compile 'com.profitbricks:groovy-sdk:3.1.0'
         }
 
   - example: maven
@@ -164,7 +164,7 @@ This SDK is available from the [ProfitBricks GitHub Page](https://github.com/pro
         <dependency>
             <groupId>com.profitbricks</groupId>
             <artifactId>groovy-sdk</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0</version>
         </dependency>
 
 ### Configuration

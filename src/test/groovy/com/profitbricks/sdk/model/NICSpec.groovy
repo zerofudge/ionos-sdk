@@ -83,6 +83,7 @@ class NICSpec extends Specification {
         nic.ips.size() == 1
         nic.ips.first() == '1.2.3.4'
         nic.mac =~ /(?i)[a-z0-9:]+/
+        nic.lan.id == lan.id
     }
 
     final 'NICs can be listed'() {

@@ -75,7 +75,7 @@ final class Common {
         final req = [
             uri                : "${getAPIURL(options)}/${path}",
             headers            : [
-                'User-Agent'   : 'profitbricks-groovy-sdk/3.0.0',
+                'User-Agent'   : 'profitbricks-groovy-sdk/3.1.0',
                 'Accept'       : JSON.acceptHeader,
                 'Authorization': "Basic " + encodeBase64String("${user}:${pword}".bytes)
             ],
