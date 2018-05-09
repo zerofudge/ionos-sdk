@@ -1,3 +1,8 @@
+### release 3.1.0 (05/??/2018)
+
+- change: fetched `NIC`s now always contain a valid (yet shallow) `LAN`
+
+
 ### release 3.0.0 (05/03/2018)
 
 - change: the artifact was renamed to `groovy-sdk`, the group name changed to `com.profitbricks`

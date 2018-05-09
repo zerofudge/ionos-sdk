@@ -73,7 +73,10 @@ final class NIC extends ModelBase {
 
     private final _from(final nic) {
         final NIC n = (nic as NIC)?.with(server)
-        if (lan) n?.with(lan)
-        return n
+        if (!lan && rawProperties.lan) {
+            lan = new LAN(id: rawProperties.lan, dataCenter: server.dataCenter)
+        }
+
+        n?.with(lan)
     }
 }
